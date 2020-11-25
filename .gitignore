@@ -1,0 +1,6 @@
+.php_cs.cache
+.phpunit.result.cache
+report.md
+report.html
+composer.lock
+infection.log

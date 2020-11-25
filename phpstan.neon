@@ -1,0 +1,19 @@
+parameters:
+    level: 7
+    paths:
+        - src
+        - tests
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            message: '#Parameter .* of function openssl_pkey_derive expects resource\, string given\.#'
+            count: 2
+            path: src/library/Utils.php
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-beberlei-assert/extension.neon
+    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon

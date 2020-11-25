@@ -1,0 +1,12 @@
+splits:
+    - prefix: "src/library"
+      target: "https://${GH_TOKEN}@github.com/spomky-labs/web-push-lib.git"
+    - prefix: "src/bundle"
+      target: "https://${GH_TOKEN}@github.com/spomky-labs/web-push-bundle.git"
+    - prefix: "src/demo"
+      target: "https://${GH_TOKEN}@github.com/spomky-labs/web-push-demo.git"
+
+origins:
+    - ^master$
+    - ^v\d+\.\d+$
+    - ^v\d+\.\d+\.\d+.*$
