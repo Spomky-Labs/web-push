@@ -26,7 +26,7 @@
     "test:typing": "./vendor/bin/phpstan analyse",
     "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
     "test:benchmark": "./vendor/bin/phpbench run -l dots --report aggregate",
-    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=97 --min-covered-msi=97",
+    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=94 --min-covered-msi=94",
     "test:security": "./vendor/bin/security-checker security:check"
   },
   "require": {
@@ -59,6 +59,7 @@
     "sensiolabs/security-checker": "^6.0",
     "symfony/cache": "^5.1",
     "symfony/http-client": "^5.1",
+    "symfony/var-dumper": "^5.2",
     "thecodingmachine/phpstan-safe-rule": "^1.0",
     "web-token/jwt-signature-algorithm-ecdsa": "^2.0"
   },

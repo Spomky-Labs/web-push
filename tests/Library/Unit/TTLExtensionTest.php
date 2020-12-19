@@ -13,10 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use function array_key_exists;
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
 use WebPush\Subscription;
 use WebPush\TTLExtension;
@@ -34,39 +33,24 @@ final class TTLExtensionTest extends TestCase
      */
     public function ttlIsSetInHeader(int $ttl): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::once())
-            ->method('debug')
-            ->with('Processing with the TTL extension', static::callback(static function (array $data) use ($ttl): bool {
-                if (!array_key_exists('TTL', $data)) {
-                    return false;
-                }
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
 
-                return ((string) $ttl) === $data['TTL'];
-            }))
+        $notification = Notification::create()
+            ->withTTL($ttl)
         ;
+        $subscription = Subscription::create('https://foo.bar');
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withHeader')
-            ->with('TTL', static::equalTo((string) $ttl))
-            ->willReturnSelf()
-        ;
-
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('getTTL')
-            ->willReturn($ttl)
-        ;
-        $subscription = self::createMock(Subscription::class);
-
-        TTLExtension::create()
+        $request = TTLExtension::create()
             ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertEquals($ttl, $request->getHeaderLine('ttl'));
+        static::assertCount(1, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Processing with the TTL extension', $logger->records[0]['message']);
+        static::assertEquals($ttl, $logger->records[0]['context']['TTL']);
     }
 
     /**

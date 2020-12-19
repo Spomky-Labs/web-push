@@ -22,6 +22,7 @@ use Safe\DateTimeImmutable;
 use function Safe\openssl_encrypt;
 use function Safe\openssl_pkey_new;
 use function Safe\sprintf;
+use Symfony\Component\Cache\Adapter\NullAdapter;
 use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Loggable;
@@ -34,10 +35,13 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     protected const PADDING_NONE = 0;
     protected const PADDING_RECOMMENDED = 3052;
     private const SIZE = 32;
+    private const SALT_SIZE = 16;
+    private const CEK_SIZE = 16;
+    private const NONCE_SIZE = 12;
 
     protected int $padding = self::PADDING_RECOMMENDED;
 
-    private ?CacheItemPoolInterface $cache = null;
+    private CacheItemPoolInterface $cache;
     private LoggerInterface $logger;
     private string $cacheKey = self::WEB_PUSH_PAYLOAD_ENCRYPTION;
     private string $cacheExpirationTime = 'now + 30min';
@@ -45,6 +49,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     public function __construct()
     {
         $this->logger = new NullLogger();
+        $this->cache = new NullAdapter();
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -90,7 +95,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $userAgentAuthToken = Base64Url::decode($keys->get('auth'));
         $this->logger->debug(sprintf('User-agent auth token: %s', Base64Url::encode($userAgentAuthToken)));
 
-        $salt = random_bytes(16);
+        $salt = random_bytes(self::SALT_SIZE);
         $this->logger->debug(sprintf('Salt: %s', Base64Url::encode($salt)));
 
         $serverKey = $this->getServerKey();
@@ -109,12 +114,12 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         // Derive the Content Encryption Key
         $contentEncryptionKeyInfo = $this->createInfo($this->name(), $context);
-        $contentEncryptionKey = mb_substr(hash_hmac('sha256', $contentEncryptionKeyInfo."\1", $prk, true), 0, 16, '8bit');
+        $contentEncryptionKey = mb_substr(hash_hmac('sha256', $contentEncryptionKeyInfo."\1", $prk, true), 0, self::CEK_SIZE, '8bit');
         $this->logger->debug(sprintf('CEK: %s', Base64Url::encode($contentEncryptionKey)));
 
         // Derive the Nonce
         $nonceInfo = $this->createInfo('nonce', $context);
-        $nonce = mb_substr(hash_hmac('sha256', $nonceInfo."\1", $prk, true), 0, 12, '8bit');
+        $nonce = mb_substr(hash_hmac('sha256', $nonceInfo."\1", $prk, true), 0, self::NONCE_SIZE, '8bit');
         $this->logger->debug(sprintf('NONCE: %s', Base64Url::encode($nonce)));
 
         // Padding
@@ -134,10 +139,9 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $bodyLength = mb_strlen($body, '8bit');
         Assertion::max($bodyLength, 4096, 'The size of payload must not be greater than 4096 bytes.');
 
-        $request = $this->prepareRequest($request, $salt);
-
         return $request
             ->withAddedHeader('Crypto-Key', sprintf('dh=%s', Base64Url::encode($serverKey->getPublicKey())))
+            ->withHeader('Encryption', 'salt='.Base64Url::encode($salt))
             ->withHeader('Content-Length', (string) $bodyLength)
             ;
     }
@@ -147,8 +151,6 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     abstract protected function getContext(string $userAgentPublicKey, ServerKey $serverKey): string;
 
     abstract protected function addPadding(string $payload): string;
-
-    abstract protected function prepareRequest(RequestInterface $request, string $salt): RequestInterface;
 
     abstract protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string;
 
@@ -164,16 +166,8 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     private function getServerKey(): ServerKey
     {
-        if (null === $this->cache) {
-            return $this->generateServerKey();
-        }
         $this->logger->debug('Getting key from the cache');
 
-        return $this->getServerKeyFromCache();
-    }
-
-    private function getServerKeyFromCache(): ServerKey
-    {
         $item = $this->cache->getItem($this->cacheKey);
         if ($item->isHit()) {
             $this->logger->debug('The key is available from the cache.');
@@ -202,7 +196,6 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         ]);
 
         $details = openssl_pkey_get_details($keyResource);
-        openssl_pkey_free($keyResource);
 
         Assertion::isArray($details, 'Unable to get the key details');
 

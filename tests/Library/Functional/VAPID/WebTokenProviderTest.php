@@ -13,10 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\VAPID;
 
-use function count;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use Safe\DateTimeImmutable;
 use WebPush\Base64Url;
 use WebPush\VAPID\WebTokenProvider;
@@ -51,17 +50,7 @@ final class WebTokenProviderTest extends TestCase
     {
         $expiresAt = DateTimeImmutable::createFromFormat('Y-m-d\TH:i:sP', '2020-01-28T16:22:37-07:00');
 
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(2))
-            ->method('debug')
-            ->withConsecutive(
-                ['Computing the JWS'],
-                ['JWS computed', static::callback(static function (array $data): bool {
-                    return 0 === count(array_diff(['token', 'key'], array_keys($data)));
-                })],
-            )
-        ;
+        $logger = new TestLogger();
 
         $header = WebTokenProvider::create($publicKey, $privateKey)
             ->setLogger($logger)
@@ -71,6 +60,13 @@ final class WebTokenProviderTest extends TestCase
                 'exp' => $expiresAt->getTimestamp(),
             ])
         ;
+
+        static::assertCount(2, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Computing the JWS', $logger->records[0]['message']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('JWS computed', $logger->records[1]['message']);
+        static::assertEquals(['token', 'key'], array_keys($logger->records[1]['context']));
 
         static::assertStringStartsWith('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.', $header->getToken());
         static::assertEquals($publicKey, $header->getKey());

@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
 use WebPush\Subscription;
 use WebPush\UrgencyExtension;
@@ -33,33 +33,24 @@ final class UrgencyExtensionTest extends TestCase
      */
     public function urgencyIsSetInHeader(string $urgency): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::once())
-            ->method('debug')
-            ->with('Processing with the Urgency extension', ['Urgency' => $urgency])
-    ;
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withHeader')
-            ->with('Urgency', $urgency)
-            ->willReturnSelf()
+        $notification = Notification::create()
+            ->withUrgency($urgency)
         ;
+        $subscription = Subscription::create('https://foo.bar');
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('getUrgency')
-            ->willReturn($urgency)
-        ;
-        $subscription = self::createMock(Subscription::class);
-
-        UrgencyExtension::create()
+        $request = UrgencyExtension::create()
             ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertEquals($urgency, $request->getHeaderLine('urgency'));
+        static::assertCount(1, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Processing with the Urgency extension', $logger->records[0]['message']);
+        static::assertEquals($urgency, $logger->records[0]['context']['Urgency']);
     }
 
     /**

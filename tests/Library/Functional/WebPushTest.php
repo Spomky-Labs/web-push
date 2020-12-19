@@ -13,15 +13,11 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional;
 
+use Http\Mock\Client;
 use InvalidArgumentException;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
-use WebPush\Base64Url;
-use WebPush\Keys;
 use WebPush\Notification;
 use WebPush\SimpleWebPush;
 use WebPush\Subscription;
@@ -30,6 +26,7 @@ use WebPush\Subscription;
  * @internal
  * @group Functional
  * @group Library
+ * @covers \WebPush\SimpleWebPush
  */
 class WebPushTest extends TestCase
 {
@@ -38,79 +35,11 @@ class WebPushTest extends TestCase
      */
     public function aNotificationCanBeSent(): void
     {
-        $response = self::createMock(ResponseInterface::class);
-        $response
-            ->expects(static::never())
-            ->method(static::anything())
+        $subscription = Subscription::create('https://foo.bar')
+            ->withContentEncoding('aesgcm')
         ;
-
-        $body = self::createMock(StreamInterface::class);
-        $body
-            ->expects(static::once())
-            ->method('write')
-            ->willReturnSelf()
-        ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('getBody')
-            ->willReturn($body)
-        ;
-        $request
-            ->expects(static::exactly(2))
-            ->method('withAddedHeader')
-            ->withConsecutive(
-                ['Crypto-Key'],
-                ['Authorization'],
-            )
-            ->willReturnSelf()
-        ;
-        $request
-            ->expects(static::exactly(7))
-            ->method('withHeader')
-            ->withConsecutive(
-                ['TTL', '3600'],
-                ['Topic', 'topic'],
-                ['Urgency', 'high'],
-                ['Content-Type', 'application/octet-stream'],
-                ['Content-Encoding', 'aesgcm'],
-                ['Encryption', static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'salt=', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-                ['Content-Length', '3070'],
-            )
-            ->willReturnSelf()
-        ;
-
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::exactly(2))
-            ->method('getEndpoint')
-            ->willReturn('https://foo.bar')
-        ;
-        $subscription
-            ->expects(static::once())
-            ->method('getContentEncoding')
-            ->willReturn('aesgcm')
-        ;
-
-        $keys = new Keys();
-        $keys
-            ->set('auth', 'wSfP1pfACMwFesCEfJx4-w')
-            ->set('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU')
-        ;
-        $subscription
-            ->expects(static::once())
-            ->method('getKeys')
-            ->willReturn($keys)
-        ;
+        $subscription->getKeys()->set('auth', 'wSfP1pfACMwFesCEfJx4-w');
+        $subscription->getKeys()->set('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU');
 
         $notification = Notification::create()
             ->sync()
@@ -120,21 +49,9 @@ class WebPushTest extends TestCase
             ->withTTL(3600)
         ;
 
-        $client = self::createMock(ClientInterface::class);
-        $client
-            ->expects(static::once())
-            ->method('sendRequest')
-            ->with($request)
-            ->willReturn($response)
-        ;
-
-        $requestFactory = self::createMock(RequestFactoryInterface::class);
-        $requestFactory
-            ->expects(static::once())
-            ->method('createRequest')
-            ->with('POST', 'https://foo.bar')
-            ->willReturn($request)
-        ;
+        $client = new Client();
+        $client->addResponse(new Response());
+        $requestFactory = new Psr17Factory();
 
         $report = SimpleWebPush::create($client, $requestFactory)
             ->enableVapid(
@@ -145,8 +62,25 @@ class WebPushTest extends TestCase
             ->send($notification, $subscription)
         ;
 
-        static::assertSame($notification, $report->getNotification());
-        static::assertSame($subscription, $report->getSubscription());
+        $request = $report->getRequest();
+        static::assertTrue($request->hasHeader('ttl'));
+        static::assertTrue($request->hasHeader('topic'));
+        static::assertTrue($request->hasHeader('urgency'));
+        static::assertTrue($request->hasHeader('content-type'));
+        static::assertTrue($request->hasHeader('content-encoding'));
+        static::assertTrue($request->hasHeader('crypto-key'));
+        static::assertTrue($request->hasHeader('encryption'));
+        static::assertTrue($request->hasHeader('content-length'));
+        static::assertTrue($request->hasHeader('authorization'));
+        static::assertEquals(['3600'], $request->getHeader('ttl'));
+        static::assertEquals(['topic'], $request->getHeader('topic'));
+        static::assertEquals(['high'], $request->getHeader('urgency'));
+        static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
+        static::assertEquals(['aesgcm'], $request->getHeader('content-encoding'));
+        static::assertEquals(['3070'], $request->getHeader('content-length'));
+        static::assertStringStartsWith('dh=', $request->getHeaderLine('crypto-key'));
+        static::assertStringStartsWith('salt=', $request->getHeaderLine('encryption'));
+        static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
     }
 
     /**
@@ -154,66 +88,11 @@ class WebPushTest extends TestCase
      */
     public function aNotificationCannotBeSent(): void
     {
-        $response = self::createMock(ResponseInterface::class);
-
-        $body = self::createMock(StreamInterface::class);
-        $body
-            ->expects(static::once())
-            ->method('write')
-            ->willReturnSelf()
+        $subscription = Subscription::create('https://foo.bar')
+            ->withContentEncoding('aes128gcm')
         ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('getBody')
-            ->willReturn($body)
-        ;
-        $request
-            ->expects(static::exactly(2))
-            ->method('withAddedHeader')
-            ->withConsecutive(
-                ['Crypto-Key'],
-                ['Authorization'],
-            )
-            ->willReturnSelf()
-        ;
-        $request
-            ->expects(static::exactly(6))
-            ->method('withHeader')
-            ->withConsecutive(
-                ['TTL', '3600'],
-                ['Topic', 'topic'],
-                ['Urgency', 'high'],
-                ['Content-Type', 'application/octet-stream'],
-                ['Content-Encoding', 'aes128gcm'],
-                ['Content-Length', '3154'],
-            )
-            ->willReturnSelf()
-        ;
-
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::exactly(2))
-            ->method('getEndpoint')
-            ->willReturn('https://foo.bar')
-        ;
-        $subscription
-            ->expects(static::once())
-            ->method('getContentEncoding')
-            ->willReturn('aes128gcm')
-        ;
-
-        $keys = new Keys();
-        $keys
-            ->set('auth', 'wSfP1pfACMwFesCEfJx4-w')
-            ->set('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU')
-        ;
-        $subscription
-            ->expects(static::once())
-            ->method('getKeys')
-            ->willReturn($keys)
-        ;
+        $subscription->getKeys()->set('auth', 'wSfP1pfACMwFesCEfJx4-w');
+        $subscription->getKeys()->set('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU');
 
         $notification = Notification::create()
             ->sync()
@@ -223,21 +102,9 @@ class WebPushTest extends TestCase
             ->withTTL(3600)
         ;
 
-        $client = self::createMock(ClientInterface::class);
-        $client
-            ->expects(static::once())
-            ->method('sendRequest')
-            ->with($request)
-            ->willReturn($response)
-        ;
-
-        $requestFactory = self::createMock(RequestFactoryInterface::class);
-        $requestFactory
-            ->expects(static::once())
-            ->method('createRequest')
-            ->with('POST', 'https://foo.bar')
-            ->willReturn($request)
-        ;
+        $client = new Client();
+        $client->addResponse(new Response());
+        $requestFactory = new Psr17Factory();
 
         $report = SimpleWebPush::create($client, $requestFactory)
             ->enableVapid(
@@ -248,8 +115,25 @@ class WebPushTest extends TestCase
             ->send($notification, $subscription)
         ;
 
-        static::assertSame($notification, $report->getNotification());
-        static::assertSame($subscription, $report->getSubscription());
+        $request = $report->getRequest();
+        static::assertTrue($request->hasHeader('ttl'));
+        static::assertTrue($request->hasHeader('topic'));
+        static::assertTrue($request->hasHeader('urgency'));
+        static::assertTrue($request->hasHeader('content-type'));
+        static::assertTrue($request->hasHeader('content-encoding'));
+        static::assertTrue($request->hasHeader('crypto-key'));
+        static::assertTrue($request->hasHeader('encryption'));
+        static::assertTrue($request->hasHeader('content-length'));
+        static::assertTrue($request->hasHeader('authorization'));
+        static::assertEquals(['3600'], $request->getHeader('ttl'));
+        static::assertEquals(['topic'], $request->getHeader('topic'));
+        static::assertEquals(['high'], $request->getHeader('urgency'));
+        static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
+        static::assertEquals(['aes128gcm'], $request->getHeader('content-encoding'));
+        static::assertEquals(['3154'], $request->getHeader('content-length'));
+        static::assertStringStartsWith('dh=', $request->getHeaderLine('crypto-key'));
+        static::assertStringStartsWith('salt=', $request->getHeaderLine('encryption'));
+        static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
     }
 
     /**
@@ -260,8 +144,8 @@ class WebPushTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('VAPID has already been enabled');
 
-        $client = self::createMock(ClientInterface::class);
-        $requestFactory = self::createMock(RequestFactoryInterface::class);
+        $client = new Client();
+        $requestFactory = new Psr17Factory();
 
         SimpleWebPush::create($client, $requestFactory)
             ->enableVapid(

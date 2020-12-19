@@ -13,17 +13,16 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use function array_key_exists;
+use Http\Mock\Client;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
-use WebPush\StatusReport;
 use WebPush\Subscription;
 use WebPush\WebPush;
 
@@ -39,91 +38,17 @@ class WebPushTest extends TestCase
      */
     public function aNotificationCanBeSent(): void
     {
-        $response = self::createMock(ResponseInterface::class);
-        $response
-            ->expects(static::once())
-            ->method('getStatusCode')
-            ->willReturn(201)
-        ;
+        $subscription = Subscription::create('https://foo.bar');
+        $notification = Notification::create();
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
+        $client = new Client();
+        $client->addResponse(new Response(201));
+        $requestFactory = new Psr17Factory();
 
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getEndpoint')
-            ->willReturn('https://foo.bar')
-        ;
+        $extensionManager = ExtensionManager::create();
+        $logger = new TestLogger();
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
-
-        $client = self::createMock(ClientInterface::class);
-        $client
-            ->expects(static::once())
-            ->method('sendRequest')
-            ->with($request)
-            ->willReturn($response)
-        ;
-
-        $requestFactory = self::createMock(RequestFactoryInterface::class);
-        $requestFactory
-            ->expects(static::once())
-            ->method('createRequest')
-            ->with('POST', 'https://foo.bar')
-            ->willReturn($request)
-        ;
-
-        $extensionManager = self::createMock(ExtensionManager::class);
-        $extensionManager
-            ->expects(static::once())
-            ->method('process')
-            ->with($request, $notification, $subscription)
-            ->willReturnArgument(0)
-        ;
-
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(3))
-            ->method('debug')
-            ->withConsecutive(
-                ['Sending notification', static::callback(static function (array $data) use ($notification): bool {
-                    if (!array_key_exists('notification', $data)) {
-                        return false;
-                    }
-
-                    return $data['notification'] === $notification;
-                })],
-                ['Request ready', static::callback(static function (array $data) use ($request): bool {
-                    if (!array_key_exists('request', $data)) {
-                        return false;
-                    }
-
-                    return $data['request'] === $request;
-                })],
-                ['Response received', static::callback(static function (array $data) use ($response): bool {
-                    if (!array_key_exists('response', $data)) {
-                        return false;
-                    }
-
-                    return $data['response'] === $response;
-                })],
-            )
-        ;
-
-        $eventDispatcher = self::createMock(EventDispatcherInterface::class);
-        $eventDispatcher
-            ->expects(static::once())
-            ->method('dispatch')
-            ->with(static::isInstanceOf(StatusReport::class))
-        ;
+        $eventDispatcher = new EventDispatcher();
 
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
         $report = $webPush
@@ -132,6 +57,17 @@ class WebPushTest extends TestCase
             ->send($notification, $subscription)
         ;
 
+        static::assertCount(3, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Sending notification', $logger->records[0]['message']);
+        static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
+        static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('Request ready', $logger->records[1]['message']);
+        static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
+        static::assertEquals('debug', $logger->records[2]['level']);
+        static::assertEquals('Response received', $logger->records[2]['message']);
+        static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
         static::assertTrue($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
         static::assertSame($subscription, $report->getSubscription());
@@ -142,91 +78,17 @@ class WebPushTest extends TestCase
      */
     public function aNotificationCanBeSentAsync(): void
     {
-        $response = self::createMock(ResponseInterface::class);
-        $response
-            ->expects(static::once())
-            ->method('getStatusCode')
-            ->willReturn(202)
-        ;
+        $subscription = Subscription::create('https://foo.bar');
+        $notification = Notification::create();
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
+        $client = new Client();
+        $client->addResponse(new Response(202));
+        $requestFactory = new Psr17Factory();
 
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getEndpoint')
-            ->willReturn('https://foo.bar')
-        ;
+        $extensionManager = ExtensionManager::create();
+        $logger = new TestLogger();
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
-
-        $client = self::createMock(ClientInterface::class);
-        $client
-            ->expects(static::once())
-            ->method('sendRequest')
-            ->with($request)
-            ->willReturn($response)
-        ;
-
-        $requestFactory = self::createMock(RequestFactoryInterface::class);
-        $requestFactory
-            ->expects(static::once())
-            ->method('createRequest')
-            ->with('POST', 'https://foo.bar')
-            ->willReturn($request)
-        ;
-
-        $extensionManager = self::createMock(ExtensionManager::class);
-        $extensionManager
-            ->expects(static::once())
-            ->method('process')
-            ->with($request, $notification, $subscription)
-            ->willReturnArgument(0)
-        ;
-
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(3))
-            ->method('debug')
-            ->withConsecutive(
-                ['Sending notification', static::callback(static function (array $data) use ($notification): bool {
-                    if (!array_key_exists('notification', $data)) {
-                        return false;
-                    }
-
-                    return $data['notification'] === $notification;
-                })],
-                ['Request ready', static::callback(static function (array $data) use ($request): bool {
-                    if (!array_key_exists('request', $data)) {
-                        return false;
-                    }
-
-                    return $data['request'] === $request;
-                })],
-                ['Response received', static::callback(static function (array $data) use ($response): bool {
-                    if (!array_key_exists('response', $data)) {
-                        return false;
-                    }
-
-                    return $data['response'] === $response;
-                })],
-            )
-        ;
-
-        $eventDispatcher = self::createMock(EventDispatcherInterface::class);
-        $eventDispatcher
-            ->expects(static::once())
-            ->method('dispatch')
-            ->with(static::isInstanceOf(StatusReport::class))
-        ;
+        $eventDispatcher = new EventDispatcher();
 
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
         $report = $webPush
@@ -235,6 +97,17 @@ class WebPushTest extends TestCase
             ->send($notification, $subscription)
         ;
 
+        static::assertCount(3, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Sending notification', $logger->records[0]['message']);
+        static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
+        static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('Request ready', $logger->records[1]['message']);
+        static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
+        static::assertEquals('debug', $logger->records[2]['level']);
+        static::assertEquals('Response received', $logger->records[2]['message']);
+        static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
         static::assertTrue($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
         static::assertSame($subscription, $report->getSubscription());
@@ -245,91 +118,17 @@ class WebPushTest extends TestCase
      */
     public function aNotificationCannotBeSent(): void
     {
-        $response = self::createMock(ResponseInterface::class);
-        $response
-            ->expects(static::once())
-            ->method('getStatusCode')
-            ->willReturn(409)
-        ;
+        $subscription = Subscription::create('https://foo.bar');
+        $notification = Notification::create();
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
+        $client = new Client();
+        $client->addResponse(new Response(409));
+        $requestFactory = new Psr17Factory();
 
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getEndpoint')
-            ->willReturn('https://foo.bar')
-        ;
+        $extensionManager = ExtensionManager::create();
+        $logger = new TestLogger();
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
-
-        $client = self::createMock(ClientInterface::class);
-        $client
-            ->expects(static::once())
-            ->method('sendRequest')
-            ->with($request)
-            ->willReturn($response)
-        ;
-
-        $requestFactory = self::createMock(RequestFactoryInterface::class);
-        $requestFactory
-            ->expects(static::once())
-            ->method('createRequest')
-            ->with('POST', 'https://foo.bar')
-            ->willReturn($request)
-        ;
-
-        $extensionManager = self::createMock(ExtensionManager::class);
-        $extensionManager
-            ->expects(static::once())
-            ->method('process')
-            ->with($request, $notification, $subscription)
-            ->willReturnArgument(0)
-        ;
-
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(3))
-            ->method('debug')
-            ->withConsecutive(
-                ['Sending notification', static::callback(static function (array $data) use ($notification): bool {
-                    if (!array_key_exists('notification', $data)) {
-                        return false;
-                    }
-
-                    return $data['notification'] === $notification;
-                })],
-                ['Request ready', static::callback(static function (array $data) use ($request): bool {
-                    if (!array_key_exists('request', $data)) {
-                        return false;
-                    }
-
-                    return $data['request'] === $request;
-                })],
-                ['Response received', static::callback(static function (array $data) use ($response): bool {
-                    if (!array_key_exists('response', $data)) {
-                        return false;
-                    }
-
-                    return $data['response'] === $response;
-                })],
-            )
-        ;
-
-        $eventDispatcher = self::createMock(EventDispatcherInterface::class);
-        $eventDispatcher
-            ->expects(static::once())
-            ->method('dispatch')
-            ->with(static::isInstanceOf(StatusReport::class))
-        ;
+        $eventDispatcher = new EventDispatcher();
 
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
         $report = $webPush
@@ -338,6 +137,17 @@ class WebPushTest extends TestCase
             ->send($notification, $subscription)
         ;
 
+        static::assertCount(3, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Sending notification', $logger->records[0]['message']);
+        static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
+        static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('Request ready', $logger->records[1]['message']);
+        static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
+        static::assertEquals('debug', $logger->records[2]['level']);
+        static::assertEquals('Response received', $logger->records[2]['message']);
+        static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
         static::assertFalse($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
         static::assertSame($subscription, $report->getSubscription());

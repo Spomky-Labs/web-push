@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
 use WebPush\Subscription;
 use WebPush\TopicExtension;
@@ -33,41 +33,26 @@ final class TopicExtensionTest extends TestCase
      */
     public function topicIsSetInHeader(?string $topic): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::once())
-            ->method('debug')
-            ->with('Processing with the Topic extension', ['Topic' => $topic])
-        ;
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
 
-        $request = self::createMock(RequestInterface::class);
-        if (null === $topic) {
-            $request
-                ->expects(static::never())
-                ->method(static::anything())
-                ->willReturnSelf()
-            ;
-        } else {
-            $request
-                ->expects(static::once())
-                ->method('withHeader')
-                ->with('Topic', $topic)
-                ->willReturnSelf()
-            ;
+        $notification = Notification::create();
+        if (null !== $topic) {
+            $notification = $notification->withTopic($topic);
         }
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('getTopic')
-            ->willReturn($topic)
-        ;
-        $subscription = self::createMock(Subscription::class);
+        $subscription = Subscription::create('https://foo.bar');
 
-        TopicExtension::create()
+        $request = TopicExtension::create()
             ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertEquals($topic, $request->getHeaderLine('topic'));
+        static::assertCount(1, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Processing with the Topic extension', $logger->records[0]['message']);
+        static::assertEquals($topic, $logger->records[0]['context']['Topic']);
     }
 
     /**

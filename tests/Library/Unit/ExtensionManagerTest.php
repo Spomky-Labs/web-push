@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
-use WebPush\Extension;
+use Psr\Log\Test\TestLogger;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
+use WebPush\PreferAsyncExtension;
 use WebPush\Subscription;
+use WebPush\TTLExtension;
 
 /**
  * @internal
@@ -33,41 +34,26 @@ final class ExtensionManagerTest extends TestCase
      */
     public function topicIsSetInHeader(): void
     {
-        $extension1 = self::createMock(Extension::class);
-        $extension1
-            ->expects(static::once())
-            ->method('process')
-            ->willReturnArgument(0)
-        ;
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
+        $notification = Notification::create();
+        $subscription = Subscription::create('https://foo.bar');
 
-        $extension2 = self::createMock(Extension::class);
-        $extension2
-            ->expects(static::once())
-            ->method('process')
-            ->willReturnArgument(0)
-        ;
-
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(4))
-            ->method('debug')
-            ->withConsecutive(
-                ['Extension added', ['extension' => $extension1]],
-                ['Extension added', ['extension' => $extension2]],
-                ['Processing the request'],
-                ['Processing done'],
-            )
-        ;
-
-        $request = self::createMock(RequestInterface::class);
-        $notification = self::createMock(Notification::class);
-        $subscription = self::createMock(Subscription::class);
-
-        $manager = ExtensionManager::create()
+        ExtensionManager::create()
             ->setLogger($logger)
-            ->add($extension1)
-            ->add($extension2)
+            ->add(new TTLExtension())
+            ->add(new PreferAsyncExtension())
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertCount(4, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Extension added', $logger->records[0]['message']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('Extension added', $logger->records[1]['message']);
+        static::assertEquals('debug', $logger->records[2]['level']);
+        static::assertEquals('Processing the request', $logger->records[2]['message']);
+        static::assertEquals('debug', $logger->records[3]['level']);
+        static::assertEquals('Processing done', $logger->records[3]['message']);
     }
 }

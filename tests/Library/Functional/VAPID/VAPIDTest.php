@@ -13,17 +13,14 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\VAPID;
 
-use function array_key_exists;
-use DateTimeInterface;
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheItemPoolInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
+use function Safe\json_decode;
+use WebPush\Base64Url;
 use WebPush\Notification;
 use WebPush\Subscription;
-use WebPush\VAPID\Header;
-use WebPush\VAPID\JWSProvider;
+use WebPush\VAPID\LcobucciProvider;
 use WebPush\VAPID\VAPIDExtension;
 
 /**
@@ -38,201 +35,43 @@ final class VAPIDTest extends TestCase
      */
     public function vapidHeaderCanBeAdded(): void
     {
-        $jwsProvider = self::createMock(JWSProvider::class);
-        $jwsProvider
-            ->expects(static::once())
-            ->method('computeHeader')
-            ->with()
-            ->willReturnCallback(static function (array $parameters): Header {
-                static::assertArrayHasKey('aud', $parameters);
-                static::assertArrayHasKey('sub', $parameters);
-                static::assertArrayHasKey('exp', $parameters);
-                static::assertEquals('https://foo.fr', $parameters['aud']);
-                static::assertEquals('subject', $parameters['sub']);
-                static::assertIsInt($parameters['exp']);
+        $jwsProvider = LcobucciProvider::create(
+            'BDCgQkzSHClEg4otdckrN-duog2fAIk6O07uijwKr-w-4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM',
+            '870MB6gfuTJ4HtUnUvYMyJpr5eUZNP4Bk43bVdj3eAE'
+        );
 
-                return new Header('TOKEN', 'KEY');
-            })
-        ;
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
 
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(3))
-            ->method('debug')
-            ->withConsecutive(
-                ['Processing with VAPID header'],
-                ['Caching feature is not available'],
-                ['Generated header', static::callback(static function (array $data): bool {
-                    if (!array_key_exists('header', $data)) {
-                        return false;
-                    }
+        $notification = Notification::create();
+        $subscription = Subscription::create('https://foo.bar');
 
-                    return $data['header'] instanceof Header;
-                })],
-            )
-        ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withAddedHeader')
-            ->with('Authorization', 'vapid t=TOKEN, k=KEY')
-            ->willReturnSelf()
-        ;
-
-        $notification = self::createMock(Notification::class);
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getEndpoint')
-            ->willReturn('https://foo.fr/test')
-        ;
-
-        VAPIDExtension::create('subject', $jwsProvider)
+        $request = VAPIDExtension::create('subject', $jwsProvider)
             ->setLogger($logger)
+            ->setTokenExpirationTime('now +2hours')
             ->process($request, $notification, $subscription)
         ;
-    }
 
-    /**
-     * @test
-     */
-    public function vapidWithCacheHeaderCanBeAdded(): void
-    {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(3))
-            ->method('debug')
-            ->withConsecutive(
-                ['Processing with VAPID header'],
-                ['Caching feature is available'],
-                ['Header from cache', static::callback(static function (array $data): bool {
-                    if (!array_key_exists('header', $data)) {
-                        return false;
-                    }
+        $vapidHeader = $request->getHeaderLine('authorization');
+        static::assertStringStartsWith('vapid t=', $vapidHeader);
+        $tokenPayload = mb_substr($vapidHeader, 45);
+        $tokenPayload = mb_substr($tokenPayload, 0, mb_strpos($tokenPayload, '.'));
+        $tokenPayload = Base64Url::decode($tokenPayload);
+        $claims = json_decode($tokenPayload, true);
 
-                    return $data['header'] instanceof Header;
-                })],
-            )
-        ;
+        static::assertArrayHasKey('aud', $claims);
+        static::assertArrayHasKey('sub', $claims);
+        static::assertArrayHasKey('exp', $claims);
+        static::assertEquals('https://foo.bar', $claims['aud']);
+        static::assertEquals('subject', $claims['sub']);
+        static::assertGreaterThanOrEqual(time(), $claims['exp']);
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
-        $cacheItem
-            ->expects(static::once())
-            ->method('isHit')
-            ->willReturn(true)
-        ;
-        $cacheItem
-            ->expects(static::once())
-            ->method('get')
-            ->willReturn(new Header('TOKEN__CACHE', 'KEY__CACHE'))
-        ;
-        $cache = self::createMock(CacheItemPoolInterface::class);
-        $cache
-            ->expects(static::once())
-            ->method('getItem')
-            ->with(hash('sha512', 'https://foo.fr'))
-            ->willReturn($cacheItem)
-        ;
-        $cache
-            ->expects(static::never())
-            ->method('save')
-        ;
-
-        $jwsProvider = self::createMock(JWSProvider::class);
-        $jwsProvider
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withAddedHeader')
-            ->withConsecutive(
-                ['Authorization', 'vapid t=TOKEN__CACHE, k=KEY__CACHE'],
-                //['Crypto-Key', static::isType('string')],
-            )
-            ->willReturnSelf()
-        ;
-
-        $notification = self::createMock(Notification::class);
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getEndpoint')
-            ->willReturn('https://foo.fr/test')
-        ;
-
-        VAPIDExtension::create('subject', $jwsProvider)
-            ->setLogger($logger)
-            ->setCache($cache, 'now +30min')
-            ->setTokenExpirationTime('now +2 hours')
-            ->process($request, $notification, $subscription)
-        ;
-    }
-
-    /**
-     * @test
-     */
-    public function vapidWithMissingCacheHeaderCanBeGenerated(): void
-    {
-        $cacheItem = self::createMock(CacheItemInterface::class);
-        $cacheItem
-            ->expects(static::once())
-            ->method('isHit')
-            ->willReturn(false)
-        ;
-        $cacheItem
-            ->expects(static::once())
-            ->method('set')
-            ->with(static::isInstanceOf(Header::class))
-            ->willReturnSelf()
-        ;
-        $cacheItem
-            ->expects(static::once())
-            ->method('expiresAt')
-            ->with(static::isInstanceOf(DateTimeInterface::class))
-            ->willReturnSelf()
-        ;
-        $cache = self::createMock(CacheItemPoolInterface::class);
-        $cache
-            ->expects(static::once())
-            ->method('getItem')
-            ->with(hash('sha512', 'https://foo.fr:8080'))
-            ->willReturn($cacheItem)
-        ;
-        $cache
-            ->expects(static::once())
-            ->method('save')
-        ;
-
-        $jwsProvider = self::createMock(JWSProvider::class);
-        $jwsProvider
-            ->expects(static::once())
-            ->method('computeHeader')
-        ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withAddedHeader')
-            ->with('Authorization', static::isType('string'))
-            ->willReturnSelf()
-        ;
-
-        $notification = self::createMock(Notification::class);
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getEndpoint')
-            ->willReturn('https://foo.fr:8080/test')
-        ;
-
-        VAPIDExtension::create('subject', $jwsProvider)
-            ->setTokenExpirationTime('now +2 hours')
-            ->setCache($cache, 'now +30min')
-            ->process($request, $notification, $subscription)
-        ;
+        static::assertCount(3, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Processing with VAPID header', $logger->records[0]['message']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('Trying to get the header from the cache', $logger->records[1]['message']);
+        static::assertEquals('debug', $logger->records[2]['level']);
+        static::assertEquals('Header from cache', $logger->records[2]['message']);
     }
 }

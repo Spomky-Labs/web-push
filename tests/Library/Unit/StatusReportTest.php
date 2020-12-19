@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use Nyholm\Psr7\Request;
+use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WebPush\Notification;
 use WebPush\StatusReport;
 use WebPush\Subscription;
@@ -33,27 +33,13 @@ final class StatusReportTest extends TestCase
      */
     public function report(int $statusCode, bool $isSuccess): void
     {
-        $subscription = self::createMock(Subscription::class);
-        $notification = self::createMock(Notification::class);
-        $request = self::createMock(RequestInterface::class);
-        $response = self::createMock(ResponseInterface::class);
-        $response
-            ->expects(static::once())
-            ->method('getHeaderLine')
-            ->with('location')
-            ->willReturn('https://foo.bar')
-        ;
-        $response
-            ->expects(static::once())
-            ->method('getStatusCode')
-            ->willReturn($statusCode)
-        ;
-        $response
-            ->expects(static::once())
-            ->method('getHeader')
-            ->with('link')
-            ->willReturn(['https://link.1'])
-        ;
+        $subscription = Subscription::create('https://foo.bar');
+        $notification = Notification::create();
+        $request = new Request('POST', 'https://foo.bar');
+        $response = new Response($statusCode, [
+            'location' => ['https://foo.bar'],
+            'link' => ['https://link.1'],
+        ]);
         $report = new StatusReport(
             $subscription,
             $notification,

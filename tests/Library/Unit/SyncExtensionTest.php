@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
 use WebPush\PreferAsyncExtension;
 use WebPush\Subscription;
@@ -32,33 +32,22 @@ final class SyncExtensionTest extends TestCase
      */
     public function asyncIsSetInHeader(): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::once())
-            ->method('debug')
-            ->with('Sending asynchronous notification')
-    ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withHeader')
-            ->with('Prefer', 'respond-async')
-            ->willReturnSelf()
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
+        $notification = Notification::create()
+            ->async()
         ;
+        $subscription = Subscription::create('https://foo.bar');
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('isAsync')
-            ->willReturn(true)
-        ;
-        $subscription = self::createMock(Subscription::class);
-
-        $extension = PreferAsyncExtension::create()
+        $request = PreferAsyncExtension::create()
             ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertEquals('respond-async', $request->getHeaderLine('prefer'));
+        static::assertCount(1, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Sending asynchronous notification', $logger->records[0]['message']);
     }
 
     /**
@@ -66,31 +55,21 @@ final class SyncExtensionTest extends TestCase
      */
     public function asyncIsNotSetInHeader(): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::once())
-            ->method('debug')
-            ->with('Sending synchronous notification')
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
+        $notification = Notification::create()
+            ->sync()
         ;
+        $subscription = Subscription::create('https://foo.bar');
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::never())
-            ->method('withHeader')
-            ->willReturnSelf()
-        ;
-
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('isAsync')
-            ->willReturn(false)
-        ;
-        $subscription = self::createMock(Subscription::class);
-
-        PreferAsyncExtension::create()
+        $request = PreferAsyncExtension::create()
             ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertFalse($request->hasHeader('prefer'));
+        static::assertCount(1, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Sending synchronous notification', $logger->records[0]['message']);
     }
 }

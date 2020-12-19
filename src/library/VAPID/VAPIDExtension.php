@@ -20,6 +20,7 @@ use Psr\Log\NullLogger;
 use Safe\DateTimeImmutable;
 use function Safe\parse_url;
 use function Safe\sprintf;
+use Symfony\Component\Cache\Adapter\NullAdapter;
 use WebPush\Cachable;
 use WebPush\Extension;
 use WebPush\Loggable;
@@ -29,7 +30,7 @@ use WebPush\Subscription;
 class VAPIDExtension implements Extension, Loggable, Cachable
 {
     private JWSProvider $jwsProvider;
-    private ?CacheItemPoolInterface $cache = null;
+    private CacheItemPoolInterface $cache;
     private string $tokenExpirationTime = 'now +1hour';
     private LoggerInterface $logger;
     private string $subject;
@@ -40,6 +41,7 @@ class VAPIDExtension implements Extension, Loggable, Cachable
         $this->subject = $subject;
         $this->jwsProvider = $jwsProvider;
         $this->logger = new NullLogger();
+        $this->cache = new NullAdapter();
     }
 
     public static function create(string $subject, JWSProvider $jwsProvider): self
@@ -81,15 +83,10 @@ class VAPIDExtension implements Extension, Loggable, Cachable
             'sub' => $this->subject,
             'exp' => $expiresAt->getTimestamp(),
         ];
-        if (null !== $this->cache) {
-            $this->logger->debug('Caching feature is available');
-            $header = $this->getHeaderFromCache($origin, $claims);
-            $this->logger->debug('Header from cache', ['header' => $header]);
-        } else {
-            $this->logger->debug('Caching feature is not available');
-            $header = $this->jwsProvider->computeHeader($claims);
-            $this->logger->debug('Generated header', ['header' => $header]);
-        }
+
+        $this->logger->debug('Trying to get the header from the cache');
+        $header = $this->getHeaderFromCache($origin, $claims);
+        $this->logger->debug('Header from cache', ['header' => $header]);
 
         return $request
             ->withAddedHeader('Authorization', sprintf('vapid t=%s, k=%s', $header->getToken(), $header->getKey()))

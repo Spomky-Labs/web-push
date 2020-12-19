@@ -15,20 +15,20 @@ namespace WebPush\Tests\Library\Functional\Payload;
 
 use function chr;
 use function count;
-use DateTimeInterface;
 use InvalidArgumentException;
+use Nyholm\Psr7\Request;
 use function ord;
 use PHPUnit\Framework\TestCase;
-use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use function Safe\openssl_decrypt;
 use function Safe\preg_match;
 use function Safe\unpack;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\NullAdapter;
 use WebPush\Base64Url;
-use WebPush\Keys;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\ServerKey;
 use WebPush\Subscription;
@@ -41,8 +41,6 @@ use WebPush\Utils;
  */
 final class AES128GCMTest extends TestCase
 {
-    private static ?string $body = null;
-
     /**
      * @test
      */
@@ -67,6 +65,39 @@ final class AES128GCMTest extends TestCase
 
     /**
      * @test
+     */
+    public function missingUserAgentPublicKey(): void
+    {
+        static::expectException(InvalidArgumentException::class);
+        static::expectExceptionMessage('The user-agent public key is missing');
+
+        $request = new Request('POST', 'https://foo.bar');
+        $subscription = Subscription::create('https://foo.bar')
+            ->withContentEncoding('aes128gcm')
+        ;
+
+        AES128GCM::create()->encode('', $request, $subscription);
+    }
+
+    /**
+     * @test
+     */
+    public function missingUserAgentAuthenticationToken(): void
+    {
+        static::expectException(InvalidArgumentException::class);
+        static::expectExceptionMessage('The user-agent authentication token is missing');
+
+        $request = new Request('POST', 'https://foo.bar');
+        $subscription = Subscription::create('https://foo.bar')
+            ->withContentEncoding('aes128gcm')
+        ;
+        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+
+        AES128GCM::create()->encode('', $request, $subscription);
+    }
+
+    /**
+     * @test
      *
      * @see https://tests.peter.sh/push-encryption-verifier/
      */
@@ -78,23 +109,7 @@ final class AES128GCMTest extends TestCase
         $userAgentAuthToken = Base64Url::decode('BTBZMqHH6r4Tts7J_aSIgg');
         $expectedPayload = 'When I grow up, I want to be a watermelon';
 
-        $stream = self::createMock(StreamInterface::class);
-        $stream
-            ->expects(static::once())
-            ->method('rewind')
-        ;
-        $stream
-            ->expects(static::once())
-            ->method('getContents')
-            ->willReturn($body)
-        ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('getBody')
-            ->willReturn($stream)
-        ;
+        $request = new Request('POST', 'https://foo.bar', [], $body);
 
         $payload = $this->decryptRequest($request, $userAgentAuthToken, $userAgentPublicKey, $userAgentPrivateKey, true);
         static::assertEquals($expectedPayload, $payload);
@@ -106,77 +121,14 @@ final class AES128GCMTest extends TestCase
      *
      * @see https://tests.peter.sh/push-encryption-verifier/
      */
-    public function encryptPayload(string $userAgentPrivateKey, string $userAgentPublicKey, string $userAgentAuthToken, string $payload, string $padding, LoggerInterface $logger, CacheItemPoolInterface $cache): void
+    public function encryptPayload(string $userAgentPrivateKey, string $userAgentPublicKey, string $userAgentAuthToken, string $payload, string $padding, CacheItemPoolInterface $cache): void
     {
-        self::$body = null;
-        $stream = self::createMock(StreamInterface::class);
-        $stream
-            ->expects(static::once())
-            ->method('write')
-            ->with(static::isType('string'))
-            ->willReturnCallback(static function (string $body): void {
-                self::$body = $body;
-            })
+        $logger = new TestLogger();
+        $subscription = Subscription::create('https://foo.bar')
+            ->withContentEncoding('aes128gcm')
         ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::exactly(2))
-            ->method('getBody')
-            ->willReturn($stream)
-        ;
-        $request
-            ->expects(static::exactly(1))
-            ->method('withHeader')
-            ->withConsecutive(
-                ['Content-Length', static::isType('string')],
-            )
-            ->willReturnSelf()
-        ;
-        $request
-            ->expects(static::exactly(1))
-            ->method('withAddedHeader')
-            ->withConsecutive(
-                ['Crypto-Key'],
-            )
-            ->willReturnSelf()
-        ;
-
-        $keys = self::createMock(Keys::class);
-        $keys
-            ->expects(static::exactly(2))
-            ->method('has')
-            ->willReturnCallback(static function (string $name): bool {
-                switch ($name) {
-                    case 'p256dh':
-                    case 'auth':
-                        return true;
-                    default:
-                        return false;
-                }
-            })
-        ;
-        $keys
-            ->expects(static::exactly(2))
-            ->method('get')
-            ->willReturnCallback(static function (string $name) use ($userAgentPublicKey, $userAgentAuthToken): string {
-                switch ($name) {
-                    case 'p256dh':
-                        return $userAgentPublicKey;
-                    case 'auth':
-                        return $userAgentAuthToken;
-                    default:
-                        throw new InvalidArgumentException('Undefined key');
-                }
-            })
-        ;
-
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getKeys')
-            ->willReturn($keys)
-        ;
+        $subscription->getKeys()->set('p256dh', $userAgentPublicKey);
+        $subscription->getKeys()->set('auth', $userAgentAuthToken);
 
         $encoder = AES128GCM::create();
 
@@ -196,23 +148,15 @@ final class AES128GCMTest extends TestCase
             default:
                 break;
         }
-        $encoder
-            ->setCache($cache)
-            ->setLogger($logger)
-        ;
+        $encoder->setCache($cache);
         static::assertEquals('aes128gcm', $encoder->name());
 
-        $encoder->encode($payload, $request, $subscription);
+        $request = new Request('POST', 'https://foo.bar');
+        $encoder
+            ->setLogger($logger)
+            ->encode($payload, $request, $subscription)
+        ;
 
-        $stream
-            ->expects(static::once())
-            ->method('rewind')
-        ;
-        $stream
-            ->expects(static::once())
-            ->method('getContents')
-            ->willReturn(self::$body)
-        ;
         $decryptedPayload = $this->decryptRequest(
             $request,
             Base64Url::decode($userAgentAuthToken),
@@ -222,6 +166,11 @@ final class AES128GCMTest extends TestCase
         );
 
         static::assertEquals($payload, $decryptedPayload);
+
+        static::assertGreaterThanOrEqual(13, count($logger->records));
+        foreach ($logger->records as $record) {
+            static::assertEquals('debug', $record['level']);
+        }
     }
 
     /**
@@ -236,83 +185,20 @@ final class AES128GCMTest extends TestCase
         $userAgentPublicKey = 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4';
         $userAgentAuthToken = 'BTBZMqHH6r4Tts7J_aSIgg';
 
-        $stream = self::createMock(StreamInterface::class);
-        $stream
-            ->expects(static::once())
-            ->method('write')
-            ->with(static::isType('string'))
-            ->willReturnCallback(static function (string $body): void {
-                self::$body = $body;
-            })
+        $subscription = Subscription::create('https://foo.bar')
+            ->withContentEncoding('aes128gcm')
         ;
-
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('getBody')
-            ->willReturn($stream)
-        ;
-        $request
-            ->expects(static::never())
-            ->method('withHeader')
-        ;
-        $request
-            ->expects(static::never())
-            ->method('withAddedHeader')
-        ;
-
-        $keys = self::createMock(Keys::class);
-        $keys
-            ->expects(static::exactly(2))
-            ->method('has')
-            ->willReturnCallback(static function (string $name): bool {
-                switch ($name) {
-                    case 'p256dh':
-                    case 'auth':
-                        return true;
-                    default:
-                        return false;
-                }
-            })
-        ;
-        $keys
-            ->expects(static::exactly(2))
-            ->method('get')
-            ->willReturnCallback(static function (string $name) use ($userAgentPublicKey, $userAgentAuthToken): string {
-                switch ($name) {
-                    case 'p256dh':
-                        return $userAgentPublicKey;
-                    case 'auth':
-                        return $userAgentAuthToken;
-                    default:
-                        throw new InvalidArgumentException('Undefined key');
-                }
-            })
-        ;
-
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getKeys')
-            ->willReturn($keys)
-        ;
+        $subscription->getKeys()->set('p256dh', $userAgentPublicKey);
+        $subscription->getKeys()->set('auth', $userAgentAuthToken);
 
         $encoder = AES128GCM::create();
 
         static::assertEquals('aes128gcm', $encoder->name());
         $payload = str_pad('', 3994, '0');
 
+        $request = new Request('POST', 'https://foo.bar');
         $encoder->encode($payload, $request, $subscription);
 
-        $stream
-            ->expects(static::once())
-            ->method('rewind')
-        ;
-        $stream
-            ->expects(static::once())
-            ->method('getContents')
-            ->willReturn(self::$body)
-        ;
         $decryptedPayload = $this->decryptRequest(
             $request,
             Base64Url::decode($userAgentAuthToken),
@@ -330,9 +216,7 @@ final class AES128GCMTest extends TestCase
     public function dataEncryptPayload(): array
     {
         $withoutCache = $this->getMissingCache();
-        $withoutLogger = $this->getLoggerForMissingCache();
         $withCache = $this->getExistingCache();
-        $withLogger = $this->getLoggerForExistingCache();
         $uaPrivateKey = 'q1dXpw3UpT5VOmu_cf_v6ih07Aems3njxI-JWgLcM94';
         $uaPublicKey = 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4';
         $uaAuthSecret = 'BTBZMqHH6r4Tts7J_aSIgg';
@@ -345,7 +229,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'noPadding',
-                $withoutLogger,
                 $withoutCache,
             ],
             [
@@ -354,7 +237,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 str_pad('', 3993, '1'),
                 'noPadding',
-                $withoutLogger,
                 $withoutCache,
             ],
             [
@@ -363,7 +245,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'recommendedPadding',
-                $withoutLogger,
                 $withoutCache,
             ],
             [
@@ -372,7 +253,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'maxPadding',
-                $withoutLogger,
                 $withoutCache,
             ],
             [
@@ -381,7 +261,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'customPadding',
-                $withoutLogger,
                 $withoutCache,
             ],
             [
@@ -390,7 +269,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'noPadding',
-                $withLogger,
                 $withCache,
             ],
             [
@@ -399,7 +277,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'recommendedPadding',
-                $withLogger,
                 $withCache,
             ],
             [
@@ -408,7 +285,6 @@ final class AES128GCMTest extends TestCase
                 $uaAuthSecret,
                 $payload,
                 'maxPadding',
-                $withLogger,
                 $withCache,
             ],
         ];
@@ -468,226 +344,20 @@ final class AES128GCMTest extends TestCase
 
     private function getMissingCache(): CacheItemPoolInterface
     {
-        $item = self::createMock(CacheItemInterface::class);
-        $item
-            ->expects(static::atLeastOnce())
-            ->method('isHit')
-            ->willReturn(false)
-        ;
-        $item
-            ->expects(static::atLeastOnce())
-            ->method('set')
-            ->with(static::isInstanceOf(ServerKey::class))
-            ->willReturnSelf()
-        ;
-        $item
-            ->expects(static::atLeastOnce())
-            ->method('expiresAt')
-            ->with(static::isInstanceOf(DateTimeInterface::class))
-            ->willReturnSelf()
-        ;
-        $cache = self::createMock(CacheItemPoolInterface::class);
-        $cache
-            ->expects(static::atLeastOnce())
-            ->method('getItem')
-            ->with('WEB_PUSH_PAYLOAD_ENCRYPTION')
-            ->willReturn($item)
-        ;
-        $cache
-            ->expects(static::atLeastOnce())
-            ->method('save')
-            ->with(static::isInstanceOf(CacheItemInterface::class))
-        ;
-
-        return $cache;
-    }
-
-    private function getLoggerForExistingCache(): LoggerInterface
-    {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::atLeast(13))
-            ->method('debug')
-            ->withConsecutive(
-                ['Trying to encode the following payload.'],
-                ['User-agent public key: BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'],
-                ['User-agent auth token: BTBZMqHH6r4Tts7J_aSIgg'],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'Salt: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 6, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-                ['Getting key from the cache'],
-                ['The key is available from the cache.'],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'IKM: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 32 === mb_strlen($salt, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'PRK: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 32 === mb_strlen($salt, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'CEK: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'NONCE: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 7, null));
-
-                    return 12 === mb_strlen($salt, '8bit');
-                })],
-                ['Payload with padding', static::callback(static function (array $data): bool {
-                    return isset($data['padded_payload']);
-                })],
-                [static::callback(static function (string $data): bool {
-                    return 0 === mb_strpos($data, 'Encrypted payload: ', 0, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'Tag: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-            )
-        ;
-
-        return $logger;
-    }
-
-    private function getLoggerForMissingCache(): LoggerInterface
-    {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::atLeast(16))
-            ->method('debug')
-            ->withConsecutive(
-                ['Trying to encode the following payload.'],
-                ['User-agent public key: BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'],
-                ['User-agent auth token: BTBZMqHH6r4Tts7J_aSIgg'],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'Salt: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 6, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-                ['Getting key from the cache'],
-                ['No key from the cache'],
-                ['Generating new key pair'],
-                ['The key has been created.'],
-                ['Key saved'],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'IKM: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 32 === mb_strlen($salt, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'PRK: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 32 === mb_strlen($salt, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'CEK: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'NONCE: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 7, null));
-
-                    return 12 === mb_strlen($salt, '8bit');
-                })],
-                ['Payload with padding'],
-                [static::callback(static function (string $data): bool {
-                    return 0 === mb_strpos($data, 'Encrypted payload: ', 0, '8bit');
-                })],
-                [static::callback(static function (string $data): bool {
-                    $pos = mb_strpos($data, 'Tag: ', 0, '8bit');
-                    if (0 !== $pos) {
-                        return false;
-                    }
-                    $salt = Base64Url::decode(mb_substr($data, 5, null));
-
-                    return 16 === mb_strlen($salt, '8bit');
-                })],
-            )
-        ;
-
-        return $logger;
+        return new NullAdapter();
     }
 
     private function getExistingCache(): CacheItemPoolInterface
     {
-        $item = self::createMock(CacheItemInterface::class);
-        $item
-            ->expects(static::atLeastOnce())
-            ->method('isHit')
-            ->willReturn(true)
-        ;
-        $item
-            ->expects(static::atLeastOnce())
-            ->method('get')
-            ->willReturn(new ServerKey(
+        $cache = new ArrayAdapter();
+        $item = $cache->getItem('WEB_PUSH_PAYLOAD_ENCRYPTION');
+        $item->set(
+            new ServerKey(
                 Base64Url::decode('BNuH4FkvKM50iG9sNLmJxSJL-H5B7KzxdpVOMp8OCmJZIaiZhXWFEolBD3xAXpJbjqMuny5jznfDnjYKueWngnM'),
                 Base64Url::decode('Bw10H72jYRnlGZQytw8ruC9uJzqkWJqlOyFEEqQqYZ0')
-            ))
-        ;
-        $item
-            ->expects(static::once())
-            ->method('expiresAt')
-            ->with(static::isInstanceOf(DateTimeInterface::class))
-            ->willReturnSelf()
-        ;
-        $cache = self::createMock(CacheItemPoolInterface::class);
-        $cache
-            ->expects(static::atLeastOnce())
-            ->method('getItem')
-            ->with('WEB_PUSH_PAYLOAD_ENCRYPTION')
-            ->willReturn($item)
-        ;
+            )
+        );
+        $cache->save($item);
 
         return $cache;
     }

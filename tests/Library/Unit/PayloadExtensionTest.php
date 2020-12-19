@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Unit;
 
 use InvalidArgumentException;
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
-use WebPush\Payload\ContentEncoding;
+use WebPush\Payload\AESGCM;
 use WebPush\Payload\PayloadExtension;
 use WebPush\Subscription;
 
@@ -34,36 +34,23 @@ final class PayloadExtensionTest extends TestCase
      */
     public function canProcessWithoutPayload(): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(2))
-            ->method('debug')
-            ->withConsecutive(
-                ['Processing with payload'],
-                ['No payload'],
-            )
-        ;
+        $logger = new TestLogger();
+        $request = new Request('POST', 'https://foo.bar');
+        $notification = Notification::create();
+        $subscription = Subscription::create('https://foo.bar');
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::once())
-            ->method('withHeader')
-            ->with('Content-Length', '0')
-            ->willReturnSelf()
-        ;
-
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('getPayload')
-            ->willReturn(null)
-        ;
-        $subscription = self::createMock(Subscription::class);
-
-        PayloadExtension::create()
+        $request = PayloadExtension::create()
             ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertEquals('0', $request->getHeaderLine('content-length'));
+
+        static::assertCount(2, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Processing with payload', $logger->records[0]['message']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('No payload', $logger->records[1]['message']);
     }
 
     /**
@@ -71,62 +58,30 @@ final class PayloadExtensionTest extends TestCase
      */
     public function canProcessWithPayload(): void
     {
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::exactly(2))
-            ->method('debug')
-            ->withConsecutive(
-                ['Processing with payload'],
-                ['Encoder found: aesgcm. Processing with the encoder.'],
-            )
+        $logger = new TestLogger();
+        $notification = Notification::create()
+            ->withPayload('Payload')
         ;
+        $subscription = Subscription::create('https://foo.bar');
+        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->getKeys()->set('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::exactly(2))
-            ->method('withHeader')
-            ->withConsecutive(
-                ['Content-Type', 'application/octet-stream'],
-                ['Content-Encoding', 'aesgcm'],
-            )
-            ->willReturnSelf()
-        ;
+        $request = new Request('POST', 'https://foo.bar');
 
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('getPayload')
-            ->willReturn('Payload')
-        ;
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getContentEncoding')
-            ->willReturn('aesgcm')
-        ;
-
-        $contentEncoding = self::createMock(ContentEncoding::class);
-        $contentEncoding
-            ->expects(static::once())
-            ->method('name')
-            ->willReturn('aesgcm')
-        ;
-        $contentEncoding
-            ->expects(static::once())
-            ->method('encode')
-            ->with(
-                'Payload',
-                static::isInstanceOf(RequestInterface::class),
-                static::isInstanceOf(Subscription::class)
-            )
-            ->willReturnArgument(1)
-        ;
-
-        PayloadExtension::create()
+        $request = PayloadExtension::create()
             ->setLogger($logger)
-            ->addContentEncoding($contentEncoding)
+            ->addContentEncoding(AESGCM::create())
             ->process($request, $notification, $subscription)
         ;
+
+        static::assertEquals('application/octet-stream', $request->getHeaderLine('content-type'));
+        static::assertEquals('aesgcm', $request->getHeaderLine('content-encoding'));
+
+        static::assertCount(2, $logger->records);
+        static::assertEquals('debug', $logger->records[0]['level']);
+        static::assertEquals('Processing with payload', $logger->records[0]['message']);
+        static::assertEquals('debug', $logger->records[1]['level']);
+        static::assertEquals('Encoder found: aesgcm. Processing with the encoder.', $logger->records[1]['message']);
     }
 
     /**
@@ -137,42 +92,16 @@ final class PayloadExtensionTest extends TestCase
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('The content encoding "aesgcm" is not supported');
 
-        $logger = self::createMock(LoggerInterface::class);
-        $logger
-            ->expects(static::once())
-            ->method('debug')
-            ->withConsecutive(
-                ['Processing with payload'],
-            )
-        ;
+        $request = new Request('POST', 'https://foo.bar');
 
-        $request = self::createMock(RequestInterface::class);
-        $request
-            ->expects(static::never())
-            ->method(static::anything())
+        $notification = Notification::create()
+            ->withPayload('Payload')
         ;
-
-        $notification = self::createMock(Notification::class);
-        $notification
-            ->expects(static::once())
-            ->method('getPayload')
-            ->willReturn('Payload')
-        ;
-        $subscription = self::createMock(Subscription::class);
-        $subscription
-            ->expects(static::once())
-            ->method('getContentEncoding')
-            ->willReturn('aesgcm')
-        ;
-
-        $contentEncoding = self::createMock(ContentEncoding::class);
-        $contentEncoding
-            ->expects(static::never())
-            ->method(static::anything())
-        ;
+        $subscription = Subscription::create('https://foo.bar');
+        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->getKeys()->set('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         PayloadExtension::create()
-            ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
     }
