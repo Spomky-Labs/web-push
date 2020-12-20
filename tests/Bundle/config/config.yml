@@ -1,0 +1,42 @@
+services:
+    WebPush\Tests\Bundle\MockClientCallback: ~
+    WebPush\Tests\Bundle\WebPushEventListener:
+        tags:
+            - { name: kernel.event_listener, event: WebPush\StatusReport }
+    Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\ResponseFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\ServerRequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\StreamFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\UploadedFileFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\UriFactoryInterface: '@nyholm.psr7.psr17_factory'
+    nyholm.psr7.psr17_factory:
+        class: Nyholm\Psr7\Factory\Psr17Factory
+
+framework:
+    test: ~
+    secret: 'test'
+    http_client:
+        mock_response_factory: WebPush\Tests\Bundle\MockClientCallback
+
+webpush:
+    #logger: Psr\Log\LoggerInterface
+    event_dispatcher: Psr\EventDispatcher\EventDispatcherInterface
+    vapid:
+        enabled: true
+        subject: 'https://foo.bar'
+        #cache: Psr\Cache\CacheItemPoolInterface
+        #cache_lifetime: '+1 hour'
+        #token_lifetime: '+2 hour'
+        web_token:
+            enabled: true
+            public_key: 'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ'
+            private_key: 'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
+    #payload:
+        #aesgcm:
+            #cache: Psr\Cache\CacheItemPoolInterface
+            #cache_lifetime: '+1 hour'
+            #padding: 'recommended'
+        #aes128gcm:
+            #cache: Psr\Cache\CacheItemPoolInterface
+            #cache_lifetime: '+1 hour'
+            #padding: 'recommended'

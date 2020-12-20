@@ -3,12 +3,16 @@
   "type": "library",
   "description": "Web-Push library for PHP",
   "keywords": ["push", "notifications", "web", "WebPush", "Push API"],
-  "homepage": "https://github.com/spomky-labs/web-push-lib",
+  "homepage": "https://github.com/spomky-labs/web-push",
   "license": "MIT",
   "authors": [
     {
       "name": "Spomky-Labs",
       "homepage": "https://github.com/Spomky-Labs"
+    },
+    {
+      "name": "All contributors",
+      "homepage": "https://github.com/web-auth/webauthn-symfony-bundle/contributors"
     }
   ],
   "require": {

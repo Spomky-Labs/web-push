@@ -1,0 +1,30 @@
+{
+    "name": "spomky-labs/web-push-bundle",
+    "type": "symfony-bundle",
+    "description": "Web-Push bundle for Symfony",
+    "keywords": ["push", "notifications", "web", "WebPush", "Push API"],
+    "homepage": "https://github.com/spomky-labs/web-push",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Spomky-Labs",
+            "homepage": "https://github.com/Spomky-Labs"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/webauthn-symfony-bundle/contributors"
+        }
+    ],
+    "require": {
+        "sensio/framework-extra-bundle": "^5.2",
+        "spomky-labs/web-push-lib": "^2.0",
+        "symfony/config": "^4.4|^5.0",
+        "symfony/dependency-injection": "^4.4|^5.0",
+        "symfony/framework-bundle": "^4.4|^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "WebPush\\Bundle\\": "src/"
+        }
+    }
+}
