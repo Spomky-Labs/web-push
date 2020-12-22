@@ -13,17 +13,15 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class WebPush implements WebPushService, Loggable, Dispatchable
+class WebPush implements WebPushService, Loggable
 {
     private ClientInterface $client;
     private LoggerInterface $logger;
-    private EventDispatcherInterface $eventDispatcher;
     private RequestFactoryInterface $requestFactory;
     private ExtensionManager $extensionManager;
 
@@ -33,7 +31,6 @@ class WebPush implements WebPushService, Loggable, Dispatchable
         $this->requestFactory = $requestFactory;
         $this->extensionManager = $extensionManager;
         $this->logger = new NullLogger();
-        $this->eventDispatcher = new NullEventDispatcher();
     }
 
     public static function create(ClientInterface $client, RequestFactoryInterface $requestFactory, ExtensionManager $extensionManager): self
@@ -48,13 +45,6 @@ class WebPush implements WebPushService, Loggable, Dispatchable
         return $this;
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
-    {
-        $this->eventDispatcher = $eventDispatcher;
-
-        return $this;
-    }
-
     public function send(Notification $notification, Subscription $subscription): StatusReport
     {
         $this->logger->debug('Sending notification', ['notification' => $notification, 'subscription' => $subscription]);
@@ -65,15 +55,11 @@ class WebPush implements WebPushService, Loggable, Dispatchable
         $response = $this->client->sendRequest($request);
         $this->logger->debug('Response received', ['response' => $response]);
 
-        $statusReport = new StatusReport(
+        return new StatusReport(
             $subscription,
             $notification,
             $request,
             $response
         );
-
-        $this->eventDispatcher->dispatch($statusReport);
-
-        return $statusReport;
     }
 }

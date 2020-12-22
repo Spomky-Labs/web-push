@@ -20,11 +20,9 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use WebPush\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
-use WebPush\Dispatchable;
 use WebPush\Loggable;
 use WebPush\Payload\ContentEncoding;
 use WebPush\VAPID\JWSProvider;
@@ -56,7 +54,6 @@ final class WebPushExtension extends Extension
 
         $container->registerForAutoconfiguration(\WebPush\Extension::class)->addTag(ExtensionCompilerPass::TAG);
         $container->registerForAutoconfiguration(Loggable::class)->addTag(LoggerSetterCompilerPass::TAG);
-        $container->registerForAutoconfiguration(Dispatchable::class)->addTag(EventDispatcherSetterCompilerPass::TAG);
         $container->registerForAutoconfiguration(ContentEncoding::class)->addTag(PayloadContentEncodingCompilerPass::TAG);
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
@@ -66,9 +63,6 @@ final class WebPushExtension extends Extension
         $container->setAlias('webpush.request_factory', $config['request_factory']);
         if (null !== $config['logger']) {
             $container->setAlias(LoggerSetterCompilerPass::SERVICE, $config['logger']);
-        }
-        if (null !== $config['event_dispatcher']) {
-            $container->setAlias(EventDispatcherSetterCompilerPass::SERVICE, $config['event_dispatcher']);
         }
 
         $this->configureVapidSection($container, $loader, $config['vapid']);

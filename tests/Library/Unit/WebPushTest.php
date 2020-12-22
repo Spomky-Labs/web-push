@@ -20,7 +20,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\Test\TestLogger;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Subscription;
@@ -48,12 +47,9 @@ class WebPushTest extends TestCase
         $extensionManager = ExtensionManager::create();
         $logger = new TestLogger();
 
-        $eventDispatcher = new EventDispatcher();
-
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
         $report = $webPush
             ->setLogger($logger)
-            ->setEventDispatcher($eventDispatcher)
             ->send($notification, $subscription)
         ;
 
@@ -88,12 +84,9 @@ class WebPushTest extends TestCase
         $extensionManager = ExtensionManager::create();
         $logger = new TestLogger();
 
-        $eventDispatcher = new EventDispatcher();
-
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
         $report = $webPush
             ->setLogger($logger)
-            ->setEventDispatcher($eventDispatcher)
             ->send($notification, $subscription)
         ;
 
@@ -128,12 +121,9 @@ class WebPushTest extends TestCase
         $extensionManager = ExtensionManager::create();
         $logger = new TestLogger();
 
-        $eventDispatcher = new EventDispatcher();
-
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
         $report = $webPush
             ->setLogger($logger)
-            ->setEventDispatcher($eventDispatcher)
             ->send($notification, $subscription)
         ;
 

@@ -20,7 +20,6 @@ framework:
 
 webpush:
     #logger: Psr\Log\LoggerInterface
-    event_dispatcher: Psr\EventDispatcher\EventDispatcherInterface
     vapid:
         enabled: true
         subject: 'https://foo.bar'

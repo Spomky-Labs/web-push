@@ -15,7 +15,6 @@ namespace WebPush\Bundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use WebPush\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadCacheCompilerPass;
@@ -42,7 +41,6 @@ final class WebPushBundle extends Bundle
         parent::build($container);
         $container->addCompilerPass(new ExtensionCompilerPass());
         $container->addCompilerPass(new LoggerSetterCompilerPass());
-        $container->addCompilerPass(new EventDispatcherSetterCompilerPass());
         $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
         $container->addCompilerPass(new VapidCacheCompilerPass());
         $container->addCompilerPass(new PayloadCacheCompilerPass());

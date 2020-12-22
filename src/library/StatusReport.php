@@ -58,6 +58,13 @@ class StatusReport
         return $code >= 200 && $code < 300;
     }
 
+    public function hasExpired(): bool
+    {
+        $code = $this->response->getStatusCode();
+
+        return 404 === $code || 410 === $code;
+    }
+
     public function getLocation(): string
     {
         return $this->response->getHeaderLine('location');

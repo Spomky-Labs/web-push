@@ -19,7 +19,6 @@ use WebPush\Message;
 use WebPush\Notification;
 use WebPush\Subscription;
 use WebPush\Tests\Bundle\MockClientCallback;
-use WebPush\Tests\Bundle\WebPushEventListener;
 use WebPush\WebPush;
 
 /**
@@ -38,8 +37,6 @@ class NotificationTest extends KernelTestCase
         $kernel = self::bootKernel();
         /** @var WebPush $pushService */
         $pushService = $kernel->getContainer()->get(WebPush::class);
-        /** @var WebPushEventListener $eventListener */
-        $eventListener = self::$container->get(WebPushEventListener::class);
         /** @var MockClientCallback $responseFactory */
         $responseFactory = self::$container->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
@@ -64,11 +61,8 @@ class NotificationTest extends KernelTestCase
         ;
 
         $report = $pushService->send($notification, $subscription);
-        $events = $eventListener->getEvents();
 
         static::assertEquals(201, $report->getResponse()->getStatusCode());
-        static::assertCount(1, $events);
-        static::assertSame($report, $events[0]);
     }
 
     public function listOfSubscriptions(): array
