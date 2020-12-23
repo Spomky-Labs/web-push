@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Spomky-Labs
+ * Copyright (c) 2020 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace WebPush\Tests;
 
 use DirectoryIterator;
+use function in_array;
 use PHPUnit\Framework\TestCase;
-use function Safe\json_decode;
 use function Safe\file_get_contents;
+use function Safe\json_decode;
 use function Safe\sprintf;
 
 /**

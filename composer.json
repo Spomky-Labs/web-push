@@ -82,8 +82,7 @@
   },
   "replace": {
     "spomky-labs/web-push-lib": "self.version",
-    "spomky-labs/web-push-bundle": "self.version",
-    "spomky-labs/web-push-demo": "self.version"
+    "spomky-labs/web-push-bundle": "self.version"
   },
   "suggest": {
     "ext-mbstring": "Mandatory when using Payload or VAPID extensions",

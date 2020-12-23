@@ -56,7 +56,7 @@ final class VAPIDTest extends TestCase
         static::assertStringStartsWith('vapid t=', $vapidHeader);
         $tokenPayload = mb_substr($vapidHeader, 45);
         $position = mb_strpos($tokenPayload, '.');
-        $tokenPayload = mb_substr($tokenPayload, 0, $position === false ? null : $position);
+        $tokenPayload = mb_substr($tokenPayload, 0, false === $position ? null : $position);
         $tokenPayload = Base64Url::decode($tokenPayload);
         $claims = json_decode($tokenPayload, true);
 
