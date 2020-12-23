@@ -30,6 +30,7 @@ use WebPush\UrgencyExtension;
 use WebPush\VAPID\VAPIDExtension;
 use WebPush\VAPID\WebTokenProvider;
 use WebPush\WebPush;
+use function Safe\file_get_contents;
 
 // PSR-17 Request Factory
 $psr17Factory = new Psr17Factory();

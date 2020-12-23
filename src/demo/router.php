@@ -14,18 +14,28 @@ declare(strict_types=1);
 // adapted from http://stackoverflow.com/a/38926070
 // DON'T USE IN PRODUCTION, please code your own router or use a framework!
 
+require_once __DIR__.'/vendor/autoload.php';
+
+use function Safe\realpath;
+use function Safe\chdir;
+use function Safe\readfile;
+
 chdir(__DIR__);
 $filePath = realpath('./'.ltrim($_SERVER['REQUEST_URI'], '/'));
-if ($filePath && is_dir($filePath)) {
+if (is_dir($filePath)) {
     // attempt to find an index file
     foreach (['index.php', 'index.html'] as $indexFile) {
-        if ($filePath = realpath($filePath.DIRECTORY_SEPARATOR.$indexFile)) {
+        try {
+            $filePath = realpath($filePath.DIRECTORY_SEPARATOR.$indexFile);
+            break;
+        }
+        if () {
             break;
         }
     }
 }
 
-if ($filePath && is_file($filePath)) {
+if (is_file($filePath)) {
     // 1. check that file is not outside of this directory for security
     // 2. check for circular reference to router.php
     // 3. don't serve dot files

@@ -41,8 +41,6 @@
     "symfony/config": "^5.1",
     "symfony/dependency-injection": "^5.1",
     "symfony/framework-bundle": "^5.1",
-    "symfony/http-client": "^5.2",
-    "symfony/yaml": "^4.4|^5.0",
     "thecodingmachine/safe": "^1.1"
   },
   "require-dev": {
@@ -61,7 +59,9 @@
     "roave/security-advisories": "dev-latest",
     "sensiolabs/security-checker": "^6.0",
     "symfony/cache": "^5.1",
+    "symfony/http-client": "^5.2",
     "symfony/phpunit-bridge": "^5.1",
+    "symfony/yaml": "^4.4|^5.0",
     "symfony/var-dumper": "^5.2",
     "thecodingmachine/phpstan-safe-rule": "^1.0",
     "web-token/jwt-signature-algorithm-ecdsa": "^2.0"
@@ -79,6 +79,11 @@
   },
   "config": {
     "sort-packages": true
+  },
+  "replace": {
+    "spomky-labs/web-push-lib": "self.version",
+    "spomky-labs/web-push-bundle": "self.version",
+    "spomky-labs/web-push-demo": "self.version"
   },
   "suggest": {
     "ext-mbstring": "Mandatory when using Payload or VAPID extensions",

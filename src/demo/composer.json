@@ -1,7 +1,21 @@
 {
-    "name": "webpush/example",
+    "name": "spomky-labs/web-push-demo",
+    "description": "Web-Push bundle for Symfony",
+    "keywords": ["push", "notifications", "web", "WebPush", "Push API", "Demo"],
+    "homepage": "https://github.com/spomky-labs/web-push",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Spomky-Labs",
+            "homepage": "https://github.com/Spomky-Labs"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/web-auth/webauthn-symfony-demo/contributors"
+        }
+    ],
     "require": {
-        "minishlink/web-push": "dev-rebuild/ng",
+        "spomky-labs/web-push-lib": "^1.0",
         "monolog/monolog": "^2.1",
         "nyholm/psr7": "^1.3",
         "symfony/cache": "^5.1",

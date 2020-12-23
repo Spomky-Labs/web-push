@@ -15,6 +15,7 @@ namespace WebPush\Tests\Bundle;
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use WebPush\Bundle\WebPushBundle;
 
@@ -30,8 +31,10 @@ final class AppKernel extends Kernel
 
     /**
      * {@inheritdoc}
+     *
+     * @return iterable|BundleInterface[] An iterable of bundle instances
      */
-    public function registerBundles(): array
+    public function registerBundles()
     {
         return [
             new FrameworkBundle(),

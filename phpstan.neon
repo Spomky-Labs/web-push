@@ -4,6 +4,7 @@ parameters:
         - src
         - tests
     treatPhpDocTypesAsCertain: false
+    checkMissingIterableValueType: false
     ignoreErrors:
         -
             message: '#Parameter .* of function openssl_pkey_derive expects resource\, string given\.#'
