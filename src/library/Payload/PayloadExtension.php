@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace WebPush\Payload;
 
 use Assert\Assertion;
+use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -67,16 +68,25 @@ class PayloadExtension implements Extension, Loggable
             ;
         }
 
-        $contentEncoding = $subscription->getContentEncoding();
-        Assertion::keyExists($this->contentEncodings, $contentEncoding, sprintf('The content encoding "%s" is not supported', $contentEncoding));
-        $encoder = $this->contentEncodings[$contentEncoding];
-        $this->logger->debug(sprintf('Encoder found: %s. Processing with the encoder.', $contentEncoding));
+        $encoder = $this->findEncoder($subscription);
+        $this->logger->debug(sprintf('Encoder found: %s. Processing with the encoder.', $encoder->name()));
 
         $request = $request
             ->withHeader('Content-Type', 'application/octet-stream')
-            ->withHeader('Content-Encoding', $contentEncoding)
+            ->withHeader('Content-Encoding', $encoder->name())
         ;
 
         return $encoder->encode($payload, $request, $subscription);
+    }
+
+    private function findEncoder(Subscription $subscription): ContentEncoding
+    {
+        $supportedContentEncodings = $subscription->getSupportedContentEncodings();
+        foreach ($supportedContentEncodings as $supportedContentEncoding) {
+            if (array_key_exists($supportedContentEncoding, $this->contentEncodings)) {
+                return $this->contentEncodings[$supportedContentEncoding];
+            }
+        }
+        throw new InvalidArgumentException(sprintf('No content encoding found. Supported content encodings for the subscription are: %s', implode(', ', $supportedContentEncodings)));
     }
 }

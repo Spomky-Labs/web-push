@@ -90,7 +90,7 @@ final class PayloadExtensionTest extends TestCase
     public function unsupportedContentEncoding(): void
     {
         self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('The content encoding "aesgcm" is not supported');
+        self::expectExceptionMessage('No content encoding found. Supported content encodings for the subscription are: aesgcm');
 
         $request = new Request('POST', 'https://foo.bar');
 

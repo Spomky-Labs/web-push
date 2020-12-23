@@ -26,7 +26,10 @@ class Subscription implements JsonSerializable
 
     private Keys $keys;
 
-    private string $contentEncoding = 'aesgcm';
+    /**
+     * @var string[]
+     */
+    private array $supportedContentEncodings = ['aesgcm'];
 
     private ?int $expirationTime = null;
 
@@ -41,9 +44,12 @@ class Subscription implements JsonSerializable
         return new self($endpoint);
     }
 
-    public function withContentEncoding(string $contentEncoding): self
+    /**
+     * @param string[] $contentEncodings
+     */
+    public function withContentEncodings(array $contentEncodings): self
     {
-        $this->contentEncoding = $contentEncoding;
+        $this->supportedContentEncodings = $contentEncodings;
 
         return $this;
     }
@@ -68,9 +74,12 @@ class Subscription implements JsonSerializable
         return $this->endpoint;
     }
 
-    public function getContentEncoding(): string
+    /**
+     * @return string[]
+     */
+    public function getSupportedContentEncodings(): array
     {
-        return $this->contentEncoding;
+        return $this->supportedContentEncodings;
     }
 
     public static function createFromString(string $input): self
@@ -88,7 +97,7 @@ class Subscription implements JsonSerializable
     {
         return [
             'endpoint' => $this->endpoint,
-            'contentEncoding' => $this->contentEncoding,
+            'supportedContentEncodings' => $this->supportedContentEncodings,
             'keys' => $this->keys,
         ];
     }
@@ -102,9 +111,10 @@ class Subscription implements JsonSerializable
         Assertion::string($input['endpoint'], 'Invalid input');
 
         $object = new self($input['endpoint']);
-        if (array_key_exists('contentEncoding', $input)) {
-            Assertion::nullOrString($input['contentEncoding'], 'Invalid input');
-            $object->contentEncoding = $input['contentEncoding'];
+        if (array_key_exists('supportedContentEncodings', $input)) {
+            $encodings = $input['supportedContentEncodings'] ?? ['aesgcm'];
+            Assertion::allString($encodings, 'Invalid input');
+            $object->supportedContentEncodings = $encodings;
         }
         if (array_key_exists('expirationTime', $input)) {
             Assertion::nullOrInteger($input['expirationTime'], 'Invalid input');

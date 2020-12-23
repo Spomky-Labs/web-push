@@ -58,7 +58,7 @@ class StatusReport
         return $code >= 200 && $code < 300;
     }
 
-    public function hasExpired(): bool
+    public function notificationExpired(): bool
     {
         $code = $this->response->getStatusCode();
 

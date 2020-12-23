@@ -73,7 +73,7 @@ final class AES128GCMTest extends TestCase
 
         $request = new Request('POST', 'https://foo.bar');
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aes128gcm')
+            ->withContentEncodings(['aes128gcm'])
         ;
 
         AES128GCM::create()->encode('', $request, $subscription);
@@ -89,7 +89,7 @@ final class AES128GCMTest extends TestCase
 
         $request = new Request('POST', 'https://foo.bar');
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aes128gcm')
+            ->withContentEncodings(['aes128gcm'])
         ;
         $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
 
@@ -125,7 +125,7 @@ final class AES128GCMTest extends TestCase
     {
         $logger = new TestLogger();
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aes128gcm')
+            ->withContentEncodings(['aes128gcm'])
         ;
         $subscription->getKeys()->set('p256dh', $userAgentPublicKey);
         $subscription->getKeys()->set('auth', $userAgentAuthToken);
@@ -186,7 +186,7 @@ final class AES128GCMTest extends TestCase
         $userAgentAuthToken = 'BTBZMqHH6r4Tts7J_aSIgg';
 
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aes128gcm')
+            ->withContentEncodings(['aes128gcm'])
         ;
         $subscription->getKeys()->set('p256dh', $userAgentPublicKey);
         $subscription->getKeys()->set('auth', $userAgentAuthToken);

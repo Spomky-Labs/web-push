@@ -70,7 +70,7 @@ final class AESGCMTest extends TestCase
 
         $request = new Request('POST', 'https://foo.bar');
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aesgcm')
+            ->withContentEncodings(['aesgcm'])
         ;
 
         AESGCM::create()->encode('', $request, $subscription);
@@ -86,7 +86,7 @@ final class AESGCMTest extends TestCase
 
         $request = new Request('POST', 'https://foo.bar');
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aesgcm')
+            ->withContentEncodings(['aesgcm'])
         ;
         $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
 
@@ -102,7 +102,7 @@ final class AESGCMTest extends TestCase
     public function encryptPayload(string $userAgentPrivateKey, string $userAgentPublicKey, string $userAgentAuthToken, string $payload, string $padding, CacheItemPoolInterface $cache): void
     {
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aesgcm')
+            ->withContentEncodings(['aesgcm'])
         ;
         $subscription->getKeys()->set('p256dh', $userAgentPublicKey);
         $subscription->getKeys()->set('auth', $userAgentAuthToken);

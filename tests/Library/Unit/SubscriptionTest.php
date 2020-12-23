@@ -54,7 +54,7 @@ final class SubscriptionTest extends TestCase
         static::assertEquals('https://foo.bar', $subscription->getEndpoint());
         static::assertEquals('Public key', $subscription->getKeys()->get('p256dh'));
         static::assertEquals('Authorization Token', $subscription->getKeys()->get('auth'));
-        static::assertEquals('aesgcm', $subscription->getContentEncoding());
+        static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
     }
 
     /**
@@ -67,7 +67,7 @@ final class SubscriptionTest extends TestCase
         static::assertEquals('https://some.pushservice.com/something-unique', $subscription->getEndpoint());
         static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKeys()->get('p256dh'));
         static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKeys()->get('auth'));
-        static::assertEquals('aesgcm', $subscription->getContentEncoding());
+        static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
         static::assertEquals(1580253757, $subscription->getExpirationTime());
         static::assertEquals(DatetimeImmutable::createFromFormat('Y-m-d\TH:i:sP', '2020-01-28T16:22:37-07:00'), $subscription->expiresAt());
     }
@@ -82,7 +82,7 @@ final class SubscriptionTest extends TestCase
         static::assertEquals('https://some.pushservice.com/something-unique', $subscription->getEndpoint());
         static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKeys()->get('p256dh'));
         static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKeys()->get('auth'));
-        static::assertEquals('aesgcm', $subscription->getContentEncoding());
+        static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
         static::assertNull($subscription->getExpirationTime());
         static::assertNull($subscription->expiresAt());
     }
@@ -104,11 +104,11 @@ final class SubscriptionTest extends TestCase
     public function createSubscriptionWithAESGCMENCODINGFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aesgcm')
+            ->withContentEncodings(['aesgcm'])
         ;
 
         static::assertEquals('https://foo.bar', $subscription->getEndpoint());
-        static::assertEquals('aesgcm', $subscription->getContentEncoding());
+        static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
     }
 
     /**
@@ -117,11 +117,11 @@ final class SubscriptionTest extends TestCase
     public function createSubscriptionWithAES128GCMENCODINGFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aes128gcm')
+            ->withContentEncodings(['aes128gcm'])
         ;
 
         static::assertEquals('https://foo.bar', $subscription->getEndpoint());
-        static::assertEquals('aes128gcm', $subscription->getContentEncoding());
+        static::assertEquals(['aes128gcm'], $subscription->getSupportedContentEncodings());
     }
 
     /**
@@ -133,7 +133,7 @@ final class SubscriptionTest extends TestCase
     public function createSubscription(string $endpoint, ?string $contentEncoding, array $keys): void
     {
         $subscription = Subscription::create($endpoint)
-            ->withContentEncoding($contentEncoding)
+            ->withContentEncodings([$contentEncoding])
         ;
         foreach ($keys as $k => $v) {
             $subscription->getKeys()->set($k, $v);
@@ -141,14 +141,14 @@ final class SubscriptionTest extends TestCase
 
         static::assertEquals($endpoint, $subscription->getEndpoint());
         static::assertEquals($keys, $subscription->getKeys()->all());
-        static::assertEquals($contentEncoding, $subscription->getContentEncoding());
+        static::assertEquals([$contentEncoding], $subscription->getSupportedContentEncodings());
 
         $json = json_encode($subscription);
         $newSubscription = Subscription::createFromString($json);
 
         static::assertEquals($endpoint, $newSubscription->getEndpoint());
         static::assertEquals($keys, $newSubscription->getKeys()->all());
-        static::assertEquals($contentEncoding, $newSubscription->getContentEncoding());
+        static::assertEquals([$contentEncoding], $newSubscription->getSupportedContentEncodings());
     }
 
     /**
@@ -197,14 +197,6 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 0,
-                ]),
-                'exception' => InvalidArgumentException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 0,
                 ]),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',

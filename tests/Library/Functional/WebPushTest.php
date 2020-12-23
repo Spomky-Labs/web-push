@@ -36,7 +36,7 @@ class WebPushTest extends TestCase
     public function aNotificationCanBeSent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aesgcm')
+            ->withContentEncodings(['aesgcm'])
         ;
         $subscription->getKeys()->set('auth', 'wSfP1pfACMwFesCEfJx4-w');
         $subscription->getKeys()->set('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU');
@@ -89,7 +89,7 @@ class WebPushTest extends TestCase
     public function aNotificationCannotBeSent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
-            ->withContentEncoding('aes128gcm')
+            ->withContentEncodings(['aes128gcm'])
         ;
         $subscription->getKeys()->set('auth', 'wSfP1pfACMwFesCEfJx4-w');
         $subscription->getKeys()->set('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU');
