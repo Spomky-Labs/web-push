@@ -139,11 +139,11 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $bodyLength = mb_strlen($body, '8bit');
         Assertion::max($bodyLength, 4096, 'The size of payload must not be greater than 4096 bytes.');
 
+        $request = $this->prepareHeaders($request, $serverKey, $salt);
+
         return $request
-            ->withAddedHeader('Crypto-Key', sprintf('dh=%s', Base64Url::encode($serverKey->getPublicKey())))
-            ->withHeader('Encryption', 'salt='.Base64Url::encode($salt))
-            ->withHeader('Content-Length', (string) $bodyLength)
-            ;
+            ->withAddedHeader('Content-Length', (string) $bodyLength)
+        ;
     }
 
     abstract protected function getKeyInfo(string $userAgentPublicKey, ServerKey $serverKey): string;
@@ -153,6 +153,8 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     abstract protected function addPadding(string $payload): string;
 
     abstract protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string;
+
+    abstract protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface;
 
     private function createInfo(string $type, string $context): string
     {

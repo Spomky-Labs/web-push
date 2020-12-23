@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use Assert\Assertion;
+use function array_key_exists;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
@@ -64,7 +64,7 @@ class PayloadExtension implements Extension, Loggable
             $this->logger->debug('No payload');
 
             return $request
-                ->withHeader('Content-Length', '0')
+                ->withAddedHeader('Content-Length', '0')
             ;
         }
 
@@ -72,8 +72,8 @@ class PayloadExtension implements Extension, Loggable
         $this->logger->debug(sprintf('Encoder found: %s. Processing with the encoder.', $encoder->name()));
 
         $request = $request
-            ->withHeader('Content-Type', 'application/octet-stream')
-            ->withHeader('Content-Encoding', $encoder->name())
+            ->withAddedHeader('Content-Type', 'application/octet-stream')
+            ->withAddedHeader('Content-Encoding', $encoder->name())
         ;
 
         return $encoder->encode($payload, $request, $subscription);

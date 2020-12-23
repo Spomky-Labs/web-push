@@ -47,7 +47,7 @@ class TopicExtension implements Extension, Loggable
         }
 
         return $request
-            ->withHeader('Topic', $topic)
+            ->withAddedHeader('Topic', $topic)
         ;
     }
 }

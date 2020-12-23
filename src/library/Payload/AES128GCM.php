@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace WebPush\Payload;
 
 use Assert\Assertion;
+use Psr\Http\Message\RequestInterface;
 use function Safe\pack;
 
 final class AES128GCM extends AbstractAESGCM
@@ -59,6 +60,11 @@ final class AES128GCM extends AbstractAESGCM
     protected function addPadding(string $payload): string
     {
         return str_pad($payload."\2", $this->padding, "\0", STR_PAD_RIGHT);
+    }
+
+    protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface
+    {
+        return $request;
     }
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string

@@ -44,7 +44,7 @@ class UrgencyExtension implements Extension, Loggable
         $this->logger->debug('Processing with the Urgency extension', ['Urgency' => $urgency]);
 
         return $request
-            ->withHeader('Urgency', $urgency)
+            ->withAddedHeader('Urgency', $urgency)
         ;
     }
 }

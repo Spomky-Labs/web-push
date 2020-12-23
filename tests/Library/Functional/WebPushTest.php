@@ -121,8 +121,8 @@ class WebPushTest extends TestCase
         static::assertTrue($request->hasHeader('urgency'));
         static::assertTrue($request->hasHeader('content-type'));
         static::assertTrue($request->hasHeader('content-encoding'));
-        static::assertTrue($request->hasHeader('crypto-key'));
-        static::assertTrue($request->hasHeader('encryption'));
+        static::assertFalse($request->hasHeader('crypto-key'));
+        static::assertFalse($request->hasHeader('encryption'));
         static::assertTrue($request->hasHeader('content-length'));
         static::assertTrue($request->hasHeader('authorization'));
         static::assertEquals(['3600'], $request->getHeader('ttl'));
@@ -131,8 +131,6 @@ class WebPushTest extends TestCase
         static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
         static::assertEquals(['aes128gcm'], $request->getHeader('content-encoding'));
         static::assertEquals(['3154'], $request->getHeader('content-length'));
-        static::assertStringStartsWith('dh=', $request->getHeaderLine('crypto-key'));
-        static::assertStringStartsWith('salt=', $request->getHeaderLine('encryption'));
         static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
     }
 

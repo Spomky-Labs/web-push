@@ -49,7 +49,7 @@ class PreferAsyncExtension implements Extension, Loggable
         $this->logger->debug('Sending asynchronous notification');
 
         return $request
-            ->withHeader('Prefer', 'respond-async')
+            ->withAddedHeader('Prefer', 'respond-async')
         ;
     }
 }

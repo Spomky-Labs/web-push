@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace WebPush\Payload;
 
 use Assert\Assertion;
+use Psr\Http\Message\RequestInterface;
 use function Safe\pack;
 use function Safe\sprintf;
+use WebPush\Base64Url;
 
 final class AESGCM extends AbstractAESGCM
 {
@@ -68,6 +70,14 @@ final class AESGCM extends AbstractAESGCM
         $paddingLength = max(self::PADDING_NONE, $this->padding - $payloadLength);
 
         return pack('n*', $paddingLength).str_pad($payload, $this->padding, "\0", STR_PAD_LEFT);
+    }
+
+    protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface
+    {
+        return $request
+            ->withAddedHeader('Crypto-Key', sprintf('dh=%s', Base64Url::encode($serverKey->getPublicKey())))
+            ->withAddedHeader('Encryption', 'salt='.Base64Url::encode($salt))
+        ;
     }
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string

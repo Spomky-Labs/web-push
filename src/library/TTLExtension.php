@@ -44,7 +44,7 @@ class TTLExtension implements Extension, Loggable
         $this->logger->debug('Processing with the TTL extension', ['TTL' => $ttl]);
 
         return $request
-            ->withHeader('TTL', $ttl)
+            ->withAddedHeader('TTL', $ttl)
         ;
     }
 }
