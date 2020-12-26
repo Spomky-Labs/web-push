@@ -91,7 +91,7 @@ class Subscription implements JsonSerializable
     }
 
     /**
-     * @return array<string, string|Keys>
+     * @return array<string, string|string[]|Keys>
      */
     public function jsonSerialize(): array
     {

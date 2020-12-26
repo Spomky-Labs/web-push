@@ -130,7 +130,7 @@ final class SubscriptionTest extends TestCase
      *
      * @param array<string, string> $keys
      */
-    public function createSubscription(string $endpoint, ?string $contentEncoding, array $keys): void
+    public function createSubscription(string $endpoint, string $contentEncoding, array $keys): void
     {
         $subscription = Subscription::create($endpoint)
             ->withContentEncodings([$contentEncoding])

@@ -58,13 +58,13 @@ final class Configuration implements ConfigurationInterface
             ->canBeEnabled()
             ->validate()
             ->ifTrue(static function (array $conf): bool {
-                            $wt = $conf['web_token']['enabled'] ? 1 : 0;
-                            $lc = $conf['lcobucci']['enabled'] ? 1 : 0;
-                            $cu = $conf['custom']['enabled'] ? 1 : 0;
+                $wt = $conf['web_token']['enabled'] ? 1 : 0;
+                $lc = $conf['lcobucci']['enabled'] ? 1 : 0;
+                $cu = $conf['custom']['enabled'] ? 1 : 0;
 
-                            return 1 !== $wt + $lc + $cu;
-                        })
-            ->thenInvalid('Invalid')
+                return 1 !== $wt + $lc + $cu;
+            })
+            ->thenInvalid('A JWS Provider shall be set')
             ->end()
             ->children()
             ->scalarNode('subject')
@@ -131,8 +131,8 @@ final class Configuration implements ConfigurationInterface
             ->info('Length of the padding: none, recommended, max or and integer')
             ->validate()
             ->ifTrue(static function ($conf): bool {
-                                            return !in_array($conf, ['none', 'max', 'recommended'], true) && !(is_int($conf));
-                                        })
+                return !in_array($conf, ['none', 'max', 'recommended'], true) && !(is_int($conf));
+            })
             ->thenInvalid('Invalid')
             ->end()
             ->end()
@@ -154,8 +154,8 @@ final class Configuration implements ConfigurationInterface
             ->info('Length of the padding: none, recommended, max or and integer')
             ->validate()
             ->ifTrue(static function ($conf): bool {
-                                            return !in_array($conf, ['none', 'max', 'recommended'], true) && !(is_int($conf));
-                                        })
+                return !in_array($conf, ['none', 'max', 'recommended'], true) && !(is_int($conf));
+            })
             ->thenInvalid('Invalid')
             ->end()
             ->end()
