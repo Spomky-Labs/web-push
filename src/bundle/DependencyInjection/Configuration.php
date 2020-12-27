@@ -20,6 +20,11 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use WebPush\Base64Url;
+use WebPush\Payload\AES128GCM;
+use WebPush\Payload\AESGCM;
+use WebPush\VAPID\LcobucciProvider;
+use WebPush\VAPID\WebTokenProvider;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -64,7 +69,7 @@ final class Configuration implements ConfigurationInterface
 
                 return 1 !== $wt + $lc + $cu;
             })
-            ->thenInvalid('A JWS Provider shall be set')
+            ->thenInvalid('One, and only one, JWS Provider shall be set')
             ->end()
             ->children()
             ->scalarNode('subject')
@@ -89,10 +94,22 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('private_key')
             ->isRequired()
             ->info('The VAPID private key')
+            ->validate()
+            ->ifTrue(static function (string $conf): bool {
+                return WebTokenProvider::PRIVATE_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
+            })
+            ->thenInvalid('Invalid private key length')
+            ->end()
             ->end()
             ->scalarNode('public_key')
             ->isRequired()
             ->info('The VAPID public key')
+            ->validate()
+            ->ifTrue(static function (string $conf): bool {
+                return WebTokenProvider::PUBLIC_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
+            })
+            ->thenInvalid('Invalid public key length')
+            ->end()
             ->end()
             ->end()
             ->end()
@@ -102,10 +119,22 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('private_key')
             ->isRequired()
             ->info('The VAPID private key')
+            ->validate()
+            ->ifTrue(static function (string $conf): bool {
+                return LcobucciProvider::PRIVATE_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
+            })
+            ->thenInvalid('Invalid private key length')
+            ->end()
             ->end()
             ->scalarNode('public_key')
             ->isRequired()
             ->info('The VAPID public key')
+            ->validate()
+            ->ifTrue(static function (string $conf): bool {
+                return LcobucciProvider::PUBLIC_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
+            })
+            ->thenInvalid('Invalid public key length')
+            ->end()
             ->end()
             ->end()
             ->end()
@@ -114,7 +143,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
             ->scalarNode('id')
             ->isRequired()
-            ->info('The VAPID private key')
+            ->info('The custom JWS Provider service ID')
             ->end()
             ->end()
             ->end()
@@ -130,10 +159,17 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue('recommended')
             ->info('Length of the padding: none, recommended, max or and integer')
             ->validate()
-            ->ifTrue(static function ($conf): bool {
-                return !in_array($conf, ['none', 'max', 'recommended'], true) && !(is_int($conf));
+            ->ifTrue(static function (string $conf): bool {
+                if (in_array($conf, ['none', 'max', 'recommended'], true)) {
+                    return false;
+                }
+                if (!is_int($conf)) {
+                    return true;
+                }
+
+                return $conf < 0 || $conf > AES128GCM::PADDING_MAX;
             })
-            ->thenInvalid('Invalid')
+            ->thenInvalid(sprintf('The padding must have one of the following value: none, recommended, max or an integer between 0 and %d', AES128GCM::PADDING_MAX))
             ->end()
             ->end()
             ->scalarNode('cache')
@@ -153,10 +189,17 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue('recommended')
             ->info('Length of the padding: none, recommended, max or and integer')
             ->validate()
-            ->ifTrue(static function ($conf): bool {
-                return !in_array($conf, ['none', 'max', 'recommended'], true) && !(is_int($conf));
+            ->ifTrue(static function (string $conf): bool {
+                if (in_array($conf, ['none', 'max', 'recommended'], true)) {
+                    return false;
+                }
+                if (!is_int($conf)) {
+                    return true;
+                }
+
+                return $conf < 0 || $conf > AESGCM::PADDING_MAX;
             })
-            ->thenInvalid('Invalid')
+            ->thenInvalid(sprintf('The padding must have one of the following value: none, recommended, max or an integer between 0 and %d', AESGCM::PADDING_MAX))
             ->end()
             ->end()
             ->scalarNode('cache')

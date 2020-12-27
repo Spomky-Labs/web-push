@@ -13,21 +13,17 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit;
 
-use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use WebPush\Bundle\DependencyInjection\Configuration;
+use WebPush\Base64Url;
 
 /**
  * @group functional
  *
  * @internal
  */
-class ConfigurationTest extends TestCase
+class ConfigurationTest extends AbstractConfigurationTest
 {
-    use ConfigurationTestCaseTrait;
-
     /**
      * @test
      */
@@ -84,7 +80,7 @@ class ConfigurationTest extends TestCase
     /**
      * @test
      */
-    public function invalidIfSubjectIsSetWhenVapidIsEnabled(): void
+    public function invalidIfNoJwtProviderIsEnabled(): void
     {
         $this->assertConfigurationIsInvalid(
             [
@@ -95,12 +91,81 @@ class ConfigurationTest extends TestCase
                     ],
                 ],
             ],
-            'Invalid configuration for path "webpush.vapid": A JWS Provider shall be set'
+            'Invalid configuration for path "webpush.vapid": One, and only one, JWS Provider shall be set'
         );
     }
 
-    protected function getConfiguration(): Configuration
+    /**
+     * @test
+     * @dataProvider multipleJwsProvider
+     */
+    public function invalidIfSeveralJwsProviderAreSet(array $conf): void
     {
-        return new Configuration('webpush');
+        $conf['enabled'] = true;
+        $conf['subject'] = 'https://foo.bar';
+        $this->assertConfigurationIsInvalid(
+            [
+                [
+                    'vapid' => $conf,
+                ],
+            ],
+            'Invalid configuration for path "webpush.vapid": One, and only one, JWS Provider shall be set'
+        );
+    }
+
+    public function multipleJwsProvider(): array
+    {
+        return [
+            [[
+                'web-token' => [
+                    'enabled' => true,
+                    'private_key' => Base64Url::encode('00000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                ],
+                'lcobucci' => [
+                    'enabled' => true,
+                    'private_key' => Base64Url::encode('00000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                ],
+            ]],
+            [[
+                'lcobucci' => [
+                    'enabled' => true,
+                    'private_key' => Base64Url::encode('00000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                ],
+                'custom' => [
+                    'enabled' => true,
+                    'id' => 'app.service.foo',
+                ],
+            ]],
+            [[
+                'web-token' => [
+                    'enabled' => true,
+                    'private_key' => Base64Url::encode('00000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                ],
+                'custom' => [
+                    'enabled' => true,
+                    'id' => 'app.service.foo',
+                ],
+            ]],
+            [[
+                'web-token' => [
+                    'enabled' => true,
+                    'private_key' => Base64Url::encode('00000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                ],
+                'lcobucci' => [
+                    'enabled' => true,
+                    'private_key' => Base64Url::encode('00000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                ],
+                'custom' => [
+                    'enabled' => true,
+                    'id' => 'app.service.foo',
+                ],
+            ]],
+        ];
     }
 }

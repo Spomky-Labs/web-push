@@ -21,8 +21,8 @@ use WebPush\Base64Url;
 
 final class AESGCM extends AbstractAESGCM
 {
+    public const PADDING_MAX = 4078;
     private const ENCODING = 'aesgcm';
-    private const PADDING_MAX = 4078;
 
     public static function create(): self
     {

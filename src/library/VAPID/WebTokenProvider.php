@@ -28,8 +28,8 @@ use WebPush\Loggable;
 
 final class WebTokenProvider implements JWSProvider, Loggable
 {
-    private const PUBLIC_KEY_SIZE = 65;
-    private const COMPONENT_SIZE = 32;
+    public const PUBLIC_KEY_LENGTH = 65;
+    public const PRIVATE_KEY_LENGTH = 32;
 
     private JWK $signatureKey;
     private CompactSerializer $serializer;
@@ -39,13 +39,13 @@ final class WebTokenProvider implements JWSProvider, Loggable
     public function __construct(string $publicKey, string $privateKey)
     {
         $privateKeyBin = Base64Url::decode($privateKey);
-        Assertion::eq(mb_strlen($privateKeyBin, '8bit'), self::COMPONENT_SIZE, 'Invalid private key size');
+        Assertion::eq(mb_strlen($privateKeyBin, '8bit'), self::PRIVATE_KEY_LENGTH, 'Invalid private key size');
 
         $publicKeyBin = Base64Url::decode($publicKey);
-        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_SIZE, 'Invalid public key size', );
+        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_LENGTH, 'Invalid public key size', );
         Assertion::startsWith($publicKeyBin, "\4", 'Invalid public key', null, '8bit');
-        $x = mb_substr($publicKeyBin, 1, self::COMPONENT_SIZE, '8bit');
-        $y = mb_substr($publicKeyBin, -self::COMPONENT_SIZE, null, '8bit');
+        $x = mb_substr($publicKeyBin, 1, self::PRIVATE_KEY_LENGTH, '8bit');
+        $y = mb_substr($publicKeyBin, -self::PRIVATE_KEY_LENGTH, null, '8bit');
 
         $jwk = new JWK([
             'kty' => 'EC',

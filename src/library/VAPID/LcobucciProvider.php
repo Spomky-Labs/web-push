@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
+use Assert\Assertion;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -26,12 +27,22 @@ use WebPush\Utils;
 
 final class LcobucciProvider implements JWSProvider, Loggable
 {
+    public const PUBLIC_KEY_LENGTH = 65;
+    public const PRIVATE_KEY_LENGTH = 32;
+
     private string $publicKey;
     private LoggerInterface $logger;
     private Key $key;
 
     public function __construct(string $publicKey, string $privateKey)
     {
+        $privateKeyBin = Base64Url::decode($privateKey);
+        Assertion::eq(mb_strlen($privateKeyBin, '8bit'), self::PRIVATE_KEY_LENGTH, 'Invalid private key size');
+
+        $publicKeyBin = Base64Url::decode($publicKey);
+        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_LENGTH, 'Invalid public key size', );
+        Assertion::startsWith($publicKeyBin, "\4", 'Invalid public key', null, '8bit');
+
         $this->publicKey = $publicKey;
         $pem = Utils::privateKeyToPEM(
             Base64Url::decode($privateKey),

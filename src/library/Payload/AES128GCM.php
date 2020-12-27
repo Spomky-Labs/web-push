@@ -19,8 +19,8 @@ use function Safe\pack;
 
 final class AES128GCM extends AbstractAESGCM
 {
+    public const PADDING_MAX = 3993; // as per RFC8291: 4096 -tag(16) -salt(16) -rs(4) -idlen(1) -keyid(65) -AEAD_AES_128_GCM expension(16) and 1 byte in case of
     private const ENCODING = 'aes128gcm';
-    private const PADDING_MAX = 3993; // as per RFC8291: 4096 -tag(16) -salt(16) -rs(4) -idlen(1) -keyid(65) -AEAD_AES_128_GCM expension(16) and 1 byte in case of
 
     public static function create(): self
     {
