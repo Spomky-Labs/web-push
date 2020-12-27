@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\VAPID;
 
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
 use Safe\DateTimeImmutable;
@@ -31,7 +32,7 @@ final class LcobucciProviderTest extends TestCase
      */
     public function computeHeader(string $publicKey, string $privateKey): void
     {
-        $expiresAt = DateTimeImmutable::createFromFormat('Y-m-d\TH:i:sP', '2020-01-28T16:22:37-07:00');
+        $expiresAt = DateTimeImmutable::createFromFormat(DateTimeInterface::ATOM, '2020-01-28T16:22:37-07:00');
 
         $logger = new TestLogger();
 
