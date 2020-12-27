@@ -18,7 +18,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use WebPush\Base64Url;
 
 /**
- * @group functional
+ * @group unit
  *
  * @internal
  */

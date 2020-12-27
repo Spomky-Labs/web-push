@@ -17,6 +17,7 @@ use function in_array;
 use function is_int;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use function Safe\sprintf;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -159,7 +160,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue('recommended')
             ->info('Length of the padding: none, recommended, max or and integer')
             ->validate()
-            ->ifTrue(static function (string $conf): bool {
+            ->ifTrue(static function ($conf): bool {
                 if (in_array($conf, ['none', 'max', 'recommended'], true)) {
                     return false;
                 }
@@ -189,7 +190,7 @@ final class Configuration implements ConfigurationInterface
             ->defaultValue('recommended')
             ->info('Length of the padding: none, recommended, max or and integer')
             ->validate()
-            ->ifTrue(static function (string $conf): bool {
+            ->ifTrue(static function ($conf): bool {
                 if (in_array($conf, ['none', 'max', 'recommended'], true)) {
                     return false;
                 }

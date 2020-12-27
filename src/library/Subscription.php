@@ -112,7 +112,8 @@ class Subscription implements JsonSerializable
 
         $object = new self($input['endpoint']);
         if (array_key_exists('supportedContentEncodings', $input)) {
-            $encodings = $input['supportedContentEncodings'] ?? ['aesgcm'];
+            $encodings = $input['supportedContentEncodings'];
+            Assertion::isArray($encodings, 'Invalid input');
             Assertion::allString($encodings, 'Invalid input');
             $object->supportedContentEncodings = $encodings;
         }

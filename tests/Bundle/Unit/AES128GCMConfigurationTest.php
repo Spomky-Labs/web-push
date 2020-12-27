@@ -16,7 +16,7 @@ namespace WebPush\Tests\Bundle\Unit;
 use WebPush\Payload\AES128GCM;
 
 /**
- * @group functional
+ * @group unit
  *
  * @internal
  */

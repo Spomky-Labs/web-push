@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit;
 
 /**
- * @group functional
+ * @group unit
  *
  * @internal
  */
