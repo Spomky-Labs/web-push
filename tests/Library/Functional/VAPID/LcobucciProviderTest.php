@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\VAPID;
 
-use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
 use Safe\DateTimeImmutable;
@@ -32,7 +31,7 @@ final class LcobucciProviderTest extends TestCase
      */
     public function computeHeader(string $publicKey, string $privateKey): void
     {
-        $expiresAt = DateTimeImmutable::createFromFormat(DateTimeInterface::ATOM, '2020-01-28T16:22:37-07:00');
+        $expiresAt = new DateTimeImmutable('@1580253757');
 
         $logger = new TestLogger();
 
@@ -44,13 +43,6 @@ final class LcobucciProviderTest extends TestCase
                 'exp' => $expiresAt->getTimestamp(),
             ])
         ;
-
-        static::assertCount(2, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Computing the JWS', $logger->records[0]['message']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('JWS computed', $logger->records[1]['message']);
-        static::assertEquals(['token', 'key'], array_keys($logger->records[1]['context']));
 
         static::assertStringStartsWith('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.', $header->getToken());
         static::assertEquals($publicKey, $header->getKey());
