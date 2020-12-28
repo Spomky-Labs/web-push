@@ -59,6 +59,7 @@
     "phpstan/phpstan-phpunit": "^0.12",
     "phpstan/phpstan-strict-rules": "^0.12",
     "phpunit/phpunit": "^9.3",
+    "rector/rector": "^0.9.1",
     "roave/security-advisories": "dev-latest",
     "sensiolabs/security-checker": "^6.0",
     "symfony/cache": "^5.2.1",
