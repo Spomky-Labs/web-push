@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit;
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use WebPush\Payload\AESGCM;
 
 /**
@@ -50,6 +52,64 @@ class AESGCMConfigurationTest extends AbstractConfigurationTest
             ['min'],
             [-1],
             [AESGCM::PADDING_MAX + 1],
+        ];
+    }
+
+    /**
+     * @test
+     *
+     * @param string|int|bool $padding
+     * @dataProvider validPaddings
+     */
+    public function validPadding($padding): void
+    {
+        $this->assertProcessedConfigurationEquals(
+            [
+                [
+                    'payload' => [
+                        'aesgcm' => [
+                            'padding' => $padding,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'logger' => null,
+                'http_client' => ClientInterface::class,
+                'request_factory' => RequestFactoryInterface::class,
+                'vapid' => [
+                    'enabled' => false,
+                    'cache' => null,
+                    'cache_lifetime' => 'now + 30min',
+                    'token_lifetime' => 'now +1hour',
+                    'web_token' => ['enabled' => false],
+                    'lcobucci' => ['enabled' => false],
+                    'custom' => ['enabled' => false],
+                ],
+                'payload' => [
+                    'aes128gcm' => [
+                        'padding' => 'recommended',
+                        'cache' => null,
+                        'cache_lifetime' => 'now + 30min',
+                    ],
+                    'aesgcm' => [
+                        'padding' => $padding,
+                        'cache' => null,
+                        'cache_lifetime' => 'now + 30min',
+                    ],
+                ],
+            ]
+        );
+    }
+
+    public function validPaddings(): array
+    {
+        return [
+            ['none'],
+            ['recommended'],
+            ['max'],
+            [0],
+            [AESGCM::PADDING_MAX],
         ];
     }
 }
