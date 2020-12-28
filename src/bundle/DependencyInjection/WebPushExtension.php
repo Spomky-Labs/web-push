@@ -29,20 +29,14 @@ use WebPush\VAPID\JWSProvider;
 
 final class WebPushExtension extends Extension
 {
-    /**
-     * @var string
-     */
-    private $alias;
+    private string $alias;
 
     public function __construct(string $alias)
     {
         $this->alias = $alias;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->alias;
     }

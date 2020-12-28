@@ -69,9 +69,12 @@ final class AES128GCM extends AbstractAESGCM
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string
     {
-        $body = $salt.pack('N*', 4096).pack('C*', mb_strlen($serverKey->getPublicKey(), '8bit')).$serverKey->getPublicKey();
-        $body .= $encryptedText.$tag;
-
-        return $body;
+        return $salt.
+            pack('N*', 4096).
+            pack('C*', mb_strlen($serverKey->getPublicKey(), '8bit')).
+            $serverKey->getPublicKey().
+            $encryptedText.
+            $tag
+        ;
     }
 }

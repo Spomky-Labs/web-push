@@ -14,19 +14,29 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Functional;
 
 use Http\Mock\Client;
-use InvalidArgumentException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use WebPush\ExtensionManager;
 use WebPush\Notification;
-use WebPush\SimpleWebPush;
+use WebPush\Payload\AES128GCM;
+use WebPush\Payload\AESGCM;
+use WebPush\Payload\PayloadExtension;
+use WebPush\PreferAsyncExtension;
 use WebPush\Subscription;
+use WebPush\TopicExtension;
+use WebPush\TTLExtension;
+use WebPush\UrgencyExtension;
+use WebPush\VAPID\VAPIDExtension;
+use WebPush\VAPID\WebTokenProvider;
+use WebPush\WebPush;
 
 /**
  * @internal
  * @group Functional
  * @group Library
- * @covers \WebPush\SimpleWebPush
+ * @covers \WebPush\WebPush
  */
 class WebPushTest extends TestCase
 {
@@ -51,16 +61,9 @@ class WebPushTest extends TestCase
 
         $client = new Client();
         $client->addResponse(new Response());
-        $requestFactory = new Psr17Factory();
+        $service = $this->getService($client);
 
-        $report = SimpleWebPush::create($client, $requestFactory)
-            ->enableVapid(
-                'http://localhost:8000',
-                'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ',
-                'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
-            )
-            ->send($notification, $subscription)
-        ;
+        $report = $service->send($notification, $subscription);
 
         $request = $report->getRequest();
         static::assertTrue($request->hasHeader('ttl'));
@@ -77,7 +80,7 @@ class WebPushTest extends TestCase
         static::assertEquals(['high'], $request->getHeader('urgency'));
         static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
         static::assertEquals(['aesgcm'], $request->getHeader('content-encoding'));
-        static::assertEquals(['3070'], $request->getHeader('content-length'));
+        static::assertEquals(['4096'], $request->getHeader('content-length'));
         static::assertStringStartsWith('dh=', $request->getHeaderLine('crypto-key'));
         static::assertStringStartsWith('salt=', $request->getHeaderLine('encryption'));
         static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
@@ -104,16 +107,9 @@ class WebPushTest extends TestCase
 
         $client = new Client();
         $client->addResponse(new Response());
-        $requestFactory = new Psr17Factory();
+        $service = $this->getService($client);
 
-        $report = SimpleWebPush::create($client, $requestFactory)
-            ->enableVapid(
-                'http://localhost:8000',
-                'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ',
-                'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
-            )
-            ->send($notification, $subscription)
-        ;
+        $report = $service->send($notification, $subscription);
 
         $request = $report->getRequest();
         static::assertTrue($request->hasHeader('ttl'));
@@ -130,32 +126,33 @@ class WebPushTest extends TestCase
         static::assertEquals(['high'], $request->getHeader('urgency'));
         static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
         static::assertEquals(['aes128gcm'], $request->getHeader('content-encoding'));
-        static::assertEquals(['3154'], $request->getHeader('content-length'));
+        static::assertEquals(['4095'], $request->getHeader('content-length'));
         static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
     }
 
-    /**
-     * @test
-     */
-    public function vapidCannotBeEnabledMoreThanOnce(): void
+    private function getService(ClientInterface $client): WebPush
     {
-        static::expectException(InvalidArgumentException::class);
-        static::expectExceptionMessage('VAPID has already been enabled');
+        $extensionManager = ExtensionManager::create()
+            ->add(TTLExtension::create())
+            ->add(UrgencyExtension::create())
+            ->add(TopicExtension::create())
+            ->add(PreferAsyncExtension::create())
+            ->add(
+                PayloadExtension::create()
+                    ->addContentEncoding(AESGCM::create()->maxPadding())
+                    ->addContentEncoding(AES128GCM::create()->maxPadding())
+            )
+            ->add(VAPIDExtension::create(
+                'http://localhost:8000',
+                WebTokenProvider::create(
+                    'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ',
+                    'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
+                )
+            ))
+        ;
 
-        $client = new Client();
         $requestFactory = new Psr17Factory();
 
-        SimpleWebPush::create($client, $requestFactory)
-            ->enableVapid(
-                'http://localhost:8000',
-                'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ',
-                'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
-            )
-            ->enableVapid(
-                'http://localhost:8000',
-                'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ',
-                'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
-            )
-        ;
+        return new WebPush($client, $requestFactory, $extensionManager);
     }
 }
