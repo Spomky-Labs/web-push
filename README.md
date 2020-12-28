@@ -7,14 +7,17 @@ This framework contains PHP libraries and Symfony bundle to allow developers to 
 
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Unit%20Tests/badge.svg)
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Functional%20Tests/badge.svg)
-
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Lowest%20versions%20tests/badge.svg)
+
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Mutation%20Testing/badge.svg)
 
 ![Coding Standards](https://github.com/Spomky-Labs/web-push/workflows/Coding%20Standards/badge.svg)
 ![Static Analyze](https://github.com/Spomky-Labs/web-push/workflows/Static%20Analyze/badge.svg)
+![Rector Checkstyle](https://github.com/Spomky-Labs/web-push/workflows/Rector%20Checkstyle/badge.svg)
+
 
 ![Security](https://github.com/Spomky-Labs/web-push/workflows/Security/badge.svg)
+
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Backwards%20compatibility%20verification/badge.svg)
 
 [![Latest Stable Version](https://poser.pugx.org/Spomky-Labs/web-push/v)](//packagist.org/packages/Spomky-Labs/web-push)
