@@ -79,8 +79,6 @@ class AES128GCMConfigurationTest extends AbstractConfigurationTest
                 'request_factory' => RequestFactoryInterface::class,
                 'vapid' => [
                     'enabled' => false,
-                    'cache' => null,
-                    'cache_lifetime' => 'now + 30min',
                     'token_lifetime' => 'now +1hour',
                     'web_token' => ['enabled' => false],
                     'lcobucci' => ['enabled' => false],

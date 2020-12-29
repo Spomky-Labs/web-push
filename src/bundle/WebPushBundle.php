@@ -20,7 +20,6 @@ use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadCacheCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadPaddingCompilerPass;
-use WebPush\Bundle\DependencyInjection\Compiler\VapidCacheCompilerPass;
 use WebPush\Bundle\DependencyInjection\WebPushExtension;
 
 final class WebPushBundle extends Bundle
@@ -42,7 +41,6 @@ final class WebPushBundle extends Bundle
         $container->addCompilerPass(new ExtensionCompilerPass());
         $container->addCompilerPass(new LoggerSetterCompilerPass());
         $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
-        $container->addCompilerPass(new VapidCacheCompilerPass());
         $container->addCompilerPass(new PayloadCacheCompilerPass());
         $container->addCompilerPass(new PayloadPaddingCompilerPass());
     }

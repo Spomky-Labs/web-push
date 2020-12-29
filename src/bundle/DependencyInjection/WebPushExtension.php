@@ -75,12 +75,8 @@ final class WebPushExtension extends Extension
         }
 
         $container->setParameter('webpush.vapid.subject', $config['subject']);
-        $container->setParameter('webpush.vapid.cache_lifetime', $config['cache_lifetime']);
         $container->setParameter('webpush.vapid.token_lifetime', $config['token_lifetime']);
         $loader->load('vapid.php');
-        if (null !== $config['cache']) {
-            $container->setAlias('webpush.vapid.cache', $config['cache']);
-        }
 
         switch (true) {
             case $config['web_token']['enabled']:

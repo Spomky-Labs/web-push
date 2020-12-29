@@ -13,35 +13,29 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Safe\DateTimeImmutable;
 use function Safe\parse_url;
 use function Safe\sprintf;
-use Symfony\Component\Cache\Adapter\NullAdapter;
-use WebPush\Cachable;
 use WebPush\Extension;
 use WebPush\Loggable;
 use WebPush\Notification;
 use WebPush\Subscription;
 
-class VAPIDExtension implements Extension, Loggable, Cachable
+class VAPIDExtension implements Extension, Loggable
 {
     private JWSProvider $jwsProvider;
-    private CacheItemPoolInterface $cache;
     private string $tokenExpirationTime = 'now +1hour';
     private LoggerInterface $logger;
     private string $subject;
-    private string $cacheExpirationTime = 'now +30min';
 
     public function __construct(string $subject, JWSProvider $jwsProvider)
     {
         $this->subject = $subject;
         $this->jwsProvider = $jwsProvider;
         $this->logger = new NullLogger();
-        $this->cache = new NullAdapter();
     }
 
     public static function create(string $subject, JWSProvider $jwsProvider): self
@@ -63,14 +57,6 @@ class VAPIDExtension implements Extension, Loggable, Cachable
         return $this;
     }
 
-    public function setCache(CacheItemPoolInterface $cache, string $cacheExpirationTime = 'now +30min'): self
-    {
-        $this->cache = $cache;
-        $this->cacheExpirationTime = $cacheExpirationTime;
-
-        return $this;
-    }
-
     public function process(RequestInterface $request, Notification $notification, Subscription $subscription): RequestInterface
     {
         $this->logger->debug('Processing with VAPID header');
@@ -85,34 +71,11 @@ class VAPIDExtension implements Extension, Loggable, Cachable
         ];
 
         $this->logger->debug('Trying to get the header from the cache');
-        $header = $this->getHeaderFromCache($origin, $claims);
+        $header = $this->jwsProvider->computeHeader($claims);
         $this->logger->debug('Header from cache', ['header' => $header]);
 
         return $request
             ->withAddedHeader('Authorization', sprintf('vapid t=%s, k=%s', $header->getToken(), $header->getKey()))
         ;
-    }
-
-    /**
-     * @param array<string, mixed> $claims
-     */
-    private function getHeaderFromCache(string $origin, array $claims): Header
-    {
-        $jwsProvider = $this->jwsProvider;
-        $computedCacheKey = hash('sha512', $origin);
-
-        $item = $this->cache->getItem($computedCacheKey);
-        if ($item->isHit()) {
-            return $item->get();
-        }
-
-        $token = $jwsProvider->computeHeader($claims);
-        $item = $item
-            ->set($token)
-            ->expiresAt(new DateTimeImmutable($this->cacheExpirationTime))
-        ;
-        $this->cache->save($item);
-
-        return $token;
     }
 }

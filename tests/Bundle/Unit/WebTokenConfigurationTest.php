@@ -138,8 +138,6 @@ class WebTokenConfigurationTest extends AbstractConfigurationTest
                 'request_factory' => RequestFactoryInterface::class,
                 'vapid' => [
                     'enabled' => true,
-                    'cache' => null,
-                    'cache_lifetime' => 'now + 30min',
                     'token_lifetime' => 'now +1hour',
                     'subject' => 'https://foo.bar',
                     'web_token' => [

@@ -46,9 +46,6 @@ abstract class AbstractBench
 
         $jwsProvider = $this->jwtProvider();
         $vapidExtension = VAPIDExtension::create('mailto:foo@bar.com', $jwsProvider);
-        $vapidExtensionWithCache = VAPIDExtension::create('mailto:foo@bar.com', $jwsProvider)
-            ->setCache(new FilesystemAdapter())
-        ;
 
         $payloadExtension = PayloadExtension::create()
             ->addContentEncoding(AES128GCM::create()->maxPadding())
@@ -81,7 +78,7 @@ abstract class AbstractBench
             ->add(TTLExtension::create())
             ->add(TopicExtension::create())
             ->add(UrgencyExtension::create())
-            ->add($vapidExtensionWithCache)
+            ->add($vapidExtension)
             ->add($payloadExtensionWithCache)
         ;
 
