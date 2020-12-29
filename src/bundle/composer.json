@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Web-Push bundle for Symfony",
     "keywords": ["push", "notifications", "web", "WebPush", "Push API"],
-    "homepage": "https://github.com/spomky-labs/web-push",
+    "homepage": "https://github.com/Spomky-Labs/web-push",
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
         },
         {
             "name": "All contributors",
-            "homepage": "https://github.com/web-auth/webauthn-symfony-bundle/contributors"
+            "homepage": "https://github.com/Spomky-Labs/web-push-bundle/contributors"
         }
     ],
     "require": {
