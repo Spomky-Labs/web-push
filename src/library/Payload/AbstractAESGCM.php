@@ -22,7 +22,6 @@ use Safe\DateTimeImmutable;
 use function Safe\openssl_encrypt;
 use function Safe\openssl_pkey_new;
 use function Safe\sprintf;
-use Symfony\Component\Cache\Adapter\NullAdapter;
 use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Loggable;
@@ -41,7 +40,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     protected int $padding = self::PADDING_RECOMMENDED;
 
-    private CacheItemPoolInterface $cache;
+    private ?CacheItemPoolInterface $cache = null;
     private LoggerInterface $logger;
     private string $cacheKey = self::WEB_PUSH_PAYLOAD_ENCRYPTION;
     private string $cacheExpirationTime = 'now + 30min';
@@ -49,7 +48,6 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     public function __construct()
     {
         $this->logger = new NullLogger();
-        $this->cache = new NullAdapter();
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -169,14 +167,17 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     private function getServerKey(): ServerKey
     {
         $this->logger->debug('Getting key from the cache');
+        if (null === $this->cache) {
+            $this->logger->debug('No cache');
 
+            return $this->generateServerKey();
+        }
         $item = $this->cache->getItem($this->cacheKey);
         if ($item->isHit()) {
             $this->logger->debug('The key is available from the cache.');
 
             return $item->get();
         }
-
         $this->logger->debug('No key from the cache');
         $serverKey = $this->generateServerKey();
         $item = $item
