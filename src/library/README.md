@@ -1,7 +1,7 @@
-Web-Push Support for PHP
-========================
+WebPush Support for PHP
+=======================
 
-**Web-Push Support for PHP** is a **PHP library** that will help you to send notifications using the Web-Push protocol.
+**WebPush Support for PHP** is a **PHP library** that will help you to send notifications using the Web-Push protocol.
 
 # Installation
 
@@ -16,7 +16,7 @@ You should go to [the main repository](https://github.com/spomky-labs/web-push) 
 
 # Documentation
 
-The official documentation is available at https://webpush.spomky-labs.com
+The official documentation is available at https://web-push.spomky-labs.com
 
 # Support
 

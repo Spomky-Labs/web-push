@@ -9,14 +9,14 @@ Install the library with Composer: `composer require spomky-labs/web-push-bundle
 
 # Contribution
 
-This repository is a sub repository of [the Web Push Framework](https://github.com/spomky-labs/web-push) project and is **READ ONLY**.
+This repository is a sub repository of [the Web-Push Framework](https://github.com/spomky-labs/web-push) project and is **READ ONLY**.
 
 **Please do not submit any Pull Request here.**
 You should go to [the main repository](https://github.com/spomky-labs/web-push) instead.
 
 # Documentation
 
-The official documentation is available at https://github.com/spomky-labs/web-push 
+The official documentation is available at https://web-push.spomky-labs.com
 
 # Support
 
