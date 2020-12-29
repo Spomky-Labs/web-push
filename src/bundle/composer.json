@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "WebPush\\Bundle\\": "src/"
+            "WebPush\\Bundle\\": ""
         }
     }
 }
