@@ -11,7 +11,7 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace WebPush\Tests\Bundle\Unit;
+namespace WebPush\Tests\Bundle\Unit\Configuration;
 
 /**
  * @group unit

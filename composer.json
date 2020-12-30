@@ -26,7 +26,7 @@
     "test:typing": "./vendor/bin/phpstan analyse",
     "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
     "test:benchmark": "./vendor/bin/phpbench run -l dots --report aggregate",
-    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=94 --min-covered-msi=94",
+    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=95 --min-covered-msi=95",
     "test:security": "./vendor/bin/security-checker security:check"
   },
   "require": {
@@ -48,6 +48,7 @@
     "infection/infection": "^0.20",
     "lcobucci/jwt": "^4.0",
     "matthiasnoback/symfony-config-test": "^4.2",
+    "matthiasnoback/symfony-dependency-injection-test": "^4.2",
     "nyholm/psr7": "^1.3",
     "php-http/client-common": "^2.0",
     "php-http/discovery": "^1.13",

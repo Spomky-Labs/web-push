@@ -29,6 +29,7 @@ final class LcobucciProvider implements JWSProvider, Loggable
 {
     public const PUBLIC_KEY_LENGTH = 65;
     public const PRIVATE_KEY_LENGTH = 32;
+    private const JSON_OPTIONS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
 
     private string $publicKey;
     private LoggerInterface $logger;
@@ -68,8 +69,8 @@ final class LcobucciProvider implements JWSProvider, Loggable
     {
         $this->logger->debug('Computing the JWS');
         $signer = Sha256::create();
-        $header = json_encode(['typ' => 'JWT', 'alg' => 'ES256'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $payload = json_encode($claims, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'ES256'], self::JSON_OPTIONS);
+        $payload = json_encode($claims, self::JSON_OPTIONS);
         $dataToSign = sprintf(
             '%s.%s',
             Base64Url::encode($header),
