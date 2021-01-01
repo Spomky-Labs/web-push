@@ -1,7 +1,6 @@
 name: Backwards compatibility verification
 
-on:
-  pull_request:
+on: [pull_request]
 
 jobs:
   bc-check:
