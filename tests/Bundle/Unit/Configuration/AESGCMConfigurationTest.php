@@ -77,6 +77,7 @@ class AESGCMConfigurationTest extends AbstractConfigurationTest
                 'logger' => null,
                 'http_client' => ClientInterface::class,
                 'request_factory' => RequestFactoryInterface::class,
+                'doctrine_mapping' => false,
                 'vapid' => [
                     'enabled' => false,
                     'token_lifetime' => 'now +1hour',

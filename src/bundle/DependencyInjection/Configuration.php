@@ -48,6 +48,10 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+            ->booleanNode('doctrine_mapping')
+            ->defaultFalse()
+            ->info('If true, the doctrine schemas will be loaded')
+            ->end()
             ->scalarNode('logger')
             ->defaultNull()
             ->info('A PSR3 logger to receive logs')

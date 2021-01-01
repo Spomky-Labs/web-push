@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace WebPush\Bundle;
 
+use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use function Safe\realpath;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
@@ -43,5 +45,18 @@ final class WebPushBundle extends Bundle
         $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
         $container->addCompilerPass(new PayloadCacheCompilerPass());
         $container->addCompilerPass(new PayloadPaddingCompilerPass());
+
+        $this->registerMappings($container);
+    }
+
+    private function registerMappings(ContainerBuilder $container): void
+    {
+        if (!class_exists(DoctrineOrmMappingsPass::class)) {
+            return;
+        }
+
+        $realPath = realpath(__DIR__.'/Resources/config/doctrine-mapping');
+        $mappings = [$realPath => 'WebPush'];
+        $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping'));
     }
 }

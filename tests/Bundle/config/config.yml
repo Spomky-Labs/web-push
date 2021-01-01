@@ -1,5 +1,9 @@
 services:
     WebPush\Tests\Bundle\MockClientCallback: ~
+    WebPush\Tests\Bundle\FakeApp\Repository\SubscriptionRepository:
+        public: true
+        arguments:
+          [ '@doctrine' ]
     WebPush\Tests\Bundle\WebPushEventListener:
         tags:
             - { name: kernel.event_listener, event: WebPush\StatusReport }
@@ -12,14 +16,40 @@ services:
     nyholm.psr7.psr17_factory:
         class: Nyholm\Psr7\Factory\Psr17Factory
 
+monolog:
+    handlers:
+        main:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+
 framework:
     test: ~
     secret: 'test'
     http_client:
         mock_response_factory: WebPush\Tests\Bundle\MockClientCallback
 
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver: pdo_sqlite
+                memory: true
+    orm:
+        auto_generate_proxy_classes: true
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/'
+                prefix: 'WebPush\Tests\Bundle\FakeApp\Entity'
+                alias: App
+
 webpush:
     #logger: Psr\Log\LoggerInterface
+    doctrine_mapping: true
     vapid:
         enabled: true
         subject: 'https://foo.bar'

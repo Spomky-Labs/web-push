@@ -136,6 +136,7 @@ class WebTokenConfigurationTest extends AbstractConfigurationTest
                 'logger' => null,
                 'http_client' => ClientInterface::class,
                 'request_factory' => RequestFactoryInterface::class,
+                'doctrine_mapping' => false,
                 'vapid' => [
                     'enabled' => true,
                     'token_lifetime' => 'now +1hour',
