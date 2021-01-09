@@ -4,6 +4,10 @@ services:
         public: true
         arguments:
           [ '@doctrine' ]
+    WebPush\Tests\Bundle\FakeApp\Repository\UserRepository:
+        public: true
+        arguments:
+          [ '@doctrine' ]
     WebPush\Tests\Bundle\WebPushEventListener:
         tags:
             - { name: kernel.event_listener, event: WebPush\StatusReport }

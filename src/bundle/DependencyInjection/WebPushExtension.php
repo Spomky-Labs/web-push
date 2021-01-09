@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
-use WebPush\Bundle\Doctrine\Type\KeysType;
+use WebPush\Bundle\Doctrine\Type;
 use WebPush\Loggable;
 use WebPush\Payload\ContentEncoding;
 use WebPush\VAPID\JWSProvider;
@@ -85,7 +85,8 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
             return;
         }
         $config['dbal']['types'] += [
-            'webpush_keys' => KeysType::class,
+            'webpush_keys' => Type\KeysType::class,
+            'webpush_subscription' => Type\SubscriptionType::class,
         ];
         $container->prependExtensionConfig('doctrine', $config);
     }

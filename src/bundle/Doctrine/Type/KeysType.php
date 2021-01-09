@@ -14,9 +14,11 @@ declare(strict_types=1);
 namespace WebPush\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
 use function Safe\json_decode;
 use function Safe\json_encode;
+use Throwable;
 use WebPush\Keys;
 
 final class KeysType extends Type
@@ -27,7 +29,10 @@ final class KeysType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (null === $value) {
-            return $value;
+            return null;
+        }
+        if (!$value instanceof Keys) {
+            throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', Keys::class]);
         }
 
         return json_encode($value);
@@ -41,9 +46,13 @@ final class KeysType extends Type
         if (null === $value || $value instanceof Keys) {
             return $value;
         }
-        $json = json_decode($value, true);
+        try {
+            $json = json_decode($value, true);
 
-        return Keys::createFromAssociativeArray($json);
+            return Keys::createFromAssociativeArray($json);
+        } catch (Throwable $e) {
+            throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', 'string'], $e);
+        }
     }
 
     /**

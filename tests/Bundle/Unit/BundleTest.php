@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit;
 
+use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\ClassExistsMock;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use WebPush\Bundle\DependencyInjection\Compiler;
 use WebPush\Bundle\DependencyInjection\WebPushExtension;
@@ -26,6 +28,21 @@ use WebPush\Bundle\WebPushBundle;
  */
 class BundleTest extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        ClassExistsMock::register(WebPushBundle::class);
+    }
+
+    protected function setUp(): void
+    {
+        ClassExistsMock::withMockedClasses([]);
+    }
+
+    public function tearDown(): void
+    {
+        ClassExistsMock::withMockedClasses([]);
+    }
+
     /**
      * @test
      */
@@ -55,7 +72,30 @@ class BundleTest extends TestCase
             }
         }
 
-        static::assertTrue($found, 'Unable to find the compiler pass');
+        static::assertTrue($found, 'Unable to find the compiler pass '.$class);
+    }
+
+    /**
+     * @test
+     */
+    public function theBundleDoesNotAddDoctrineCompilerPassesIfNotAvailableHasTheCompilerPass(): void
+    {
+        ClassExistsMock::withMockedClasses([DoctrineOrmMappingsPass::class => false]);
+
+        $containerBuilder = new ContainerBuilder();
+        $bundle = new WebPushBundle();
+        $bundle->build($containerBuilder);
+
+        $passes = $containerBuilder->getCompiler()->getPassConfig()->getPasses();
+        $found = false;
+        foreach ($passes as $pass) {
+            if ($pass instanceof DoctrineOrmMappingsPass) {
+                $found = true;
+                break;
+            }
+        }
+
+        static::assertFalse($found, 'The compiler pass DoctrineOrmMappingsPass has been found');
     }
 
     public function compilerPasses(): array
@@ -66,6 +106,7 @@ class BundleTest extends TestCase
             [Compiler\PayloadCacheCompilerPass::class],
             [Compiler\PayloadContentEncodingCompilerPass::class],
             [Compiler\PayloadPaddingCompilerPass::class],
+            [DoctrineOrmMappingsPass::class],
         ];
     }
 }

@@ -30,16 +30,9 @@ class SubscriptionRepository extends ServiceEntityRepository
         parent::__construct($registry, Subscription::class);
     }
 
-    public function save(Subscription $object, bool $flush = true): void
+    public function save(Subscription $object): void
     {
         $this->getEntityManager()->persist($object);
-        if ($flush) {
-            $this->flush();
-        }
-    }
-
-    public function flush(): void
-    {
         $this->getEntityManager()->flush();
     }
 }
