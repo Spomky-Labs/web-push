@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Spomky-Labs
+ * Copyright (c) 2020-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -91,22 +91,10 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('private_key')
             ->isRequired()
             ->info('The VAPID private key')
-            ->validate()
-            ->ifTrue(static function (string $conf): bool {
-                return WebTokenProvider::PRIVATE_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
-            })
-            ->thenInvalid('Invalid private key length')
-            ->end()
             ->end()
             ->scalarNode('public_key')
             ->isRequired()
             ->info('The VAPID public key')
-            ->validate()
-            ->ifTrue(static function (string $conf): bool {
-                return WebTokenProvider::PUBLIC_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
-            })
-            ->thenInvalid('Invalid public key length')
-            ->end()
             ->end()
             ->end()
             ->end()
@@ -116,22 +104,10 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('private_key')
             ->isRequired()
             ->info('The VAPID private key')
-            ->validate()
-            ->ifTrue(static function (string $conf): bool {
-                return LcobucciProvider::PRIVATE_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
-            })
-            ->thenInvalid('Invalid private key length')
-            ->end()
             ->end()
             ->scalarNode('public_key')
             ->isRequired()
             ->info('The VAPID public key')
-            ->validate()
-            ->ifTrue(static function (string $conf): bool {
-                return LcobucciProvider::PUBLIC_KEY_LENGTH !== mb_strlen(Base64Url::decode($conf), '8bit');
-            })
-            ->thenInvalid('Invalid public key length')
-            ->end()
             ->end()
             ->end()
             ->end()

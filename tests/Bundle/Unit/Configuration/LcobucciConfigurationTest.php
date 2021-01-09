@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Spomky-Labs
+ * Copyright (c) 2020-2021 Spomky-Labs
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
@@ -48,29 +48,6 @@ class LcobucciConfigurationTest extends AbstractConfigurationTest
     /**
      * @test
      */
-    public function invalidIfPrivateKeyLengthIsIncorrect(): void
-    {
-        $this->assertConfigurationIsInvalid(
-            [
-                [
-                    'vapid' => [
-                        'enabled' => true,
-                        'subject' => 'https://foo.bar',
-                        'lcobucci' => [
-                            'enabled' => true,
-                            'private_key' => 'ABCDEF',
-                            'public_key' => 'abcde',
-                        ],
-                    ],
-                ],
-            ],
-            'Invalid configuration for path "webpush.vapid.lcobucci.private_key": Invalid private key length'
-        );
-    }
-
-    /**
-     * @test
-     */
     public function invalidIfPublicKeyIsMissing(): void
     {
         $this->assertConfigurationIsInvalid(
@@ -87,29 +64,6 @@ class LcobucciConfigurationTest extends AbstractConfigurationTest
                 ],
             ],
             'The child config "public_key" under "webpush.vapid.lcobucci" must be configured: The VAPID public key'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function invalidIfPublicKeyLengthIsIncorrect(): void
-    {
-        $this->assertConfigurationIsInvalid(
-            [
-                [
-                    'vapid' => [
-                        'enabled' => true,
-                        'subject' => 'https://foo.bar',
-                        'lcobucci' => [
-                            'enabled' => true,
-                            'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                            'public_key' => Base64Url::encode('00000000000000000000000000000000'),
-                        ],
-                    ],
-                ],
-            ],
-            'Invalid configuration for path "webpush.vapid.lcobucci.public_key": Invalid public key length'
         );
     }
 
