@@ -63,8 +63,8 @@ final class PayloadExtensionTest extends TestCase
             ->withPayload('Payload')
         ;
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
-        $subscription->getKeys()->set('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
+        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         $request = new Request('POST', 'https://foo.bar');
 
@@ -98,8 +98,8 @@ final class PayloadExtensionTest extends TestCase
             ->withPayload('Payload')
         ;
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
-        $subscription->getKeys()->set('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
+        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         PayloadExtension::create()
             ->process($request, $notification, $subscription)

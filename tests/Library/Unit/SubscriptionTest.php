@@ -46,14 +46,14 @@ final class SubscriptionTest extends TestCase
     public function createSubscriptionFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->getKeys()
-            ->set('p256dh', 'Public key')
-            ->set('auth', 'Authorization Token')
+        $subscription
+            ->setKey('p256dh', 'Public key')
+            ->setKey('auth', 'Authorization Token')
         ;
 
         static::assertEquals('https://foo.bar', $subscription->getEndpoint());
-        static::assertEquals('Public key', $subscription->getKeys()->get('p256dh'));
-        static::assertEquals('Authorization Token', $subscription->getKeys()->get('auth'));
+        static::assertEquals('Public key', $subscription->getKey('p256dh'));
+        static::assertEquals('Authorization Token', $subscription->getKey('auth'));
         static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
     }
 
@@ -65,8 +65,8 @@ final class SubscriptionTest extends TestCase
         $subscription = Subscription::createFromString('{"endpoint": "https://some.pushservice.com/something-unique","keys": {"p256dh":"BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=","auth":"FPssNDTKnInHVndSTdbKFw=="},"expirationTime":1580253757}');
 
         static::assertEquals('https://some.pushservice.com/something-unique', $subscription->getEndpoint());
-        static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKeys()->get('p256dh'));
-        static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKeys()->get('auth'));
+        static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKey('p256dh'));
+        static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKey('auth'));
         static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
         static::assertEquals(1580253757, $subscription->getExpirationTime());
         static::assertEquals(DatetimeImmutable::createFromFormat('Y-m-d\TH:i:sP', '2020-01-28T16:22:37-07:00'), $subscription->expiresAt());
@@ -80,8 +80,8 @@ final class SubscriptionTest extends TestCase
         $subscription = Subscription::createFromString('{"endpoint": "https://some.pushservice.com/something-unique","keys": {"p256dh":"BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=","auth":"FPssNDTKnInHVndSTdbKFw=="}}');
 
         static::assertEquals('https://some.pushservice.com/something-unique', $subscription->getEndpoint());
-        static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKeys()->get('p256dh'));
-        static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKeys()->get('auth'));
+        static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKey('p256dh'));
+        static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKey('auth'));
         static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
         static::assertNull($subscription->getExpirationTime());
         static::assertNull($subscription->expiresAt());
@@ -136,18 +136,18 @@ final class SubscriptionTest extends TestCase
             ->withContentEncodings([$contentEncoding])
         ;
         foreach ($keys as $k => $v) {
-            $subscription->getKeys()->set($k, $v);
+            $subscription->setKey($k, $v);
         }
 
         static::assertEquals($endpoint, $subscription->getEndpoint());
-        static::assertEquals($keys, $subscription->getKeys()->all());
+        static::assertEquals($keys, $subscription->getKeys());
         static::assertEquals([$contentEncoding], $subscription->getSupportedContentEncodings());
 
         $json = json_encode($subscription);
         $newSubscription = Subscription::createFromString($json);
 
         static::assertEquals($endpoint, $newSubscription->getEndpoint());
-        static::assertEquals($keys, $newSubscription->getKeys()->all());
+        static::assertEquals($keys, $newSubscription->getKeys());
         static::assertEquals([$contentEncoding], $newSubscription->getSupportedContentEncodings());
     }
 

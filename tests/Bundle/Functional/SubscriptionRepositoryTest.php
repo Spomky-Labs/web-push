@@ -62,8 +62,8 @@ class SubscriptionRepositoryTest extends KernelTestCase
         static::assertEquals('https://fcm.googleapis.com/fcm/send/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt', $fetched->getEndpoint());
         static::assertEquals(['aesgcm'], $fetched->getSupportedContentEncodings());
         static::assertNull($fetched->getExpirationTime());
-        static::assertEquals(['p256dh', 'auth'], $fetched->getKeys()->list());
-        static::assertEquals('BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4', $fetched->getKeys()->get('p256dh'));
-        static::assertEquals('gW9ZePDxvjUILvlYe3Dnug', $fetched->getKeys()->get('auth'));
+        static::assertEquals(['p256dh', 'auth'], array_keys($fetched->getKeys()));
+        static::assertEquals('BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4', $fetched->getKey('p256dh'));
+        static::assertEquals('gW9ZePDxvjUILvlYe3Dnug', $fetched->getKey('auth'));
     }
 }

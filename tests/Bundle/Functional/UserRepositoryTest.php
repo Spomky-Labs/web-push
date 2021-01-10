@@ -63,8 +63,8 @@ class UserRepositoryTest extends KernelTestCase
         static::assertEquals('https://fcm.googleapis.com/fcm/send/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt', $fetched->getSubscription()->getEndpoint());
         static::assertEquals(['aesgcm'], $fetched->getSubscription()->getSupportedContentEncodings());
         static::assertNull($fetched->getSubscription()->getExpirationTime());
-        static::assertEquals(['p256dh', 'auth'], $fetched->getSubscription()->getKeys()->list());
-        static::assertEquals('BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4', $fetched->getSubscription()->getKeys()->get('p256dh'));
-        static::assertEquals('gW9ZePDxvjUILvlYe3Dnug', $fetched->getSubscription()->getKeys()->get('auth'));
+        static::assertEquals(['p256dh', 'auth'], array_keys($fetched->getSubscription()->getKeys()));
+        static::assertEquals('BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4', $fetched->getSubscription()->getKey('p256dh'));
+        static::assertEquals('gW9ZePDxvjUILvlYe3Dnug', $fetched->getSubscription()->getKey('auth'));
     }
 }

@@ -85,7 +85,6 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
             return;
         }
         $config['dbal']['types'] += [
-            'webpush_keys' => Type\KeysType::class,
             'webpush_subscription' => Type\SubscriptionType::class,
         ];
         $container->prependExtensionConfig('doctrine', $config);

@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/orm/doctrine-mapping ">
     <mapped-superclass name="WebPush\Subscription">
         <field name="endpoint" type="text" unique="true"/>
-        <field name="keys" type="webpush_keys"/>
+        <field name="keys" type="array"/>
         <field name="supportedContentEncodings" type="array"/>
         <field name="expirationTime" type="integer" nullable="true"/>
     </mapped-superclass>

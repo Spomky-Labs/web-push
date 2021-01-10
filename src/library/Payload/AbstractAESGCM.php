@@ -84,13 +84,12 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     public function encode(string $payload, RequestInterface $request, Subscription $subscription): RequestInterface
     {
         $this->logger->debug('Trying to encode the following payload.');
-        $keys = $subscription->getKeys();
-        Assertion::true($keys->has('p256dh'), 'The user-agent public key is missing');
-        $userAgentPublicKey = Base64Url::decode($keys->get('p256dh'));
+        Assertion::true($subscription->hasKey('p256dh'), 'The user-agent public key is missing');
+        $userAgentPublicKey = Base64Url::decode($subscription->getKey('p256dh'));
         $this->logger->debug(sprintf('User-agent public key: %s', Base64Url::encode($userAgentPublicKey)));
 
-        Assertion::true($keys->has('auth'), 'The user-agent authentication token is missing');
-        $userAgentAuthToken = Base64Url::decode($keys->get('auth'));
+        Assertion::true($subscription->hasKey('auth'), 'The user-agent authentication token is missing');
+        $userAgentAuthToken = Base64Url::decode($subscription->getKey('auth'));
         $this->logger->debug(sprintf('User-agent auth token: %s', Base64Url::encode($userAgentAuthToken)));
 
         $salt = random_bytes(self::SALT_SIZE);

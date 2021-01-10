@@ -21,11 +21,8 @@ use function Safe\sprintf;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use WebPush\Base64Url;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
-use WebPush\VAPID\LcobucciProvider;
-use WebPush\VAPID\WebTokenProvider;
 
 final class Configuration implements ConfigurationInterface
 {

@@ -88,7 +88,7 @@ final class AESGCMTest extends TestCase
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aesgcm'])
         ;
-        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
 
         AESGCM::create()->encode('', $request, $subscription);
     }
@@ -104,8 +104,8 @@ final class AESGCMTest extends TestCase
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aesgcm'])
         ;
-        $subscription->getKeys()->set('p256dh', $userAgentPublicKey);
-        $subscription->getKeys()->set('auth', $userAgentAuthToken);
+        $subscription->setKey('p256dh', $userAgentPublicKey);
+        $subscription->setKey('auth', $userAgentAuthToken);
 
         $encoder = AESGCM::create();
 
@@ -155,8 +155,8 @@ final class AESGCMTest extends TestCase
         $request = new Request('POST', 'https://foo.bar');
 
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->getKeys()->set('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
-        $subscription->getKeys()->set('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
+        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         $payload = str_pad('', 4079, '0');
 

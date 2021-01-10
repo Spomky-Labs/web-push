@@ -24,7 +24,10 @@ class Subscription implements JsonSerializable
 {
     private string $endpoint;
 
-    private Keys $keys;
+    /**
+     * @var string[]
+     */
+    private array $keys;
 
     /**
      * @var string[]
@@ -36,7 +39,7 @@ class Subscription implements JsonSerializable
     public function __construct(string $endpoint)
     {
         $this->endpoint = $endpoint;
-        $this->keys = new Keys();
+        $this->keys = [];
     }
 
     public static function create(string $endpoint): self
@@ -54,9 +57,28 @@ class Subscription implements JsonSerializable
         return $this;
     }
 
-    public function getKeys(): Keys
+    public function getKeys(): array
     {
         return $this->keys;
+    }
+
+    public function hasKey(string $key): bool
+    {
+        return isset($this->keys[$key]);
+    }
+
+    public function getKey(string $key): string
+    {
+        Assertion::keyExists($this->keys, $key, 'The key does not exist');
+
+        return $this->keys[$key];
+    }
+
+    public function setKey(string $key, string $value): self
+    {
+        $this->keys[$key] = $value;
+
+        return $this;
     }
 
     public function getExpirationTime(): ?int
@@ -91,7 +113,7 @@ class Subscription implements JsonSerializable
     }
 
     /**
-     * @return array<string, string|string[]|Keys>
+     * @return array<string, string|string[]>
      */
     public function jsonSerialize(): array
     {
@@ -123,7 +145,11 @@ class Subscription implements JsonSerializable
         }
         if (array_key_exists('keys', $input)) {
             Assertion::isArray($input['keys'], 'Invalid input');
-            $object->keys = Keys::createFromAssociativeArray($input['keys']);
+            foreach ($input['keys'] as $k => $v) {
+                Assertion::string($k, 'Invalid key name');
+                Assertion::string($v, 'Invalid key value');
+            }
+            $object->keys = $input['keys'];
         }
 
         return $object;

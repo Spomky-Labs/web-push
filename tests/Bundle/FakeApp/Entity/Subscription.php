@@ -39,8 +39,8 @@ class Subscription extends BaseSubscription
         $base = BaseSubscription::createFromString($input);
         $object = new self($base->getEndpoint());
         $object->withContentEncodings($base->getSupportedContentEncodings());
-        foreach ($base->getKeys()->all() as $k => $v) {
-            $object->getKeys()->set($k, $v);
+        foreach ($base->getKeys() as $k => $v) {
+            $object->setKey($k, $v);
         }
 
         return $object;
