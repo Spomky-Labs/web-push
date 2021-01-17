@@ -17,7 +17,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters->set(Option::IMPORT_SHORT_CLASSES, false);
     $parameters->set(Option::IMPORT_DOC_BLOCKS, false);
     $parameters->set(Option::ENABLE_CACHE, true);
-    //$parameters->set(Option::PHPSTAN_FOR_RECTOR_PATH, __DIR__. '/phpstan.neon');
 
     $services = $containerConfigurator->services();
     $services->set(TypedPropertyRector::class);

@@ -86,6 +86,13 @@ class Subscription implements JsonSerializable
         return $this->expirationTime;
     }
 
+    public function setExpirationTime(?int $expirationTime): self
+    {
+        $this->expirationTime = $expirationTime;
+
+        return $this;
+    }
+
     public function expiresAt(): ?DateTimeInterface
     {
         return null === $this->expirationTime ? null : (new DateTimeImmutable())->setTimestamp($this->expirationTime);

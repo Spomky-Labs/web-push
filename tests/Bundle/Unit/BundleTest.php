@@ -17,7 +17,11 @@ use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappi
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ClassExistsMock;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use WebPush\Bundle\DependencyInjection\Compiler;
+use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
+use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
+use WebPush\Bundle\DependencyInjection\Compiler\PayloadCacheCompilerPass;
+use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
+use WebPush\Bundle\DependencyInjection\Compiler\PayloadPaddingCompilerPass;
 use WebPush\Bundle\DependencyInjection\WebPushExtension;
 use WebPush\Bundle\WebPushBundle;
 
@@ -75,9 +79,6 @@ class BundleTest extends TestCase
         static::assertTrue($found, 'Unable to find the compiler pass '.$class);
     }
 
-    /**
-     * @test
-     */
     public function theBundleDoesNotAddDoctrineCompilerPassesIfNotAvailableHasTheCompilerPass(): void
     {
         ClassExistsMock::withMockedClasses([DoctrineOrmMappingsPass::class => false]);
@@ -101,11 +102,11 @@ class BundleTest extends TestCase
     public function compilerPasses(): array
     {
         return [
-            [Compiler\ExtensionCompilerPass::class],
-            [Compiler\LoggerSetterCompilerPass::class],
-            [Compiler\PayloadCacheCompilerPass::class],
-            [Compiler\PayloadContentEncodingCompilerPass::class],
-            [Compiler\PayloadPaddingCompilerPass::class],
+            [ExtensionCompilerPass::class],
+            [LoggerSetterCompilerPass::class],
+            [PayloadCacheCompilerPass::class],
+            [PayloadContentEncodingCompilerPass::class],
+            [PayloadPaddingCompilerPass::class],
             [DoctrineOrmMappingsPass::class],
         ];
     }
