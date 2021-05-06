@@ -1,10 +1,10 @@
 {
-    "bootstrap": "vendor/autoload.php",
-    "path": "tests/Benchmark",
-    "progress": "dots",
-    "time_unit": "microseconds",
-    "retry_threshold": 10,
-    "reports": {
+    "runner.bootstrap": "vendor/autoload.php",
+    "runner.path": "tests/Benchmark",
+    "runner.progress": "dots",
+    "runner.time_unit": "microseconds",
+    "runner.retry_threshold": 10,
+    "report.generators": {
         "with-params": {
             "extends": "aggregate",
             "cols": ["subject", "groups", "mean", "params"]
@@ -18,7 +18,7 @@
             "cols": ["subject", "groups", "mean"]
         }
     },
-    "outputs": {
+    "report.outputs": {
         "all": {
             "extends": "html",
             "file": "report.html",
@@ -30,7 +30,7 @@
             "title": "WebPush Performance Test Suite"
         }
     },
-    "extensions": [
+    "core.extensions": [
         "PhpBench\\Extensions\\XDebug\\XDebugExtension"
     ]
 }
