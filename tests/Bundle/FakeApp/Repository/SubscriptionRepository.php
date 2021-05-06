@@ -18,6 +18,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use WebPush\Tests\Bundle\FakeApp\Entity\Subscription;
 
 /**
+ * @extends ServiceEntityRepository<Subscription>
+ *
  * @method Subscription|null find($id, $lockMode = null, $lockVersion = null)
  * @method Subscription|null findOneBy(array $criteria, array $orderBy = null)
  * @method Subscription[]    findAll()

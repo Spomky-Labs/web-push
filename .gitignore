@@ -1,5 +1,4 @@
-.php_cs.cache
-.phpunit.result.cache
+.*.cache
 report.md
 report.html
 composer.lock

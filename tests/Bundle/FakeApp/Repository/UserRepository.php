@@ -18,6 +18,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use WebPush\Tests\Bundle\FakeApp\Entity\User;
 
 /**
+ * @extends ServiceEntityRepository<User>
+ *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findAll()
