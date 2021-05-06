@@ -77,16 +77,14 @@ final class SubscriptionTest extends TestCase
      */
     public function createSubscriptionWithoutExpirationTimeFromJson(): void
     {
-        $now = time();
         $subscription = Subscription::createFromString('{"endpoint": "https://some.pushservice.com/something-unique","keys": {"p256dh":"BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=","auth":"FPssNDTKnInHVndSTdbKFw=="}}')
-            ->setExpirationTime($now)
         ;
 
         static::assertEquals('https://some.pushservice.com/something-unique', $subscription->getEndpoint());
         static::assertEquals('BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=', $subscription->getKey('p256dh'));
         static::assertEquals('FPssNDTKnInHVndSTdbKFw==', $subscription->getKey('auth'));
         static::assertEquals(['aesgcm'], $subscription->getSupportedContentEncodings());
-        static::assertEquals($now, $subscription->getExpirationTime());
+        static::assertNull($subscription->getExpirationTime());
         static::assertNull($subscription->expiresAt());
     }
 

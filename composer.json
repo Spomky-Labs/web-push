@@ -18,16 +18,14 @@
       "composer test:typing",
       "composer test:syntax",
       "composer test:benchmark",
-      "composer test:mutations",
-      "composer test:security"
+      "composer test:mutations"
     ],
     "test:unit": "./vendor/bin/phpunit --color --group Unit",
     "test:functional": "./vendor/bin/phpunit --color --group Functional",
     "test:typing": "./vendor/bin/phpstan analyse",
     "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
     "test:benchmark": "./vendor/bin/phpbench run -l dots --report aggregate",
-    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=95 --min-covered-msi=95",
-    "test:security": "./vendor/bin/security-checker security:check"
+    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=95 --min-covered-msi=95"
   },
   "require": {
     "php": ">=7.4",
@@ -49,7 +47,7 @@
     "doctrine/doctrine-fixtures-bundle": "^3.4",
     "doctrine/orm": "^2.6",
     "friendsofphp/php-cs-fixer": "^2.16",
-    "infection/infection": "^0.20",
+    "infection/infection": "^0.21",
     "lcobucci/jwt": "^4.0",
     "matthiasnoback/symfony-config-test": "^4.2",
     "matthiasnoback/symfony-dependency-injection-test": "^4.2",
@@ -66,7 +64,6 @@
     "phpunit/phpunit": "^9.3",
     "rector/rector": "^0.9.1",
     "roave/security-advisories": "dev-latest",
-    "sensiolabs/security-checker": "^6.0",
     "symfony/cache": "^5.2.1",
     "symfony/http-client": "^5.2.1",
     "symfony/monolog-bundle": "^3.5",

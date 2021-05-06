@@ -144,19 +144,19 @@ class Subscription implements JsonSerializable
             $encodings = $input['supportedContentEncodings'];
             Assertion::isArray($encodings, 'Invalid input');
             Assertion::allString($encodings, 'Invalid input');
-            $object->supportedContentEncodings = $encodings;
+            $object->withContentEncodings($encodings);
         }
         if (array_key_exists('expirationTime', $input)) {
             Assertion::nullOrInteger($input['expirationTime'], 'Invalid input');
-            $object->expirationTime = $input['expirationTime'];
+            $object->setExpirationTime($input['expirationTime']);
         }
         if (array_key_exists('keys', $input)) {
             Assertion::isArray($input['keys'], 'Invalid input');
             foreach ($input['keys'] as $k => $v) {
                 Assertion::string($k, 'Invalid key name');
                 Assertion::string($v, 'Invalid key value');
+                $object->setKey($k, $v);
             }
-            $object->keys = $input['keys'];
         }
 
         return $object;

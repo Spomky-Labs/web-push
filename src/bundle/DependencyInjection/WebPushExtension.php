@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace WebPush\Bundle\DependencyInjection;
 
 use function array_key_exists;
+use Assert\Assertion;
 use function count;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
@@ -138,6 +139,7 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
     private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
     {
         $bundles = $container->hasParameter('kernel.bundles') ? $container->getParameter('kernel.bundles') : [];
+        Assertion::isArray($bundles, 'Invalid bundle list');
         if (!array_key_exists('DoctrineBundle', $bundles)) {
             return null;
         }
