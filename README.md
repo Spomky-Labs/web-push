@@ -7,7 +7,6 @@ This framework contains PHP libraries and Symfony bundle to allow developers to 
 
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Unit%20Tests/badge.svg)
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Functional%20Tests/badge.svg)
-
 ![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Mutation%20Testing/badge.svg)
 
 ![Coding Standards](https://github.com/Spomky-Labs/web-push/workflows/Coding%20Standards/badge.svg)
