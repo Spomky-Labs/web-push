@@ -12,7 +12,6 @@ This framework contains PHP libraries and Symfony bundle to allow developers to 
 
 ![Coding Standards](https://github.com/Spomky-Labs/web-push/workflows/Coding%20Standards/badge.svg)
 ![Static Analyze](https://github.com/Spomky-Labs/web-push/workflows/Static%20Analyze/badge.svg)
-![Rector Checkstyle](https://github.com/Spomky-Labs/web-push/workflows/Rector%20Checkstyle/badge.svg)
 
 [![Latest Stable Version](https://poser.pugx.org/Spomky-Labs/web-push/v)](//packagist.org/packages/Spomky-Labs/web-push)
 [![Total Downloads](https://poser.pugx.org/Spomky-Labs/web-push/downloads)](//packagist.org/packages/Spomky-Labs/web-push)
