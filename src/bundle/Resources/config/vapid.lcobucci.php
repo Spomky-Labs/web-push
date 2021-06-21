@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\LcobucciProvider;
 
@@ -25,8 +26,8 @@ return static function (ContainerConfigurator $container): void {
     $container->set(JWSProvider::class)
         ->class(LcobucciProvider::class)
         ->args([
-            '%webpush.vapid.lcobucci.public_key%',
-            '%webpush.vapid.lcobucci.private_key%',
+            param('webpush.vapid.lcobucci.public_key'),
+            param('webpush.vapid.lcobucci.private_key'),
         ])
     ;
 };
