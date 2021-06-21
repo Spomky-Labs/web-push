@@ -60,6 +60,7 @@ class UserRepositoryTest extends KernelTestCase
         $id = $user->getId();
         $fetched = $userRepository->findOneBy(['id' => $id]);
 
+        static::assertNotNull($fetched, 'Unable to fetch the user');
         static::assertEquals('https://fcm.googleapis.com/fcm/send/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt', $fetched->getSubscription()->getEndpoint());
         static::assertEquals(['aesgcm'], $fetched->getSubscription()->getSupportedContentEncodings());
         static::assertNull($fetched->getSubscription()->getExpirationTime());
