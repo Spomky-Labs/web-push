@@ -30,6 +30,7 @@ monolog:
 framework:
     test: ~
     secret: 'test'
+    annotations: ~
     http_client:
         mock_response_factory: WebPush\Tests\Bundle\MockClientCallback
 
