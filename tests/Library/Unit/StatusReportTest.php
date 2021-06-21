@@ -54,7 +54,7 @@ final class StatusReportTest extends TestCase
         static::assertEquals('https://foo.bar', $report->getLocation());
         static::assertEquals(['https://link.1'], $report->getLinks());
         static::assertEquals($isSuccess, $report->isSuccess());
-        static::assertEquals($hasExpired, $report->notificationExpired());
+        static::assertEquals($hasExpired, $report->isSubscriptionExpired());
     }
 
     /**

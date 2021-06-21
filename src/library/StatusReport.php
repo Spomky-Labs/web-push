@@ -58,11 +58,19 @@ class StatusReport
         return $code >= 200 && $code < 300;
     }
 
-    public function notificationExpired(): bool
+    public function isSubscriptionExpired(): bool
     {
         $code = $this->response->getStatusCode();
 
         return 404 === $code || 410 === $code;
+    }
+
+    /**
+     * @deprecated The method is deprecated. Please use isSubscriptionExpired() instead
+     */
+    public function notificationExpired(): bool
+    {
+        return $this->isSubscriptionExpired();
     }
 
     public function getLocation(): string
