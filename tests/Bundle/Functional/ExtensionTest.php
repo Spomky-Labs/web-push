@@ -38,7 +38,7 @@ class ExtensionTest extends KernelTestCase
     public function taggedExtensionsAreAutoConfigured($class): void
     {
         self::bootKernel();
-        $service = static::$container->get($class);
+        $service = self::getContainer()->get($class);
         static::assertInstanceOf(Extension::class, $service);
     }
 

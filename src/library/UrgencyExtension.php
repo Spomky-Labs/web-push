@@ -38,7 +38,7 @@ class UrgencyExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, Notification $notification, Subscription $subscription): RequestInterface
+    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
     {
         $urgency = $notification->getUrgency();
         $this->logger->debug('Processing with the Urgency extension', ['Urgency' => $urgency]);

@@ -13,22 +13,22 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle;
 
-use WebPush\StatusReport;
+use WebPush\StatusStatusReportInterface;
 
 class WebPushEventListener
 {
     /**
-     * @var StatusReport[]
+     * @var StatusStatusReportInterface[]
      */
     private array $events = [];
 
-    public function __invoke(StatusReport $report): void
+    public function __invoke(StatusStatusReportInterface $report): void
     {
         $this->events[] = $report;
     }
 
     /**
-     * @return StatusReport[]
+     * @return StatusStatusReportInterface[]
      */
     public function getEvents(): array
     {

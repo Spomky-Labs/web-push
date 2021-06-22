@@ -15,5 +15,5 @@ namespace WebPush;
 
 interface WebPushService
 {
-    public function send(Notification $notification, Subscription $subscription): StatusReport;
+    public function send(NotificationInterface $notification, SubscriptionInterface $subscription): StatusReportInterface;
 }

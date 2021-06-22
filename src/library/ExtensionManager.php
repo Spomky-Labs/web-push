@@ -50,7 +50,7 @@ class ExtensionManager implements Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, Notification $notification, Subscription $subscription): RequestInterface
+    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
     {
         $this->logger->debug('Processing the request');
         foreach ($this->extensions as $extension) {

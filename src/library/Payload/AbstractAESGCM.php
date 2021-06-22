@@ -25,7 +25,7 @@ use function Safe\sprintf;
 use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Loggable;
-use WebPush\Subscription;
+use WebPush\SubscriptionInterface;
 use WebPush\Utils;
 
 abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
@@ -81,7 +81,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     abstract public function maxPadding(): self;
 
-    public function encode(string $payload, RequestInterface $request, Subscription $subscription): RequestInterface
+    public function encode(string $payload, RequestInterface $request, SubscriptionInterface $subscription): RequestInterface
     {
         $this->logger->debug('Trying to encode the following payload.');
         Assertion::true($subscription->hasKey('p256dh'), 'The user-agent public key is missing');

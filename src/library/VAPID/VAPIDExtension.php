@@ -21,8 +21,8 @@ use function Safe\parse_url;
 use function Safe\sprintf;
 use WebPush\Extension;
 use WebPush\Loggable;
-use WebPush\Notification;
-use WebPush\Subscription;
+use WebPush\NotificationInterface;
+use WebPush\SubscriptionInterface;
 
 class VAPIDExtension implements Extension, Loggable
 {
@@ -57,7 +57,7 @@ class VAPIDExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, Notification $notification, Subscription $subscription): RequestInterface
+    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
     {
         $this->logger->debug('Processing with VAPID header');
         $endpoint = $subscription->getEndpoint();

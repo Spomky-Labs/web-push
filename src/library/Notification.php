@@ -16,13 +16,8 @@ namespace WebPush;
 use function array_key_exists;
 use Assert\Assertion;
 
-class Notification
+class Notification implements NotificationInterface
 {
-    public const URGENCY_VERY_LOW = 'very-low';
-    public const URGENCY_LOW = 'low';
-    public const URGENCY_NORMAL = 'normal';
-    public const URGENCY_HIGH = 'high';
-
     private ?string $payload = null;
     private int $ttl = 0;
     private string $urgency = self::URGENCY_NORMAL;

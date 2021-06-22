@@ -17,7 +17,7 @@ use Nyholm\Psr7\Request;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
-use WebPush\StatusReport;
+use WebPush\StatusStatusReportInterface;
 use WebPush\Subscription;
 
 /**
@@ -40,7 +40,7 @@ final class StatusReportTest extends TestCase
             'location' => ['https://foo.bar'],
             'link' => ['https://link.1'],
         ]);
-        $report = new StatusReport(
+        $report = new StatusStatusReportInterface(
             $subscription,
             $notification,
             $request,
@@ -49,8 +49,6 @@ final class StatusReportTest extends TestCase
 
         static::assertSame($subscription, $report->getSubscription());
         static::assertSame($notification, $report->getNotification());
-        static::assertSame($request, $report->getRequest());
-        static::assertSame($response, $report->getResponse());
         static::assertEquals('https://foo.bar', $report->getLocation());
         static::assertEquals(['https://link.1'], $report->getLinks());
         static::assertEquals($isSuccess, $report->isSuccess());
