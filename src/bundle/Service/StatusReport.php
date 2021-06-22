@@ -18,7 +18,7 @@ use WebPush\NotificationInterface;
 use WebPush\StatusReportInterface;
 use WebPush\SubscriptionInterface;
 
-class StatusStatusReportInterface implements StatusReportInterface
+class StatusReport implements StatusReportInterface
 {
     private SubscriptionInterface $subscription;
     private NotificationInterface $notification;
@@ -79,7 +79,7 @@ class StatusStatusReportInterface implements StatusReportInterface
     {
         if (null === $this->links) {
             $headers = $this->response->getHeaders();
-            $this->links = $headers['link'] ?? '';
+            $this->links = $headers['link'] ?? [];
         }
 
         return $this->links;

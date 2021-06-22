@@ -49,7 +49,7 @@ class WebPush implements WebPushService
         return $this;
     }
 
-    public function send(NotificationInterface $notification, SubscriptionInterface $subscription): StatusStatusReportInterface
+    public function send(NotificationInterface $notification, SubscriptionInterface $subscription): StatusReport
     {
         $this->logger->debug('Sending notification', ['notification' => $notification, 'subscription' => $subscription]);
         $request = $this->requestFactory->createRequest('POST', $subscription->getEndpoint());
@@ -62,7 +62,7 @@ class WebPush implements WebPushService
         ]);
         $this->logger->debug('Response received', ['response' => $response]);
 
-        return new StatusStatusReportInterface(
+        return new StatusReport(
             $subscription,
             $notification,
             $response
