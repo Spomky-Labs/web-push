@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use WebPush\Bundle\Service\WebPush;
 use WebPush\ExtensionManager;
 
-final class TestCompilerPass implements CompilerPassInterface
+final class SymfonyServiceCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
