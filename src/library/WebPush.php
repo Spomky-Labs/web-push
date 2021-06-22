@@ -55,7 +55,7 @@ class WebPush implements WebPushService, Loggable
         $response = $this->client->sendRequest($request);
         $this->logger->debug('Response received', ['response' => $response]);
 
-        return new StatusStatusReportInterface(
+        return new StatusReport(
             $subscription,
             $notification,
             $request,

@@ -16,7 +16,7 @@ namespace WebPush;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class StatusStatusReportInterface implements StatusReportInterface
+class StatusReport implements StatusReportInterface
 {
     private SubscriptionInterface $subscription;
     private NotificationInterface $notification;

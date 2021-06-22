@@ -17,7 +17,7 @@ use Nyholm\Psr7\Request;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
-use WebPush\StatusStatusReportInterface;
+use WebPush\StatusReport;
 use WebPush\Subscription;
 
 /**
@@ -40,7 +40,7 @@ final class StatusReportTest extends TestCase
             'location' => ['https://foo.bar'],
             'link' => ['https://link.1'],
         ]);
-        $report = new StatusStatusReportInterface(
+        $report = new StatusReport(
             $subscription,
             $notification,
             $request,
