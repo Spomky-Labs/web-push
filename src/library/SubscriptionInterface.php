@@ -32,8 +32,6 @@ interface SubscriptionInterface extends JsonSerializable
      */
     public function getSupportedContentEncodings(): array;
 
-    public static function createFromString(string $input): self;
-
     /**
      * @return array<string, string|string[]>
      */
