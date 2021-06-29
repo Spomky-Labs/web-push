@@ -41,10 +41,10 @@ final class VAPIDTest extends TestCase
         );
 
         $logger = new TestLogger();
-        $request = new Request('POST', 'https://foo.bar');
+        $request = new Request('POST', 'https://foo.bar:1337/test?a=foo&b=BAR');
 
         $notification = Notification::create();
-        $subscription = Subscription::create('https://foo.bar');
+        $subscription = Subscription::create('https://foo.bar:1337/test?a=foo&b=BAR');
 
         $request = VAPIDExtension::create('subject', $jwsProvider)
             ->setLogger($logger)
@@ -63,7 +63,7 @@ final class VAPIDTest extends TestCase
         static::assertArrayHasKey('aud', $claims);
         static::assertArrayHasKey('sub', $claims);
         static::assertArrayHasKey('exp', $claims);
-        static::assertEquals('https://foo.bar', $claims['aud']);
+        static::assertEquals('https://foo.bar:1337', $claims['aud']);
         static::assertEquals('subject', $claims['sub']);
         static::assertGreaterThanOrEqual(time(), $claims['exp']);
 
