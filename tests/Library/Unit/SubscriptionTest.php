@@ -205,7 +205,7 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => 'FOO',
                     'keys' => 'foo',
                 ]),
                 'exception' => InvalidArgumentException::class,
@@ -214,7 +214,16 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => [123],
+                    'keys' => 'foo',
+                ]),
+                'exception' => InvalidArgumentException::class,
+                'message' => 'Invalid input',
+            ],
+            [
+                'input' => json_encode([
+                    'endpoint' => 'https://foo.bar',
+                    'supportedContentEncodings' => ['FOO'],
                     'keys' => [
                         12 => 0,
                     ],
@@ -225,7 +234,7 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => ['FOO'],
                     'keys' => [
                         'authToken' => 'BAR',
                         'publicKey' => 0,
@@ -237,7 +246,7 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => ['FOO'],
                     'keys' => [
                         'authToken' => 'BAR',
                         'publicKey' => 0,
