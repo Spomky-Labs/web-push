@@ -19,6 +19,7 @@ use WebPush\Message;
 use WebPush\Notification;
 use WebPush\Subscription;
 use WebPush\Tests\Bundle\MockClientCallback;
+use WebPush\WebPush;
 use WebPush\WebPushService;
 
 /**
@@ -28,6 +29,43 @@ use WebPush\WebPushService;
  */
 class NotificationTest extends KernelTestCase
 {
+    /**
+     * @test
+     * @dataProvider listOfSubscriptions
+     */
+    public function iCanSendNotificationsTheNewService(string $data): void
+    {
+        $kernel = self::bootKernel();
+        /** @var WebPush $pushService */
+        $pushService = $kernel->getContainer()->get(WebPush::class);
+        /** @var MockClientCallback $responseFactory */
+        $responseFactory = self::getContainer()->get(MockClientCallback::class);
+        $responseFactory->setResponse('', [
+            'http_code' => 201,
+        ]);
+
+        $subscription = Subscription::createFromString($data);
+
+        $message = Message::create('Hello World!')
+            ->withLang('en-GB')
+            ->interactionRequired()
+            ->withTimestamp(time())
+            ->addAction(Action::create('accept', 'Accept'))
+            ->addAction(Action::create('cancel', 'Cancel'))
+        ;
+
+        $notification = Notification::create()
+            ->withTTL(10)
+            ->withTopic('test')
+            ->lowUrgency()
+            ->withPayload($message->toString())
+        ;
+
+        $report = $pushService->send($notification, $subscription);
+
+        static::assertTrue($report->isSuccess());
+    }
+
     /**
      * @test
      * @dataProvider listOfSubscriptions
@@ -44,6 +82,7 @@ class NotificationTest extends KernelTestCase
         ]);
 
         $subscription = Subscription::createFromString($data);
+        $subscription->withContentEncodings(['aesgcm']);
 
         $message = Message::create('Hello World!')
             ->withLang('en-GB')
