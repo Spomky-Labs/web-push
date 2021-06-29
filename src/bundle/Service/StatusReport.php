@@ -46,20 +46,16 @@ class StatusReport implements StatusReportInterface
 
     public function isSuccess(): bool
     {
-        if (null === $this->code) {
-            $this->code = $this->response->getStatusCode();
-        }
+        $code = $this->prepareStatusCode();
 
-        return $this->code >= 200 && $this->code < 300;
+        return $code >= 200 && $code < 300;
     }
 
     public function isSubscriptionExpired(): bool
     {
-        if (null === $this->code) {
-            $this->code = $this->response->getStatusCode();
-        }
+        $code = $this->prepareStatusCode();
 
-        return 404 === $this->code || 410 === $this->code;
+        return 404 === $code || 410 === $code;
     }
 
     public function getLocation(): string
@@ -83,5 +79,14 @@ class StatusReport implements StatusReportInterface
         }
 
         return $this->links;
+    }
+
+    private function prepareStatusCode(): int
+    {
+        if (null === $this->code) {
+            $this->code = $this->response->getStatusCode();
+        }
+
+        return $this->code;
     }
 }

@@ -18,11 +18,12 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\ExtensionManager;
+use WebPush\Loggable;
 use WebPush\NotificationInterface;
 use WebPush\SubscriptionInterface;
 use WebPush\WebPushService;
 
-class WebPush implements WebPushService
+class WebPush implements WebPushService, Loggable
 {
     private HttpClientInterface $client;
     private LoggerInterface $logger;
@@ -35,11 +36,6 @@ class WebPush implements WebPushService
         $this->requestFactory = $requestFactory;
         $this->extensionManager = $extensionManager;
         $this->logger = new NullLogger();
-    }
-
-    public static function create(HttpClientInterface $client, RequestFactoryInterface $requestFactory, ExtensionManager $extensionManager): self
-    {
-        return new self($client, $requestFactory, $extensionManager);
     }
 
     public function setLogger(LoggerInterface $logger): self
