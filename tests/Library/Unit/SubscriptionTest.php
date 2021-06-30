@@ -91,17 +91,6 @@ final class SubscriptionTest extends TestCase
     /**
      * @test
      */
-    public function invalidExpirationTime(): void
-    {
-        static::expectException(InvalidArgumentException::class);
-        static::expectExceptionMessage('Invalid input');
-
-        Subscription::createFromString('{"endpoint": "https://some.pushservice.com/something-unique","keys": {"p256dh":"BIPUL12DLfytvTajnryr2PRdAgXS3HGKiLqndGcJGabyhHheJYlNGCeXl1dn18gSJ1WAkAPIxr4gK0_dQds4yiI=","auth":"FPssNDTKnInHVndSTdbKFw=="},"expirationTime":"Hello World"}');
-    }
-
-    /**
-     * @test
-     */
     public function createSubscriptionWithAESGCMENCODINGFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
@@ -205,7 +194,7 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => 'FOO',
                     'keys' => 'foo',
                 ]),
                 'exception' => InvalidArgumentException::class,
@@ -214,7 +203,25 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => [123],
+                    'keys' => 'foo',
+                ]),
+                'exception' => InvalidArgumentException::class,
+                'message' => 'Invalid input',
+            ],
+            [
+                'input' => json_encode([
+                    'endpoint' => 'https://foo.bar',
+                    'supportedContentEncodings' => ['FOO'],
+                    'keys' => 'foo',
+                ]),
+                'exception' => InvalidArgumentException::class,
+                'message' => 'Invalid input',
+            ],
+            [
+                'input' => json_encode([
+                    'endpoint' => 'https://foo.bar',
+                    'supportedContentEncodings' => ['FOO'],
                     'keys' => [
                         12 => 0,
                     ],
@@ -225,7 +232,7 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => ['FOO'],
                     'keys' => [
                         'authToken' => 'BAR',
                         'publicKey' => 0,
@@ -237,10 +244,23 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 'https://foo.bar',
-                    'contentEncoding' => 'FOO',
+                    'supportedContentEncodings' => ['FOO'],
                     'keys' => [
                         'authToken' => 'BAR',
                         'publicKey' => 0,
+                    ],
+                    'expirationTime' => 'Monday',
+                ]),
+                'exception' => InvalidArgumentException::class,
+                'message' => 'Invalid input',
+            ],
+            [
+                'input' => json_encode([
+                    'endpoint' => 'https://foo.bar',
+                    'supportedContentEncodings' => ['FOO'],
+                    'keys' => [
+                        'authToken' => 'BAR',
+                        'publicKey' => 'baz',
                     ],
                     'expirationTime' => 'Monday',
                 ]),

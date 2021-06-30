@@ -16,11 +16,10 @@ namespace WebPush;
 use function array_key_exists;
 use Assert\Assertion;
 use DateTimeInterface;
-use JsonSerializable;
 use Safe\DateTimeImmutable;
 use function Safe\json_decode;
 
-class Subscription implements JsonSerializable
+class Subscription implements SubscriptionInterface
 {
     private string $endpoint;
 

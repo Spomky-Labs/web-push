@@ -11,23 +11,26 @@ declare(strict_types=1);
  * of the MIT license.  See the LICENSE file for details.
  */
 
-namespace WebPush;
+namespace WebPush\Bundle\Service;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+use WebPush\NotificationInterface;
+use WebPush\StatusReportInterface;
+use WebPush\SubscriptionInterface;
 
 class StatusReport implements StatusReportInterface
 {
     private SubscriptionInterface $subscription;
     private NotificationInterface $notification;
-    private RequestInterface $request;
     private ResponseInterface $response;
+    private ?int $code = null;
+    private ?string $location = null;
+    private ?array $links = null;
 
-    public function __construct(SubscriptionInterface $subscription, NotificationInterface $notification, RequestInterface $request, ResponseInterface $response)
+    public function __construct(SubscriptionInterface $subscription, NotificationInterface $notification, ResponseInterface $response)
     {
         $this->subscription = $subscription;
         $this->notification = $notification;
-        $this->request = $request;
         $this->response = $response;
     }
 
@@ -41,47 +44,28 @@ class StatusReport implements StatusReportInterface
         return $this->notification;
     }
 
-    /**
-     * @deprecated Will be removed in v2.0. No replacement
-     */
-    public function getRequest(): RequestInterface
-    {
-        return $this->request;
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. No replacement
-     */
-    public function getResponse(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     public function isSuccess(): bool
     {
-        $code = $this->response->getStatusCode();
+        $code = $this->prepareStatusCode();
 
         return $code >= 200 && $code < 300;
     }
 
     public function isSubscriptionExpired(): bool
     {
-        $code = $this->response->getStatusCode();
+        $code = $this->prepareStatusCode();
 
         return 404 === $code || 410 === $code;
     }
 
-    /**
-     * @deprecated The method is deprecated. Please use isSubscriptionExpired() instead
-     */
-    public function notificationExpired(): bool
-    {
-        return $this->isSubscriptionExpired();
-    }
-
     public function getLocation(): string
     {
-        return $this->response->getHeaderLine('location');
+        if (null === $this->location) {
+            $headers = $this->response->getHeaders();
+            $this->location = implode(', ', $headers['location'] ?? ['']);
+        }
+
+        return $this->location;
     }
 
     /**
@@ -89,6 +73,20 @@ class StatusReport implements StatusReportInterface
      */
     public function getLinks(): array
     {
-        return $this->response->getHeader('link');
+        if (null === $this->links) {
+            $headers = $this->response->getHeaders();
+            $this->links = $headers['link'] ?? [];
+        }
+
+        return $this->links;
+    }
+
+    private function prepareStatusCode(): int
+    {
+        if (null === $this->code) {
+            $this->code = $this->response->getStatusCode();
+        }
+
+        return $this->code;
     }
 }

@@ -22,6 +22,7 @@ use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadCacheCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadPaddingCompilerPass;
+use WebPush\Bundle\DependencyInjection\Compiler\SymfonyServiceCompilerPass;
 use WebPush\Bundle\DependencyInjection\WebPushExtension;
 
 final class WebPushBundle extends Bundle
@@ -45,6 +46,7 @@ final class WebPushBundle extends Bundle
         $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
         $container->addCompilerPass(new PayloadCacheCompilerPass());
         $container->addCompilerPass(new PayloadPaddingCompilerPass());
+        $container->addCompilerPass(new SymfonyServiceCompilerPass());
 
         $this->registerMappings($container);
     }

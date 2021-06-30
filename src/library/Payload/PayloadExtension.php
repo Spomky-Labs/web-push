@@ -21,8 +21,8 @@ use Psr\Log\NullLogger;
 use function Safe\sprintf;
 use WebPush\Extension;
 use WebPush\Loggable;
-use WebPush\Notification;
-use WebPush\Subscription;
+use WebPush\NotificationInterface;
+use WebPush\SubscriptionInterface;
 
 class PayloadExtension implements Extension, Loggable
 {
@@ -56,7 +56,7 @@ class PayloadExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, Notification $notification, Subscription $subscription): RequestInterface
+    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
     {
         $this->logger->debug('Processing with payload');
         $payload = $notification->getPayload();
@@ -79,7 +79,7 @@ class PayloadExtension implements Extension, Loggable
         return $encoder->encode($payload, $request, $subscription);
     }
 
-    private function findEncoder(Subscription $subscription): ContentEncoding
+    private function findEncoder(SubscriptionInterface $subscription): ContentEncoding
     {
         $supportedContentEncodings = $subscription->getSupportedContentEncodings();
         foreach ($supportedContentEncodings as $supportedContentEncoding) {

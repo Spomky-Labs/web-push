@@ -63,9 +63,11 @@ class WebPushTest extends TestCase
         $client->addResponse(new Response());
         $service = $this->getService($client);
 
-        $report = $service->send($notification, $subscription);
+        $service->send($notification, $subscription);
+        $requests = $client->getRequests();
+        static::assertCount(1, $requests);
+        $request = $requests[0];
 
-        $request = $report->getRequest();
         static::assertTrue($request->hasHeader('ttl'));
         static::assertTrue($request->hasHeader('topic'));
         static::assertTrue($request->hasHeader('urgency'));
@@ -109,9 +111,11 @@ class WebPushTest extends TestCase
         $client->addResponse(new Response());
         $service = $this->getService($client);
 
-        $report = $service->send($notification, $subscription);
+        $service->send($notification, $subscription);
+        $requests = $client->getRequests();
+        static::assertCount(1, $requests);
+        $request = $requests[0];
 
-        $request = $report->getRequest();
         static::assertTrue($request->hasHeader('ttl'));
         static::assertTrue($request->hasHeader('topic'));
         static::assertTrue($request->hasHeader('urgency'));

@@ -20,6 +20,7 @@ use WebPush\Notification;
 use WebPush\Subscription;
 use WebPush\Tests\Bundle\MockClientCallback;
 use WebPush\WebPush;
+use WebPush\WebPushService;
 
 /**
  * @group functional
@@ -32,18 +33,19 @@ class NotificationTest extends KernelTestCase
      * @test
      * @dataProvider listOfSubscriptions
      */
-    public function iCanSendNotificationsUsingAESGCMEncryption(string $data): void
+    public function iCanSendNotificationsWithAESGCMEncryptionAndTheNewService(string $data): void
     {
         $kernel = self::bootKernel();
         /** @var WebPush $pushService */
         $pushService = $kernel->getContainer()->get(WebPush::class);
         /** @var MockClientCallback $responseFactory */
-        $responseFactory = self::$container->get(MockClientCallback::class);
+        $responseFactory = self::getContainer()->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
             'http_code' => 201,
         ]);
 
         $subscription = Subscription::createFromString($data);
+        $subscription->withContentEncodings(['aesgcm']);
 
         $message = Message::create('Hello World!')
             ->withLang('en-GB')
@@ -62,18 +64,98 @@ class NotificationTest extends KernelTestCase
 
         $report = $pushService->send($notification, $subscription);
 
-        static::assertEquals(201, $report->getResponse()->getStatusCode());
+        static::assertSame($subscription, $report->getSubscription());
+        static::assertSame($notification, $report->getNotification());
+        static::assertTrue($report->isSuccess());
+        static::assertFalse($report->isSubscriptionExpired());
+        static::assertEquals('', $report->getLocation());
+        static::assertEquals([], $report->getLinks());
+    }
 
-        $request = $report->getRequest();
-        static::assertEquals([Notification::URGENCY_LOW], $request->getHeader('urgency'));
-        static::assertEquals([10], $request->getHeader('ttl'));
-        static::assertEquals(['test'], $request->getHeader('topic'));
-        static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
-        static::assertEquals(['aesgcm'], $request->getHeader('content-encoding'));
+    /**
+     * @test
+     * @dataProvider listOfSubscriptions
+     */
+    public function iCanSendNotificationsWithAES125GCMEncryptionAndTheNewService(string $data): void
+    {
+        $kernel = self::bootKernel();
+        /** @var WebPush $pushService */
+        $pushService = $kernel->getContainer()->get(WebPush::class);
+        /** @var MockClientCallback $responseFactory */
+        $responseFactory = self::getContainer()->get(MockClientCallback::class);
+        $responseFactory->setResponse('', [
+            'http_code' => 201,
+        ]);
 
-        static::assertTrue($request->hasHeader('crypto-key'));
-        static::assertTrue($request->hasHeader('encryption'));
-        static::assertTrue($request->hasHeader('authorization'));
+        $subscription = Subscription::createFromString($data);
+        $subscription->withContentEncodings(['aes128gcm']);
+
+        $message = Message::create('Hello World!')
+            ->withLang('en-GB')
+            ->interactionRequired()
+            ->withTimestamp(time())
+            ->addAction(Action::create('accept', 'Accept'))
+            ->addAction(Action::create('cancel', 'Cancel'))
+        ;
+
+        $notification = Notification::create()
+            ->withTTL(10)
+            ->withTopic('test')
+            ->lowUrgency()
+            ->withPayload($message->toString())
+        ;
+
+        $report = $pushService->send($notification, $subscription);
+
+        static::assertSame($subscription, $report->getSubscription());
+        static::assertSame($notification, $report->getNotification());
+        static::assertTrue($report->isSuccess());
+        static::assertFalse($report->isSubscriptionExpired());
+        static::assertEquals('', $report->getLocation());
+        static::assertEquals([], $report->getLinks());
+    }
+
+    /**
+     * @test
+     * @dataProvider listOfSubscriptions
+     */
+    public function iCanSendNotificationsUsingAESGCMEncryption(string $data): void
+    {
+        $kernel = self::bootKernel();
+        /** @var WebPushService $pushService */
+        $pushService = $kernel->getContainer()->get('web_push.service');
+        /** @var MockClientCallback $responseFactory */
+        $responseFactory = self::getContainer()->get(MockClientCallback::class);
+        $responseFactory->setResponse('', [
+            'http_code' => 201,
+        ]);
+
+        $subscription = Subscription::createFromString($data);
+        $subscription->withContentEncodings(['aesgcm']);
+
+        $message = Message::create('Hello World!')
+            ->withLang('en-GB')
+            ->interactionRequired()
+            ->withTimestamp(time())
+            ->addAction(Action::create('accept', 'Accept'))
+            ->addAction(Action::create('cancel', 'Cancel'))
+        ;
+
+        $notification = Notification::create()
+            ->withTTL(10)
+            ->withTopic('test')
+            ->lowUrgency()
+            ->withPayload($message->toString())
+        ;
+
+        $report = $pushService->send($notification, $subscription);
+
+        static::assertSame($subscription, $report->getSubscription());
+        static::assertSame($notification, $report->getNotification());
+        static::assertTrue($report->isSuccess());
+        static::assertFalse($report->isSubscriptionExpired());
+        static::assertEquals('', $report->getLocation());
+        static::assertEquals([], $report->getLinks());
     }
 
     /**
@@ -83,10 +165,10 @@ class NotificationTest extends KernelTestCase
     public function iCanSendNotificationsUsingAES128GCMEncryption(string $data): void
     {
         $kernel = self::bootKernel();
-        /** @var WebPush $pushService */
-        $pushService = $kernel->getContainer()->get(WebPush::class);
+        /** @var WebPushService $pushService */
+        $pushService = $kernel->getContainer()->get('web_push.service');
         /** @var MockClientCallback $responseFactory */
-        $responseFactory = self::$container->get(MockClientCallback::class);
+        $responseFactory = self::getContainer()->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
             'http_code' => 201,
         ]);
@@ -111,18 +193,12 @@ class NotificationTest extends KernelTestCase
 
         $report = $pushService->send($notification, $subscription);
 
-        static::assertEquals(201, $report->getResponse()->getStatusCode());
-
-        $request = $report->getRequest();
-        static::assertEquals([Notification::URGENCY_VERY_LOW], $request->getHeader('urgency'));
-        static::assertEquals([3600], $request->getHeader('ttl'));
-        static::assertEquals(['FOO'], $request->getHeader('topic'));
-        static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
-        static::assertEquals(['aes128gcm'], $request->getHeader('content-encoding'));
-
-        static::assertFalse($request->hasHeader('crypto-key'));
-        static::assertFalse($request->hasHeader('encryption'));
-        static::assertTrue($request->hasHeader('authorization'));
+        static::assertSame($subscription, $report->getSubscription());
+        static::assertSame($notification, $report->getNotification());
+        static::assertTrue($report->isSuccess());
+        static::assertFalse($report->isSubscriptionExpired());
+        static::assertEquals('', $report->getLocation());
+        static::assertEquals([], $report->getLinks());
     }
 
     public function listOfSubscriptions(): array
