@@ -30,6 +30,7 @@ class Message implements JsonSerializable
      */
     private array $actions = [];
 
+    private ?string $title;
     private string $body;
 
     /**
@@ -54,9 +55,16 @@ class Message implements JsonSerializable
      */
     private ?array $vibrate = null;
 
-    public function __construct(string $body)
+    public function __construct(/**string $title , */ string $body)
     {
-        $this->body = $body;
+        if (func_num_args() !== 2) {
+            @trigger_error('Calling the constructor only with the body is deprecated since 1.1. Pass it as the second argument and provide the message title as the first argument instead.', \E_USER_DEPRECATED);
+            $this->title = null;
+            $this->body = $body;
+        } else {
+            $this->title = func_get_arg(0);
+            $this->body = func_get_arg(1);
+        }
     }
 
     public function toString(): string
@@ -133,6 +141,11 @@ class Message implements JsonSerializable
     public function getTag(): ?string
     {
         return $this->tag;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
     }
 
     public function getTimestamp(): ?int
