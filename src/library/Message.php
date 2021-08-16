@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace WebPush;
 
 use function count;
+use const E_USER_DEPRECATED;
+use function func_get_args;
+use function func_num_args;
 use function is_array;
 use JsonSerializable;
 use function Safe\json_encode;
@@ -30,7 +33,8 @@ class Message implements JsonSerializable
      */
     private array $actions = [];
 
-    private string $body;
+    private ?string $title;
+    private ?string $body;
 
     /**
      * @var mixed|null
@@ -53,10 +57,27 @@ class Message implements JsonSerializable
      * @var array<int, int>|null
      */
     private ?array $vibrate = null;
+    private bool $useNewStructure;
 
-    public function __construct(string $body)
+    public function __construct(/*string $title , */ ?string $body = null/*, bool $useNewStructure = false*/)
     {
-        $this->body = $body;
+        //dump(func_get_args());
+        if (func_num_args() < 2) {
+            @trigger_error('Calling the constructor only with the body is deprecated since 1.1 and will be removed in v2.0. Pass it as the second argument and provide the message title as the first argument instead.', E_USER_DEPRECATED);
+            $this->title = null;
+            $this->body = $body;
+        } else {
+            $this->title = func_get_arg(0);
+            $this->body = func_get_arg(1);
+        }
+        if (null !== $this->body) {
+            @trigger_error('Passing the body in the constructor is deprecated since 1.1 and will be removed in v2.0. Please set it to null and use the method "withBody" instead.', E_USER_DEPRECATED);
+        }
+
+        $this->useNewStructure = 3 === func_num_args() ? func_get_arg(2) : false;
+        if (false === $this->useNewStructure) {
+            @trigger_error('The current flat structure is deprecated since v1.1 and will be removed in v2.0. Please set the third argument as true to use the new structure instead.', E_USER_DEPRECATED);
+        }
     }
 
     public function toString(): string
@@ -64,9 +85,9 @@ class Message implements JsonSerializable
         return json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public static function create(string $body): self
+    public static function create(/*string $title , */ ?string $body = null/*, bool $useNewStructure = false*/): self
     {
-        return new self($body);
+        return new self(...func_get_args());
     }
 
     /**
@@ -77,7 +98,7 @@ class Message implements JsonSerializable
         return $this->actions;
     }
 
-    public function getBody(): string
+    public function getBody(): ?string
     {
         return $this->body;
     }
@@ -135,6 +156,11 @@ class Message implements JsonSerializable
         return $this->tag;
     }
 
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
     public function getTimestamp(): ?int
     {
         return $this->timestamp;
@@ -168,6 +194,20 @@ class Message implements JsonSerializable
     public function auto(): self
     {
         $this->dir = 'auto';
+
+        return $this;
+    }
+
+    public function withTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function withBody(string $body): self
+    {
+        $this->body = $body;
 
         return $this;
     }
@@ -282,7 +322,29 @@ class Message implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $r = array_filter(get_object_vars($this), static function ($v): bool {
+        $properties = get_object_vars($this);
+        unset($properties['useNewStructure']);
+
+        if (true === $this->useNewStructure) {
+            unset($properties['title']);
+
+            return [
+                'title' => $this->title,
+                'options' => $this->getOptions($properties),
+            ];
+        }
+
+        return $this->getOptions($properties);
+    }
+
+    /**
+     * @param array<string, mixed> $properties
+     *
+     * @return array<string, mixed>
+     */
+    private function getOptions(array $properties): array
+    {
+        $r = array_filter($properties, static function ($v): bool {
             if (is_array($v) && 0 === count($v)) {
                 return false;
             }
