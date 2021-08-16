@@ -34,6 +34,7 @@ final class MessageTest extends TestCase
         ;
 
         static::assertEquals('BODY', $message->getBody());
+        static::assertNull($message->getTitle());
         static::assertNull($message->getTimestamp());
         static::assertNull($message->getTag());
         static::assertNull($message->getData());
@@ -56,10 +57,10 @@ final class MessageTest extends TestCase
     /**
      * @test
      */
-    public function createMessageWithOptions(): void
+    public function createMessageWithOptionsAndOldStructure(): void
     {
         $action = Action::create('A', 'T');
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE', 'BODY')
             ->withTag('TAG')
             ->withTimestamp(1604141464)
             ->withLang('en-GB')
@@ -86,7 +87,49 @@ final class MessageTest extends TestCase
         static::assertNull($message->getRenotify());
         static::assertNull($message->isInteractionRequired());
 
-        $expectedJson = '{"actions":[{"action":"A","title":"T"}],"badge":"BADGE","body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","tag":"TAG","timestamp":1604141464,"vibrate":[300,10,200,10,500]}';
+        $expectedJson = '{"actions":[{"action":"A","title":"T"}],"badge":"BADGE","body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","tag":"TAG","timestamp":1604141464,"title":"TITLE","vibrate":[300,10,200,10,500]}';
+        static::assertEquals($expectedJson, $message->toString());
+        static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * @test
+     */
+    public function createMessageWithOptionsAndNewStructure(): void
+    {
+        $action = Action::create('A', 'T');
+        $message = Message::create('TITLE', 'BODY', true)
+            ->ltr()
+            ->renotify()
+            ->mute()
+            ->interactionRequired()
+            ->withTag('TAG')
+            ->withTimestamp(1604141464)
+            ->withLang('en-GB')
+            ->withImage('https://image.svg')
+            ->withBadge('BADGE')
+            ->withIcon('https://icon.ico')
+            ->withData(['foo' => 'BAR', 1, 2, 3])
+            ->addAction($action)
+            ->vibrate(300, 10, 200, 10, 500)
+        ;
+
+        static::assertEquals('TITLE', $message->getTitle());
+        static::assertEquals('BODY', $message->getBody());
+        static::assertEquals(1604141464, $message->getTimestamp());
+        static::assertEquals('TAG', $message->getTag());
+        static::assertEquals(['foo' => 'BAR', 1, 2, 3], $message->getData());
+        static::assertEquals('BADGE', $message->getBadge());
+        static::assertEquals('https://icon.ico', $message->getIcon());
+        static::assertEquals('https://image.svg', $message->getImage());
+        static::assertEquals('en-GB', $message->getLang());
+        static::assertEquals([$action], $message->getActions());
+        static::assertEquals([300, 10, 200, 10, 500], $message->getVibrate());
+        static::assertEquals('ltr', $message->getDir());
+        static::assertTrue($message->isSilent());
+        static::assertTrue($message->getRenotify());
+        static::assertTrue($message->isInteractionRequired());
+        $expectedJson = '{"title":"TITLE","options":{"actions":[{"action":"A","title":"T"}],"badge":"BADGE","body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"dir":"ltr","icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","renotify":true,"requireInteraction":true,"silent":true,"tag":"TAG","timestamp":1604141464,"vibrate":[300,10,200,10,500]}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
