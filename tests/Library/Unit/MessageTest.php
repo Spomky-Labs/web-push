@@ -30,10 +30,9 @@ final class MessageTest extends TestCase
      */
     public function createSimpleMessage(): void
     {
-        $message = Message::create('BODY')
-        ;
+        $message = Message::create();
 
-        static::assertEquals('BODY', $message->getBody());
+        static::assertNull($message->getBody());
         static::assertNull($message->getTitle());
         static::assertNull($message->getTimestamp());
         static::assertNull($message->getTag());
@@ -49,7 +48,7 @@ final class MessageTest extends TestCase
         static::assertNull($message->getRenotify());
         static::assertNull($message->isInteractionRequired());
 
-        $expectedJson = '{"body":"BODY"}';
+        $expectedJson = '[]';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }

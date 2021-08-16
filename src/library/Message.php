@@ -34,7 +34,7 @@ class Message implements JsonSerializable
     private array $actions = [];
 
     private ?string $title;
-    private string $body;
+    private ?string $body;
 
     /**
      * @var mixed|null
@@ -59,7 +59,7 @@ class Message implements JsonSerializable
     private ?array $vibrate = null;
     private bool $useNewStructure;
 
-    public function __construct(/*string $title , */ string $body/*, bool $useNewStructure = false*/)
+    public function __construct(/*string $title , */ ?string $body = null/*, bool $useNewStructure = false*/)
     {
         //dump(func_get_args());
         if (func_num_args() < 2) {
@@ -70,6 +70,10 @@ class Message implements JsonSerializable
             $this->title = func_get_arg(0);
             $this->body = func_get_arg(1);
         }
+        if (null !== $this->body) {
+            @trigger_error('Passing the body in the constructor is deprecated since 1.1 and will be removed in v2.0. Please set it to null and use the method "withBody" instead.', E_USER_DEPRECATED);
+        }
+
         $this->useNewStructure = 3 === func_num_args() ? func_get_arg(2) : false;
         if (false === $this->useNewStructure) {
             @trigger_error('The current flat structure is deprecated since v1.1 and will be removed in v2.0. Please set the third argument as true to use the new structure instead.', E_USER_DEPRECATED);
@@ -81,7 +85,7 @@ class Message implements JsonSerializable
         return json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public static function create(/*string $title , */ string $body/*, bool $useNewStructure = false*/): self
+    public static function create(/*string $title , */ ?string $body = null/*, bool $useNewStructure = false*/): self
     {
         return new self(...func_get_args());
     }
@@ -94,7 +98,7 @@ class Message implements JsonSerializable
         return $this->actions;
     }
 
-    public function getBody(): string
+    public function getBody(): ?string
     {
         return $this->body;
     }
@@ -190,6 +194,20 @@ class Message implements JsonSerializable
     public function auto(): self
     {
         $this->dir = 'auto';
+
+        return $this;
+    }
+
+    public function withTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function withBody(string $body): self
+    {
+        $this->body = $body;
 
         return $this;
     }
