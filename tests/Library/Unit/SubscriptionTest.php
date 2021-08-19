@@ -7,6 +7,7 @@ namespace WebPush\Tests\Library\Unit;
 use Assert\InvalidArgumentException;
 use DatetimeImmutable;
 use function json_encode;
+use JsonException;
 use PHPUnit\Framework\TestCase;
 use WebPush\Subscription;
 
@@ -153,7 +154,7 @@ final class SubscriptionTest extends TestCase
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      *
      * @return array<int, array<string, string>>
      */
@@ -167,7 +168,7 @@ final class SubscriptionTest extends TestCase
             ],
             [
                 'input' => '',
-                'exception' => \JsonException::class,
+                'exception' => JsonException::class,
                 'message' => 'Syntax error',
             ],
             [
