@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Request;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
@@ -26,7 +25,6 @@ final class StatusReportTest extends TestCase
     {
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
-        $request = new Request('POST', 'https://foo.bar');
         $response = new Response($statusCode, [
             'location' => ['https://foo.bar'],
             'link' => ['https://link.1'],
