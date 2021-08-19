@@ -2,25 +2,17 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\VAPID;
 
 use Assert\Assertion;
+use function json_encode;
+use JsonException;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function Safe\json_encode;
-use function Safe\sprintf;
+use function sprintf;
 use WebPush\Base64Url;
 use WebPush\Loggable;
 use WebPush\Utils;
@@ -65,12 +57,15 @@ final class LcobucciProvider implements JWSProvider, Loggable
         return $this;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function computeHeader(array $claims): Header
     {
         $this->logger->debug('Computing the JWS');
         $signer = Sha256::create();
-        $header = json_encode(['typ' => 'JWT', 'alg' => 'ES256'], self::JSON_OPTIONS);
-        $payload = json_encode($claims, self::JSON_OPTIONS);
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'ES256'], JSON_THROW_ON_ERROR | self::JSON_OPTIONS);
+        $payload = json_encode($claims, JSON_THROW_ON_ERROR | self::JSON_OPTIONS);
         $dataToSign = sprintf(
             '%s.%s',
             Base64Url::encode($header),

@@ -2,20 +2,13 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Bundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use function Safe\realpath;
+use JetBrains\PhpStorm\Pure;
+use function realpath;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
@@ -24,19 +17,23 @@ use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPa
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadPaddingCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\SymfonyServiceCompilerPass;
 use WebPush\Bundle\DependencyInjection\WebPushExtension;
+use WebPush\Bundle\Exception\InitializationException;
 
 final class WebPushBundle extends Bundle
 {
     /**
      * {@inheritdoc}
      */
-    public function getContainerExtension()
+    #[Pure]
+    public function getContainerExtension(): ExtensionInterface
     {
         return new WebPushExtension('webpush');
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws InitializationException
      */
     public function build(ContainerBuilder $container): void
     {
@@ -51,6 +48,9 @@ final class WebPushBundle extends Bundle
         $this->registerMappings($container);
     }
 
+    /**
+     * @throws InitializationException
+     */
     private function registerMappings(ContainerBuilder $container): void
     {
         if (!class_exists(DoctrineOrmMappingsPass::class)) {
@@ -58,6 +58,9 @@ final class WebPushBundle extends Bundle
         }
 
         $realPath = realpath(__DIR__.'/Resources/config/doctrine-mapping');
+        if (false === $realPath) {
+            throw new InitializationException('Unaqble to get the real path for the doctrine mapping');
+        }
         $mappings = [$realPath => 'WebPush'];
         $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping'));
     }

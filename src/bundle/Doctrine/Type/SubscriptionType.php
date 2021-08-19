@@ -2,21 +2,13 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Bundle\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
-use function Safe\json_encode;
+use function json_encode;
+use JsonException;
 use Throwable;
 use WebPush\Subscription;
 
@@ -24,6 +16,9 @@ final class SubscriptionType extends Type
 {
     /**
      * {@inheritdoc}
+     *
+     * @throws JsonException
+     * @throws ConversionException
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
@@ -34,7 +29,7 @@ final class SubscriptionType extends Type
             throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', Subscription::class]);
         }
 
-        return json_encode($value);
+        return json_encode($value, JSON_THROW_ON_ERROR);
     }
 
     /**

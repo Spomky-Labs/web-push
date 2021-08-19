@@ -2,22 +2,15 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush;
 
 use function array_key_exists;
 use Assert\Assertion;
+use DateTimeImmutable;
 use DateTimeInterface;
-use Safe\DateTimeImmutable;
-use function Safe\json_decode;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use function json_decode;
 
 class Subscription implements SubscriptionInterface
 {
@@ -41,6 +34,7 @@ class Subscription implements SubscriptionInterface
         $this->keys = [];
     }
 
+    #[Pure]
     public static function create(string $endpoint): self
     {
         return new self($endpoint);
@@ -56,16 +50,19 @@ class Subscription implements SubscriptionInterface
         return $this;
     }
 
+    #[Pure]
     public function getKeys(): array
     {
         return $this->keys;
     }
 
+    #[Pure]
     public function hasKey(string $key): bool
     {
         return isset($this->keys[$key]);
     }
 
+    #[Pure]
     public function getKey(string $key): string
     {
         Assertion::keyExists($this->keys, $key, 'The key does not exist');
@@ -80,6 +77,7 @@ class Subscription implements SubscriptionInterface
         return $this;
     }
 
+    #[Pure]
     public function getExpirationTime(): ?int
     {
         return $this->expirationTime;
@@ -92,11 +90,13 @@ class Subscription implements SubscriptionInterface
         return $this;
     }
 
+    #[Pure]
     public function expiresAt(): ?DateTimeInterface
     {
         return null === $this->expirationTime ? null : (new DateTimeImmutable())->setTimestamp($this->expirationTime);
     }
 
+    #[Pure]
     public function getEndpoint(): string
     {
         return $this->endpoint;
@@ -105,6 +105,7 @@ class Subscription implements SubscriptionInterface
     /**
      * @return string[]
      */
+    #[Pure]
     public function getSupportedContentEncodings(): array
     {
         return $this->supportedContentEncodings;
@@ -112,7 +113,8 @@ class Subscription implements SubscriptionInterface
 
     public static function createFromString(string $input): self
     {
-        $data = json_decode($input, true);
+        $data = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+
         Assertion::isArray($data, 'Invalid input');
 
         return self::createFromAssociativeArray($data);
@@ -121,6 +123,11 @@ class Subscription implements SubscriptionInterface
     /**
      * @return array<string, string|string[]>
      */
+    #[ArrayShape([
+        'endpoint' => 'string',
+        'supportedContentEncodings' => 'string[]',
+        'keys' => 'string[]',
+    ])]
     public function jsonSerialize(): array
     {
         return [

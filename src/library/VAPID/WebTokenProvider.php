@@ -2,28 +2,21 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\VAPID;
 
 use Assert\Assertion;
+use function hex2bin;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use function json_encode;
+use JsonException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function Safe\hex2bin;
-use function Safe\json_encode;
 use WebPush\Base64Url;
+use WebPush\Exception\OperationException;
 use WebPush\Loggable;
 
 final class WebTokenProvider implements JWSProvider, Loggable
@@ -74,10 +67,13 @@ final class WebTokenProvider implements JWSProvider, Loggable
         return $this;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function computeHeader(array $claims): Header
     {
         $this->logger->debug('Computing the JWS');
-        $payload = json_encode($claims);
+        $payload = json_encode($claims, JSON_THROW_ON_ERROR);
         $jws = $this->jwsBuilder->create()
             ->withPayload($payload)
             ->addSignature($this->signatureKey, ['typ' => 'JWT', 'alg' => 'ES256'])
@@ -98,7 +94,11 @@ final class WebTokenProvider implements JWSProvider, Loggable
         $hexString = '04';
         $hexString .= bin2hex(Base64Url::decode($this->signatureKey->get('x')));
         $hexString .= bin2hex(Base64Url::decode($this->signatureKey->get('y')));
+        $bin = hex2bin($hexString);
+        if (false === $bin) {
+            throw new OperationException('Unable to encode the public key');
+        }
 
-        return Base64Url::encode(hex2bin($hexString));
+        return Base64Url::encode($bin);
     }
 }

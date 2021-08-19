@@ -2,28 +2,22 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Payload;
 
 use Assert\Assertion;
+use Assert\AssertionFailedException;
+use DateTimeImmutable;
+use JetBrains\PhpStorm\Pure;
+use function openssl_encrypt;
+use function openssl_pkey_new;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Safe\DateTimeImmutable;
-use function Safe\openssl_encrypt;
-use function Safe\openssl_pkey_new;
-use function Safe\sprintf;
+use function sprintf;
 use WebPush\Base64Url;
 use WebPush\Cachable;
+use WebPush\Exception\OperationException;
 use WebPush\Loggable;
 use WebPush\SubscriptionInterface;
 use WebPush\Utils;
@@ -45,6 +39,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     private string $cacheKey = self::WEB_PUSH_PAYLOAD_ENCRYPTION;
     private string $cacheExpirationTime = 'now + 30min';
 
+    #[Pure]
     public function __construct()
     {
         $this->logger = new NullLogger();
@@ -126,6 +121,9 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         // Encryption
         $tag = '';
         $encryptedText = openssl_encrypt($paddedPayload, 'aes-128-gcm', $contentEncryptionKey, OPENSSL_RAW_DATA, $nonce, $tag);
+        if (false === $encryptedText) {
+            throw new OperationException('Unable to encrypt the payload');
+        }
         $this->logger->debug(sprintf('Encrypted payload: %s', Base64Url::encode($encryptedText)));
         $this->logger->debug(sprintf('Tag: %s', Base64Url::encode($tag)));
 
@@ -163,6 +161,10 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         return $info;
     }
 
+    /**
+     * @throws AssertionFailedException
+     * @throws OperationException
+     */
     private function getServerKey(): ServerKey
     {
         $this->logger->debug('Getting key from the cache');
@@ -189,6 +191,10 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         return $serverKey;
     }
 
+    /**
+     * @throws AssertionFailedException
+     * @throws OperationException
+     */
     private function generateServerKey(): ServerKey
     {
         $this->logger->debug('Generating new key pair');
@@ -196,6 +202,9 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
             'curve_name' => 'prime256v1',
             'private_key_type' => OPENSSL_KEYTYPE_EC,
         ]);
+        if (false === $keyResource) {
+            throw new OperationException('Unable to generate a server key');
+        }
 
         $details = openssl_pkey_get_details($keyResource);
 

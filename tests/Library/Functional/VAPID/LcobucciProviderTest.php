@@ -2,21 +2,12 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Tests\Library\Functional\VAPID;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
-use Safe\DateTimeImmutable;
 use WebPush\Base64Url;
 use WebPush\VAPID\LcobucciProvider;
 

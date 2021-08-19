@@ -2,33 +2,40 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class StatusReport implements StatusReportInterface
 {
     private SubscriptionInterface $subscription;
     private NotificationInterface $notification;
-    private RequestInterface $request;
-    private ResponseInterface $response;
+    private int $code;
+    private string $location;
+    private array $links;
 
-    public function __construct(SubscriptionInterface $subscription, NotificationInterface $notification, RequestInterface $request, ResponseInterface $response)
+    public function __construct(SubscriptionInterface $subscription, NotificationInterface $notification, int $code, string $location, array $links)
     {
         $this->subscription = $subscription;
         $this->notification = $notification;
-        $this->request = $request;
-        $this->response = $response;
+        $this->code = $code;
+        $this->location = $location;
+        $this->links = $links;
+    }
+
+    public static function create(SubscriptionInterface $subscription, NotificationInterface $notification, int $code, string $location, array $links): self
+    {
+        return new self($subscription, $notification, $code, $location, $links);
+    }
+
+    public static function createFromResponse(SubscriptionInterface $subscription, NotificationInterface $notification, ResponseInterface $response): self
+    {
+        $code = $response->getStatusCode();
+        $headers = $response->getHeaders();
+        $location = implode(', ', $headers['location'] ?? ['']);
+        $links = $headers['link'] ?? [];
+
+        return new self($subscription, $notification, $code, $location, $links);
     }
 
     public function getSubscription(): SubscriptionInterface
@@ -41,47 +48,19 @@ class StatusReport implements StatusReportInterface
         return $this->notification;
     }
 
-    /**
-     * @deprecated Will be removed in v2.0. No replacement
-     */
-    public function getRequest(): RequestInterface
-    {
-        return $this->request;
-    }
-
-    /**
-     * @deprecated Will be removed in v2.0. No replacement
-     */
-    public function getResponse(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     public function isSuccess(): bool
     {
-        $code = $this->response->getStatusCode();
-
-        return $code >= 200 && $code < 300;
+        return $this->code >= 200 && $this->code < 300;
     }
 
     public function isSubscriptionExpired(): bool
     {
-        $code = $this->response->getStatusCode();
-
-        return 404 === $code || 410 === $code;
-    }
-
-    /**
-     * @deprecated The method is deprecated. Please use isSubscriptionExpired() instead
-     */
-    public function notificationExpired(): bool
-    {
-        return $this->isSubscriptionExpired();
+        return 404 === $this->code || 410 === $this->code;
     }
 
     public function getLocation(): string
     {
-        return $this->response->getHeaderLine('location');
+        return $this->location;
     }
 
     /**
@@ -89,6 +68,6 @@ class StatusReport implements StatusReportInterface
      */
     public function getLinks(): array
     {
-        return $this->response->getHeader('link');
+        return $this->links;
     }
 }

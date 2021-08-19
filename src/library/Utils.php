@@ -2,36 +2,35 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush;
 
 use Assert\Assertion;
-use function Safe\pack;
-use function Safe\unpack;
+use function is_array;
+use function pack;
+use function unpack;
+use WebPush\Exception\OperationException;
 
 abstract class Utils
 {
     private const PART_SIZE = 32;
     private const HASH_SIZE = 256;
 
+    /**
+     * @throws OperationException
+     */
     public static function privateKeyToPEM(string $privateKey, string $publicKey): string
     {
-        $d = unpack('H*', str_pad($privateKey, self::PART_SIZE, "\0", STR_PAD_LEFT))[1];
+        $d = unpack('H*', str_pad($privateKey, self::PART_SIZE, "\0", STR_PAD_LEFT));
+        if (!is_array($d) || !isset($d[1])) {
+            throw new OperationException('Unable to convert the private key');
+        }
 
         $der = pack(
             'H*',
             '3077' // SEQUENCE, length 87+length($d)=32
                 .'020101' // INTEGER, 1
                     .'0420'   // OCTET STRING, length($d) = 32
-                        .$d
+                        .$d[1]
                     .'a00a' // TAGGED OBJECT #0, length 10
                         .'0608' // OID, length 8
                             .'2a8648ce3d030107' // 1.3.132.0.34 = P-256 Curve

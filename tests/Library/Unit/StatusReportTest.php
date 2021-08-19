@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Tests\Library\Unit;
 
 use Nyholm\Psr7\Request;
@@ -40,10 +31,9 @@ final class StatusReportTest extends TestCase
             'location' => ['https://foo.bar'],
             'link' => ['https://link.1'],
         ]);
-        $report = new StatusReport(
+        $report = StatusReport::createFromResponse(
             $subscription,
             $notification,
-            $request,
             $response
         );
 

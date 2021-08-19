@@ -2,21 +2,12 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Tests\Library\Functional\VAPID;
 
+use function json_decode;
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
-use function Safe\json_decode;
 use WebPush\Base64Url;
 use WebPush\Notification;
 use WebPush\Subscription;

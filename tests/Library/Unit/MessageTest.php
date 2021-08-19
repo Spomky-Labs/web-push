@@ -2,19 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Tests\Library\Unit;
 
+use function json_encode;
 use PHPUnit\Framework\TestCase;
-use function Safe\json_encode;
 use WebPush\Action;
 use WebPush\Message;
 
@@ -30,10 +21,10 @@ final class MessageTest extends TestCase
      */
     public function createSimpleMessage(): void
     {
-        $message = Message::create();
+        $message = Message::create('TITLE');
 
         static::assertNull($message->getBody());
-        static::assertNull($message->getTitle());
+        static::assertEquals('TITLE', $message->getTitle());
         static::assertNull($message->getTimestamp());
         static::assertNull($message->getTag());
         static::assertNull($message->getData());
@@ -48,7 +39,7 @@ final class MessageTest extends TestCase
         static::assertNull($message->getRenotify());
         static::assertNull($message->isInteractionRequired());
 
-        $expectedJson = '[]';
+        $expectedJson = '{"title":"TITLE","options":[]}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -86,7 +77,7 @@ final class MessageTest extends TestCase
         static::assertNull($message->getRenotify());
         static::assertNull($message->isInteractionRequired());
 
-        $expectedJson = '{"actions":[{"action":"A","title":"T"}],"badge":"BADGE","body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","tag":"TAG","timestamp":1604141464,"title":"TITLE","vibrate":[300,10,200,10,500]}';
+        $expectedJson = '{"title":"TITLE","options":{"actions":[{"action":"A","title":"T"}],"body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"badge":"BADGE","icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","tag":"TAG","timestamp":1604141464,"vibrate":[300,10,200,10,500]}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -97,7 +88,7 @@ final class MessageTest extends TestCase
     public function createMessageWithOptionsAndNewStructure(): void
     {
         $action = Action::create('A', 'T');
-        $message = Message::create('TITLE', 'BODY', true)
+        $message = Message::create('TITLE', 'BODY')
             ->ltr()
             ->renotify()
             ->mute()
@@ -128,7 +119,7 @@ final class MessageTest extends TestCase
         static::assertTrue($message->isSilent());
         static::assertTrue($message->getRenotify());
         static::assertTrue($message->isInteractionRequired());
-        $expectedJson = '{"title":"TITLE","options":{"actions":[{"action":"A","title":"T"}],"badge":"BADGE","body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"dir":"ltr","icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","renotify":true,"requireInteraction":true,"silent":true,"tag":"TAG","timestamp":1604141464,"vibrate":[300,10,200,10,500]}}';
+        $expectedJson = '{"title":"TITLE","options":{"actions":[{"action":"A","title":"T"}],"body":"BODY","data":{"foo":"BAR","0":1,"1":2,"2":3},"dir":"ltr","badge":"BADGE","icon":"https://icon.ico","image":"https://image.svg","lang":"en-GB","renotify":true,"requireInteraction":true,"silent":true,"tag":"TAG","timestamp":1604141464,"vibrate":[300,10,200,10,500]}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -138,12 +129,12 @@ final class MessageTest extends TestCase
      */
     public function createMessageWithAutoDirection(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->auto()
         ;
         static::assertEquals('auto', $message->getDir());
 
-        $expectedJson = '{"body":"BODY","dir":"auto"}';
+        $expectedJson = '{"title":"TITLE","options":{"dir":"auto"}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -153,12 +144,12 @@ final class MessageTest extends TestCase
      */
     public function createMessageWithLTRDirection(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->ltr()
         ;
         static::assertEquals('ltr', $message->getDir());
 
-        $expectedJson = '{"body":"BODY","dir":"ltr"}';
+        $expectedJson = '{"title":"TITLE","options":{"dir":"ltr"}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -168,12 +159,12 @@ final class MessageTest extends TestCase
      */
     public function createMessageWithRTLDirection(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->rtl()
         ;
         static::assertEquals('rtl', $message->getDir());
 
-        $expectedJson = '{"body":"BODY","dir":"rtl"}';
+        $expectedJson = '{"title":"TITLE","options":{"dir":"rtl"}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -183,12 +174,12 @@ final class MessageTest extends TestCase
      */
     public function createMessageWithInteraction(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->interactionRequired()
         ;
         static::assertTrue($message->isInteractionRequired());
 
-        $expectedJson = '{"body":"BODY","requireInteraction":true}';
+        $expectedJson = '{"title":"TITLE","options":{"requireInteraction":true}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -198,12 +189,12 @@ final class MessageTest extends TestCase
      */
     public function createMessageWithoutInteraction(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->noInteraction()
         ;
         static::assertFalse($message->isInteractionRequired());
 
-        $expectedJson = '{"body":"BODY","requireInteraction":false}';
+        $expectedJson = '{"title":"TITLE","options":{"requireInteraction":false}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -213,12 +204,12 @@ final class MessageTest extends TestCase
      */
     public function createSilentMessage(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->mute()
         ;
         static::assertTrue($message->isSilent());
 
-        $expectedJson = '{"body":"BODY","silent":true}';
+        $expectedJson = '{"title":"TITLE","options":{"silent":true}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -228,12 +219,12 @@ final class MessageTest extends TestCase
      */
     public function createNonSilentMessage(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->unmute()
         ;
         static::assertFalse($message->isSilent());
 
-        $expectedJson = '{"body":"BODY","silent":false}';
+        $expectedJson = '{"title":"TITLE","options":{"silent":false}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -243,12 +234,12 @@ final class MessageTest extends TestCase
      */
     public function createWithRenotification(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->renotify()
         ;
         static::assertTrue($message->getRenotify());
 
-        $expectedJson = '{"body":"BODY","renotify":true}';
+        $expectedJson = '{"title":"TITLE","options":{"renotify":true}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
@@ -258,12 +249,12 @@ final class MessageTest extends TestCase
      */
     public function createWithoutRenotification(): void
     {
-        $message = Message::create('BODY')
+        $message = Message::create('TITLE')
             ->doNotRenotify()
         ;
         static::assertFalse($message->getRenotify());
 
-        $expectedJson = '{"body":"BODY","renotify":false}';
+        $expectedJson = '{"title":"TITLE","options":{"renotify":false}}';
         static::assertEquals($expectedJson, $message->toString());
         static::assertEquals($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }

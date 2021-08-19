@@ -5,10 +5,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     checkMissingIterableValueType: false
     ignoreErrors:
-        -
-            message: '#Parameter .* of function openssl_pkey_derive expects resource\, string given\.#'
-            count: 2
-            path: src/library/Utils.php
+        - '#Attribute class JetBrains\\PhpStorm\\.* does not exist\.#'
         -
             message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::addDefaultsIfNotSet\(\)\.#'
             count: 1
@@ -19,5 +16,4 @@ includes:
     - vendor/phpstan/phpstan-phpunit/rules.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-beberlei-assert/extension.neon
-    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon

@@ -2,22 +2,12 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Tests\Library\Unit;
 
 use Assert\InvalidArgumentException;
 use DatetimeImmutable;
+use function json_encode;
 use PHPUnit\Framework\TestCase;
-use Safe\Exceptions\JsonException;
-use function Safe\json_encode;
 use WebPush\Subscription;
 
 /**
@@ -30,7 +20,6 @@ final class SubscriptionTest extends TestCase
     /**
      * @test
      * @dataProvider dataInvalidSubscription
-     * @psalm-param class-string<\Throwable> $exception
      */
     public function invalidInputCannotBeLoaded(string $input, string $exception, string $message): void
     {
@@ -164,19 +153,21 @@ final class SubscriptionTest extends TestCase
     }
 
     /**
+     * @throws \JsonException
+     *
      * @return array<int, array<string, string>>
      */
     public function dataInvalidSubscription(): array
     {
         return [
             [
-                'input' => json_encode(0),
+                'input' => json_encode(0, JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],
             [
                 'input' => '',
-                'exception' => JsonException::class,
+                'exception' => \JsonException::class,
                 'message' => 'Syntax error',
             ],
             [
@@ -187,7 +178,7 @@ final class SubscriptionTest extends TestCase
             [
                 'input' => json_encode([
                     'endpoint' => 0,
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],
@@ -196,7 +187,7 @@ final class SubscriptionTest extends TestCase
                     'endpoint' => 'https://foo.bar',
                     'supportedContentEncodings' => 'FOO',
                     'keys' => 'foo',
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],
@@ -205,7 +196,7 @@ final class SubscriptionTest extends TestCase
                     'endpoint' => 'https://foo.bar',
                     'supportedContentEncodings' => [123],
                     'keys' => 'foo',
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],
@@ -214,7 +205,7 @@ final class SubscriptionTest extends TestCase
                     'endpoint' => 'https://foo.bar',
                     'supportedContentEncodings' => ['FOO'],
                     'keys' => 'foo',
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],
@@ -225,7 +216,7 @@ final class SubscriptionTest extends TestCase
                     'keys' => [
                         12 => 0,
                     ],
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid key name',
             ],
@@ -237,7 +228,7 @@ final class SubscriptionTest extends TestCase
                         'authToken' => 'BAR',
                         'publicKey' => 0,
                     ],
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid key value',
             ],
@@ -250,7 +241,7 @@ final class SubscriptionTest extends TestCase
                         'publicKey' => 0,
                     ],
                     'expirationTime' => 'Monday',
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],
@@ -263,7 +254,7 @@ final class SubscriptionTest extends TestCase
                         'publicKey' => 'baz',
                     ],
                     'expirationTime' => 'Monday',
-                ]),
+                ], JSON_THROW_ON_ERROR),
                 'exception' => InvalidArgumentException::class,
                 'message' => 'Invalid input',
             ],

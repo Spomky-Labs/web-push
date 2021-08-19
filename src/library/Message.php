@@ -2,25 +2,14 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush;
 
 use function count;
-use const E_USER_DEPRECATED;
-use function func_get_args;
-use function func_num_args;
 use function is_array;
+use JetBrains\PhpStorm\Pure;
+use function json_encode;
+use JsonException;
 use JsonSerializable;
-use function Safe\json_encode;
-use function Safe\ksort;
 
 /**
  * @see https://notifications.spec.whatwg.org/#notifications
@@ -33,13 +22,13 @@ class Message implements JsonSerializable
      */
     private array $actions = [];
 
-    private ?string $title;
+    private string $title;
     private ?string $body;
 
     /**
      * @var mixed|null
      */
-    private $data;
+    private mixed $data = null;
 
     private ?string $dir = null; // = auto
 
@@ -57,110 +46,109 @@ class Message implements JsonSerializable
      * @var array<int, int>|null
      */
     private ?array $vibrate = null;
-    private bool $useNewStructure;
 
-    public function __construct(/*string $title , */ ?string $body = null/*, bool $useNewStructure = false*/)
+    public function __construct(string $title, ?string $body = null)
     {
-        //dump(func_get_args());
-        if (func_num_args() < 2) {
-            @trigger_error('Calling the constructor only with the body is deprecated since 1.1 and will be removed in v2.0. Pass it as the second argument and provide the message title as the first argument instead.', E_USER_DEPRECATED);
-            $this->title = null;
-            $this->body = $body;
-        } else {
-            $this->title = func_get_arg(0);
-            $this->body = func_get_arg(1);
-        }
-        if (null !== $this->body) {
-            @trigger_error('Passing the body in the constructor is deprecated since 1.1 and will be removed in v2.0. Please set it to null and use the method "withBody" instead.', E_USER_DEPRECATED);
-        }
-
-        $this->useNewStructure = 3 === func_num_args() ? func_get_arg(2) : false;
-        if (false === $this->useNewStructure) {
-            @trigger_error('The current flat structure is deprecated since v1.1 and will be removed in v2.0. Please set the third argument as true to use the new structure instead.', E_USER_DEPRECATED);
-        }
+        $this->title = $title;
+        $this->body = $body;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function toString(): string
     {
-        return json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public static function create(/*string $title , */ ?string $body = null/*, bool $useNewStructure = false*/): self
+    #[Pure]
+    public static function create(string $title, ?string $body = null): self
     {
-        return new self(...func_get_args());
+        return new self($title, $body);
     }
 
     /**
      * @return array<int, Action>
      */
+    #[Pure]
     public function getActions(): array
     {
         return $this->actions;
     }
 
+    #[Pure]
     public function getBody(): ?string
     {
         return $this->body;
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function getData()
+    #[Pure]
+    public function getData(): mixed
     {
         return $this->data;
     }
 
+    #[Pure]
     public function getDir(): ?string
     {
         return $this->dir;
     }
 
+    #[Pure]
     public function getBadge(): ?string
     {
         return $this->badge;
     }
 
+    #[Pure]
     public function getIcon(): ?string
     {
         return $this->icon;
     }
 
+    #[Pure]
     public function getImage(): ?string
     {
         return $this->image;
     }
 
+    #[Pure]
     public function getLang(): ?string
     {
         return $this->lang;
     }
 
+    #[Pure]
     public function getRenotify(): ?bool
     {
         return $this->renotify;
     }
 
+    #[Pure]
     public function isInteractionRequired(): ?bool
     {
         return $this->requireInteraction;
     }
 
+    #[Pure]
     public function isSilent(): ?bool
     {
         return $this->silent;
     }
 
+    #[Pure]
     public function getTag(): ?string
     {
         return $this->tag;
     }
 
+    #[Pure]
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
+    #[Pure]
     public function getTimestamp(): ?int
     {
         return $this->timestamp;
@@ -169,6 +157,7 @@ class Message implements JsonSerializable
     /**
      * @return array<int, int>|null
      */
+    #[Pure]
     public function getVibrate(): ?array
     {
         return $this->vibrate;
@@ -181,10 +170,7 @@ class Message implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @param mixed|null $data
-     */
-    public function withData($data): self
+    public function withData(mixed $data): self
     {
         $this->data = $data;
 
@@ -323,18 +309,12 @@ class Message implements JsonSerializable
     public function jsonSerialize(): array
     {
         $properties = get_object_vars($this);
-        unset($properties['useNewStructure']);
+        unset($properties['title']);
 
-        if (true === $this->useNewStructure) {
-            unset($properties['title']);
-
-            return [
-                'title' => $this->title,
-                'options' => $this->getOptions($properties),
-            ];
-        }
-
-        return $this->getOptions($properties);
+        return [
+            'title' => $this->title,
+            'options' => $this->getOptions($properties),
+        ];
     }
 
     /**
@@ -344,15 +324,12 @@ class Message implements JsonSerializable
      */
     private function getOptions(array $properties): array
     {
-        $r = array_filter($properties, static function ($v): bool {
+        return array_filter($properties, static function ($v): bool {
             if (is_array($v) && 0 === count($v)) {
                 return false;
             }
 
             return null !== $v;
         });
-        ksort($r);
-
-        return $r;
     }
 }

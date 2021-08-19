@@ -2,23 +2,15 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Payload;
 
 use function array_key_exists;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function Safe\sprintf;
+use function sprintf;
 use WebPush\Extension;
 use WebPush\Loggable;
 use WebPush\NotificationInterface;
@@ -32,11 +24,13 @@ class PayloadExtension implements Extension, Loggable
     private array $contentEncodings = [];
     private LoggerInterface $logger;
 
+    #[Pure]
     public function __construct()
     {
         $this->logger = new NullLogger();
     }
 
+    #[Pure]
     public static function create(): self
     {
         return new self();

@@ -2,23 +2,17 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\VAPID;
 
+use DateTimeImmutable;
+use Exception;
+use function is_array;
+use function parse_url;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Safe\DateTimeImmutable;
-use function Safe\parse_url;
-use function Safe\sprintf;
+use function sprintf;
+use WebPush\Exception\OperationException;
 use WebPush\Extension;
 use WebPush\Loggable;
 use WebPush\NotificationInterface;
@@ -57,12 +51,18 @@ class VAPIDExtension implements Extension, Loggable
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
     {
         $this->logger->debug('Processing with VAPID header');
         $endpoint = $subscription->getEndpoint();
         $expiresAt = new DateTimeImmutable($this->tokenExpirationTime);
         $parsedEndpoint = parse_url($endpoint);
+        if (!is_array($parsedEndpoint) || !isset($parsedEndpoint['host'], $parsedEndpoint['scheme'])) {
+            throw new OperationException('Invalid subscription endpoint');
+        }
         $origin = $parsedEndpoint['scheme'].'://'.$parsedEndpoint['host'].(isset($parsedEndpoint['port']) ? ':'.$parsedEndpoint['port'] : '');
         $claims = [
             'aud' => $origin,

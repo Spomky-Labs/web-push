@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush;
 
 use Psr\Http\Client\ClientInterface;
@@ -55,11 +46,6 @@ class WebPush implements WebPushService, Loggable
         $response = $this->client->sendRequest($request);
         $this->logger->debug('Response received', ['response' => $response]);
 
-        return new StatusReport(
-            $subscription,
-            $notification,
-            $request,
-            $response
-        );
+        return StatusReport::createFromResponse($subscription, $notification, $response);
     }
 }

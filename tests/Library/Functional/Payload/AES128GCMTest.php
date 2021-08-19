@@ -2,32 +2,23 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush\Tests\Library\Functional\Payload;
 
 use function chr;
 use function count;
 use InvalidArgumentException;
 use Nyholm\Psr7\Request;
+use function openssl_decrypt;
 use function ord;
 use PHPUnit\Framework\TestCase;
+use function preg_match;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\Test\TestLogger;
-use function Safe\openssl_decrypt;
-use function Safe\preg_match;
-use function Safe\unpack;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
+use function unpack;
 use WebPush\Base64Url;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\ServerKey;

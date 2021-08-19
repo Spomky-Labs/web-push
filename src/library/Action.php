@@ -2,20 +2,12 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace WebPush;
 
+use JetBrains\PhpStorm\Pure;
+use function json_encode;
+use JsonException;
 use JsonSerializable;
-use function Safe\json_encode;
-use function Safe\ksort;
 
 /**
  * @see https://notifications.spec.whatwg.org/#actions
@@ -32,11 +24,15 @@ class Action implements JsonSerializable
         $this->title = $title;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function toString(): string
     {
-        return json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
+    #[Pure]
     public static function create(string $action, string $title): self
     {
         return new self($action, $title);
@@ -49,16 +45,19 @@ class Action implements JsonSerializable
         return $this;
     }
 
+    #[Pure]
     public function getAction(): string
     {
         return $this->action;
     }
 
+    #[Pure]
     public function getTitle(): string
     {
         return $this->title;
     }
 
+    #[Pure]
     public function getIcon(): ?string
     {
         return $this->icon;
@@ -69,12 +68,8 @@ class Action implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $r = array_filter(get_object_vars($this), static function ($v): bool {
+        return array_filter(get_object_vars($this), static function ($v): bool {
             return null !== $v;
         });
-
-        ksort($r);
-
-        return $r;
     }
 }
