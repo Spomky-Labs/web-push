@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "spomky-labs/web-push-lib": "^1.0",
+        "spomky-labs/web-push-lib": "^2.0",
         "symfony/config": "^5.2.1",
         "symfony/dependency-injection": "^5.2.1",
         "symfony/framework-bundle": "^5.2.1"
