@@ -17,3 +17,4 @@ includes:
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-beberlei-assert/extension.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/ekino/phpstan-banned-code/extension.neon

@@ -48,7 +48,7 @@ return (new PhpCsFixer\Config())
             'style' => 'annotation',
         ],
         'php_unit_test_case_static_method_calls' => true,
-        'method_chaining_indentation' => true,
+        'method_chaining_indentation' => false,
         'php_unit_expectation' => true,
         'php_unit_test_class_requires_covers' => false,
         'global_namespace_import' => [
