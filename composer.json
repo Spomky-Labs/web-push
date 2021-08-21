@@ -11,22 +11,6 @@
       "homepage": "https://github.com/spomky-labs"
     }
   ],
-  "scripts": {
-    "test:all": [
-      "composer test:unit",
-      "composer test:functional",
-      "composer test:typing",
-      "composer test:syntax",
-      "composer test:benchmark",
-      "composer test:mutations"
-    ],
-    "test:unit": "./vendor/bin/phpunit --color --group Unit",
-    "test:functional": "./vendor/bin/phpunit --color --group Functional",
-    "test:typing": "./vendor/bin/phpstan analyse",
-    "test:syntax": "./vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no",
-    "test:benchmark": "./vendor/bin/phpbench run -l dots --report aggregate",
-    "test:mutations": "./vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=83 --min-covered-msi=88"
-  },
   "require": {
     "php": ">=8.0",
     "ext-json": "*",
