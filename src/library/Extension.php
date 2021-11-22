@@ -8,5 +8,9 @@ use Psr\Http\Message\RequestInterface;
 
 interface Extension
 {
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface;
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface;
 }

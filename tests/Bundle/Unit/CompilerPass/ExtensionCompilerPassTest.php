@@ -12,11 +12,9 @@ use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\ExtensionManager;
 
 /**
- * @group unit
- *
  * @internal
  */
-class ExtensionCompilerPassTest extends AbstractCompilerPassTestCase
+final class ExtensionCompilerPassTest extends AbstractCompilerPassTestCase
 {
     /**
      * @test
@@ -35,9 +33,7 @@ class ExtensionCompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             ExtensionManager::class,
             'add',
-            [
-                new Reference('collected_service'),
-            ]
+            [new Reference('collected_service')]
         );
     }
 

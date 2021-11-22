@@ -25,11 +25,8 @@ use WebPush\WebPush;
 
 /**
  * @internal
- * @group Functional
- * @group Library
- * @covers \WebPush\WebPush
  */
-class WebPushTest extends TestCase
+final class WebPushTest extends TestCase
 {
     /**
      * @test
@@ -40,7 +37,10 @@ class WebPushTest extends TestCase
             ->withContentEncodings(['aesgcm'])
         ;
         $subscription->setKey('auth', 'wSfP1pfACMwFesCEfJx4-w');
-        $subscription->setKey('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU');
+        $subscription->setKey(
+            'p256dh',
+            'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU'
+        );
 
         $notification = Notification::create()
             ->sync()
@@ -68,12 +68,12 @@ class WebPushTest extends TestCase
         static::assertTrue($request->hasHeader('encryption'));
         static::assertTrue($request->hasHeader('content-length'));
         static::assertTrue($request->hasHeader('authorization'));
-        static::assertEquals(['3600'], $request->getHeader('ttl'));
-        static::assertEquals(['topic'], $request->getHeader('topic'));
-        static::assertEquals(['high'], $request->getHeader('urgency'));
-        static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
-        static::assertEquals(['aesgcm'], $request->getHeader('content-encoding'));
-        static::assertEquals(['4096'], $request->getHeader('content-length'));
+        static::assertSame(['3600'], $request->getHeader('ttl'));
+        static::assertSame(['topic'], $request->getHeader('topic'));
+        static::assertSame(['high'], $request->getHeader('urgency'));
+        static::assertSame(['application/octet-stream'], $request->getHeader('content-type'));
+        static::assertSame(['aesgcm'], $request->getHeader('content-encoding'));
+        static::assertSame(['4096'], $request->getHeader('content-length'));
         static::assertStringStartsWith('dh=', $request->getHeaderLine('crypto-key'));
         static::assertStringStartsWith('salt=', $request->getHeaderLine('encryption'));
         static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
@@ -88,7 +88,10 @@ class WebPushTest extends TestCase
             ->withContentEncodings(['aes128gcm'])
         ;
         $subscription->setKey('auth', 'wSfP1pfACMwFesCEfJx4-w');
-        $subscription->setKey('p256dh', 'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU');
+        $subscription->setKey(
+            'p256dh',
+            'BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU'
+        );
 
         $notification = Notification::create()
             ->sync()
@@ -116,12 +119,12 @@ class WebPushTest extends TestCase
         static::assertFalse($request->hasHeader('encryption'));
         static::assertTrue($request->hasHeader('content-length'));
         static::assertTrue($request->hasHeader('authorization'));
-        static::assertEquals(['3600'], $request->getHeader('ttl'));
-        static::assertEquals(['topic'], $request->getHeader('topic'));
-        static::assertEquals(['high'], $request->getHeader('urgency'));
-        static::assertEquals(['application/octet-stream'], $request->getHeader('content-type'));
-        static::assertEquals(['aes128gcm'], $request->getHeader('content-encoding'));
-        static::assertEquals(['4095'], $request->getHeader('content-length'));
+        static::assertSame(['3600'], $request->getHeader('ttl'));
+        static::assertSame(['topic'], $request->getHeader('topic'));
+        static::assertSame(['high'], $request->getHeader('urgency'));
+        static::assertSame(['application/octet-stream'], $request->getHeader('content-type'));
+        static::assertSame(['aes128gcm'], $request->getHeader('content-encoding'));
+        static::assertSame(['4095'], $request->getHeader('content-length'));
         static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
     }
 

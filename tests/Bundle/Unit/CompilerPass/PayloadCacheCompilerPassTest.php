@@ -14,20 +14,20 @@ use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
 
 /**
- * @group unit
- *
  * @internal
  */
-class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
+final class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
 {
     /**
      * @test
      * @dataProvider cacheParameters
-     *
-     * @param mixed $lifetimeParameterName
      */
-    public function ifTheCacheIsSetAndTheDefinitionExistThenItTheCacheIsSet(string $class, string $cacheDefinition, $lifetimeParameterName, string $lifetimeParameterValue): void
-    {
+    public function ifTheCacheIsSetAndTheDefinitionExistThenItTheCacheIsSet(
+        string $class,
+        string $cacheDefinition,
+        $lifetimeParameterName,
+        string $lifetimeParameterValue
+    ): void {
         $collectingService = new Definition();
         $this->setDefinition($class, $collectingService);
 
@@ -42,10 +42,7 @@ class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             $class,
             'setCache',
-            [
-                new Reference($cacheDefinition),
-                $lifetimeParameterValue,
-            ]
+            [new Reference($cacheDefinition), $lifetimeParameterValue]
         );
     }
 
@@ -58,12 +55,7 @@ class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
                 'webpush.payload.aes128gcm.cache_lifetime',
                 'now +1 day',
             ],
-            [
-                AESGCM::class,
-                'webpush.payload.aesgcm.cache',
-                'webpush.payload.aesgcm.cache_lifetime',
-                'now +1 day',
-            ],
+            [AESGCM::class, 'webpush.payload.aesgcm.cache', 'webpush.payload.aesgcm.cache_lifetime', 'now +1 day'],
         ];
     }
 

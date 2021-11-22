@@ -17,11 +17,9 @@ use WebPush\Bundle\DependencyInjection\WebPushExtension;
 use WebPush\Bundle\WebPushBundle;
 
 /**
- * @group unit
- *
  * @internal
  */
-class BundleTest extends TestCase
+final class BundleTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
@@ -33,7 +31,7 @@ class BundleTest extends TestCase
         ClassExistsMock::withMockedClasses([]);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         ClassExistsMock::withMockedClasses([]);
     }
@@ -58,7 +56,10 @@ class BundleTest extends TestCase
         $bundle = new WebPushBundle();
         $bundle->build($containerBuilder);
 
-        $passes = $containerBuilder->getCompiler()->getPassConfig()->getPasses();
+        $passes = $containerBuilder->getCompiler()
+            ->getPassConfig()
+            ->getPasses()
+        ;
         $found = false;
         foreach ($passes as $pass) {
             if ($pass instanceof $class) {
@@ -67,18 +68,23 @@ class BundleTest extends TestCase
             }
         }
 
-        static::assertTrue($found, 'Unable to find the compiler pass '.$class);
+        static::assertTrue($found, 'Unable to find the compiler pass ' . $class);
     }
 
     public function theBundleDoesNotAddDoctrineCompilerPassesIfNotAvailableHasTheCompilerPass(): void
     {
-        ClassExistsMock::withMockedClasses([DoctrineOrmMappingsPass::class => false]);
+        ClassExistsMock::withMockedClasses([
+            DoctrineOrmMappingsPass::class => false,
+        ]);
 
         $containerBuilder = new ContainerBuilder();
         $bundle = new WebPushBundle();
         $bundle->build($containerBuilder);
 
-        $passes = $containerBuilder->getCompiler()->getPassConfig()->getPasses();
+        $passes = $containerBuilder->getCompiler()
+            ->getPassConfig()
+            ->getPasses()
+        ;
         $found = false;
         foreach ($passes as $pass) {
             if ($pass instanceof DoctrineOrmMappingsPass) {

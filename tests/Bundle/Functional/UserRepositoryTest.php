@@ -13,25 +13,23 @@ use WebPush\Tests\Bundle\FakeApp\Entity\User;
 use WebPush\Tests\Bundle\FakeApp\Repository\UserRepository;
 
 /**
- * @group functional
- *
  * @internal
  */
-class UserRepositoryTest extends KernelTestCase
+final class UserRepositoryTest extends KernelTestCase
 {
     protected function setUp(): void
     {
         $kernel = static::bootKernel();
         /** @var ManagerRegistry $registry */
-        $registry = $kernel->getContainer()->get('doctrine');
+        $registry = $kernel->getContainer()
+            ->get('doctrine')
+        ;
         /** @var EntityManagerInterface $em */
         $em = $registry->getManager();
         $cmf = $em->getMetadataFactory();
 
         $schemaTool = new SchemaTool($em);
-        $schemaTool->createSchema([
-            $cmf->getMetadataFor(User::class),
-        ]);
+        $schemaTool->createSchema([$cmf->getMetadataFor(User::class)]);
     }
 
     /**
@@ -49,14 +47,24 @@ class UserRepositoryTest extends KernelTestCase
 
         $userRepository->save($user);
         $id = $user->getId();
-        $fetched = $userRepository->findOneBy(['id' => $id]);
+        $fetched = $userRepository->findOneBy([
+            'id' => $id,
+        ]);
 
         static::assertNotNull($fetched, 'Unable to fetch the user');
-        static::assertEquals('https://fcm.googleapis.com/fcm/send/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt', $fetched->getSubscription()->getEndpoint());
-        static::assertEquals(['aesgcm'], $fetched->getSubscription()->getSupportedContentEncodings());
+        static::assertSame(
+            'https://fcm.googleapis.com/fcm/send/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt',
+            $fetched->getSubscription()
+                ->getEndpoint()
+        );
+        static::assertSame(['aesgcm'], $fetched->getSubscription()->getSupportedContentEncodings());
         static::assertNull($fetched->getSubscription()->getExpirationTime());
-        static::assertEquals(['p256dh', 'auth'], array_keys($fetched->getSubscription()->getKeys()));
-        static::assertEquals('BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4', $fetched->getSubscription()->getKey('p256dh'));
-        static::assertEquals('gW9ZePDxvjUILvlYe3Dnug', $fetched->getSubscription()->getKey('auth'));
+        static::assertSame(['p256dh', 'auth'], array_keys($fetched->getSubscription()->getKeys()));
+        static::assertSame(
+            'BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4',
+            $fetched->getSubscription()
+                ->getKey('p256dh')
+        );
+        static::assertSame('gW9ZePDxvjUILvlYe3Dnug', $fetched->getSubscription()->getKey('auth'));
     }
 }

@@ -6,7 +6,6 @@ namespace WebPush\Tests\Bundle\Functional;
 
 use Nyholm\Psr7\Request;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use WebPush\Extension;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Payload\PayloadExtension;
@@ -20,17 +19,42 @@ use WebPush\VAPID\VAPIDExtension;
 /**
  * @internal
  */
-final class ExtensionTest extends KernelTestCase
+final class LoggerTest extends KernelTestCase
 {
     /**
      * @test
-     * @dataProvider  listOfPayloadExtensions
      */
-    public function taggedExtensionsAreAutoConfigured($class): void
+    public function messagesAreRegistered(): void
     {
         self::bootKernel();
-        $service = self::getContainer()->get($class);
-        static::assertInstanceOf(Extension::class, $service);
+        $data = '{"endpoint":"https:\/\/fcm.googleapis.com\/fcm\/send\/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt","contentEncoding":"aes128gcm","keys":{"p256dh":"BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4","auth":"gW9ZePDxvjUILvlYe3Dnug"}}';
+        $subscription = Subscription::createFromString($data);
+        $notification = Notification::create()
+            ->async()
+            ->withTopic('topic')
+            ->withTTL(1337)
+            ->highUrgency()
+            ->withPayload('PAYLOAD')
+        ;
+        $request = new Request('POST', 'https://www.foo.bar:1337/test?a=FOO');
+
+        /** @var UrgencyExtension $extension */
+        $extension = self::getContainer()->get(UrgencyExtension::class);
+        $extension->process($request, $notification, $subscription);
+
+        $messages = self::getContainer()->get('webpush.logger')->getMessages();
+        $expectedMessage = [
+            'debug' => [
+                0 => [
+                    'msg' => 'Processing with the Urgency extension',
+                    'ctx' => [
+                        'Urgency' => 'high',
+                    ],
+                ],
+            ],
+        ];
+
+        static::assertSame($expectedMessage, $messages);
     }
 
     /**

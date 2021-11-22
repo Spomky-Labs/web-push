@@ -12,8 +12,6 @@ use WebPush\Subscription;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class StatusReportTest extends TestCase
 {
@@ -29,18 +27,14 @@ final class StatusReportTest extends TestCase
             'location' => ['https://foo.bar'],
             'link' => ['https://link.1'],
         ]);
-        $report = StatusReport::createFromResponse(
-            $subscription,
-            $notification,
-            $response
-        );
+        $report = StatusReport::createFromResponse($subscription, $notification, $response);
 
         static::assertSame($subscription, $report->getSubscription());
         static::assertSame($notification, $report->getNotification());
-        static::assertEquals('https://foo.bar', $report->getLocation());
-        static::assertEquals(['https://link.1'], $report->getLinks());
-        static::assertEquals($isSuccess, $report->isSuccess());
-        static::assertEquals($hasExpired, $report->isSubscriptionExpired());
+        static::assertSame('https://foo.bar', $report->getLocation());
+        static::assertSame(['https://link.1'], $report->getLinks());
+        static::assertSame($isSuccess, $report->isSuccess());
+        static::assertSame($hasExpired, $report->isSubscriptionExpired());
     }
 
     /**

@@ -25,11 +25,9 @@ use WebPush\VAPID\JWSProvider;
 
 final class WebPushExtension extends Extension implements PrependExtensionInterface
 {
-    private string $alias;
-
-    public function __construct(string $alias)
-    {
-        $this->alias = $alias;
+    public function __construct(
+        private string $alias
+    ) {
     }
 
     public function getAlias(): string
@@ -44,9 +42,11 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
 
         $container->registerForAutoconfiguration(\WebPush\Extension::class)->addTag(ExtensionCompilerPass::TAG);
         $container->registerForAutoconfiguration(Loggable::class)->addTag(LoggerSetterCompilerPass::TAG);
-        $container->registerForAutoconfiguration(ContentEncoding::class)->addTag(PayloadContentEncodingCompilerPass::TAG);
+        $container->registerForAutoconfiguration(ContentEncoding::class)->addTag(
+            PayloadContentEncodingCompilerPass::TAG
+        );
 
-        $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/'));
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
         $loader->load('services.php');
 
         if ($config['doctrine_mapping']) {
@@ -54,7 +54,7 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         }
         $container->setAlias('webpush.http_client', $config['http_client']);
         $container->setAlias('webpush.request_factory', $config['request_factory']);
-        if (null !== $config['logger']) {
+        if ($config['logger'] !== null) {
             $container->setAlias(LoggerSetterCompilerPass::SERVICE, $config['logger']);
         }
 
@@ -73,7 +73,7 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
     public function prepend(ContainerBuilder $container): void
     {
         $config = $this->getDoctrineBundleConfiguration($container);
-        if (null === $config) {
+        if ($config === null) {
             return;
         }
         $config['dbal']['types'] += [
@@ -84,7 +84,7 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
 
     private function configureVapidSection(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
-        if (!$config['enabled']) {
+        if (! $config['enabled']) {
             return;
         }
 
@@ -116,13 +116,13 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
     {
         $container->setParameter('webpush.payload.aesgcm.cache_lifetime', $config['aesgcm']['cache_lifetime']);
         $container->setParameter('webpush.payload.aesgcm.padding', $config['aesgcm']['padding']);
-        if (null !== $config['aesgcm']['cache']) {
+        if ($config['aesgcm']['cache'] !== null) {
             $container->setAlias('webpush.payload.aesgcm.cache', $config['aesgcm']['cache']);
         }
 
         $container->setParameter('webpush.payload.aes128gcm.cache_lifetime', $config['aes128gcm']['cache_lifetime']);
         $container->setParameter('webpush.payload.aes128gcm.padding', $config['aes128gcm']['padding']);
-        if (null !== $config['aes128gcm']['cache']) {
+        if ($config['aes128gcm']['cache'] !== null) {
             $container->setAlias('webpush.payload.aes128gcm.cache', $config['aes128gcm']['cache']);
         }
     }
@@ -131,19 +131,19 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
     {
         $bundles = $container->hasParameter('kernel.bundles') ? $container->getParameter('kernel.bundles') : [];
         Assertion::isArray($bundles, 'Invalid bundle list');
-        if (!array_key_exists('DoctrineBundle', $bundles)) {
+        if (! array_key_exists('DoctrineBundle', $bundles)) {
             return null;
         }
         $configs = $container->getExtensionConfig('doctrine');
-        if (0 === count($configs)) {
+        if (count($configs) === 0) {
             return null;
         }
 
         $config = current($configs);
-        if (!isset($config['dbal'])) {
+        if (! isset($config['dbal'])) {
             $config['dbal'] = [];
         }
-        if (!isset($config['dbal']['types'])) {
+        if (! isset($config['dbal']['types'])) {
             $config['dbal']['types'] = [];
         }
 

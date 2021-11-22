@@ -18,7 +18,7 @@ final class PayloadContentEncodingCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(PayloadExtension::class)) {
+        if (! $container->hasDefinition(PayloadExtension::class)) {
             return;
         }
 

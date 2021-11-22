@@ -9,8 +9,6 @@ use WebPush\VAPID\Header;
 
 /**
  * @internal
- * @group Functional
- * @group Library
  */
 final class HeaderTest extends TestCase
 {
@@ -21,7 +19,7 @@ final class HeaderTest extends TestCase
     {
         $header = new Header('token', 'key');
 
-        static::assertEquals('token', $header->getToken());
-        static::assertEquals('key', $header->getKey());
+        static::assertSame('token', $header->getToken());
+        static::assertSame('key', $header->getKey());
     }
 }

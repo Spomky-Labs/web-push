@@ -9,10 +9,8 @@ use WebPush\Base64Url;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
-class Base64UrlTest extends TestCase
+final class Base64UrlTest extends TestCase
 {
     /**
      * @dataProvider getTestVectors
@@ -24,8 +22,8 @@ class Base64UrlTest extends TestCase
         $encoded = Base64Url::encode($message);
         $decoded = Base64Url::decode($expectedResult);
 
-        static::assertEquals($expectedResult, $encoded);
-        static::assertEquals($message, $decoded);
+        static::assertSame($expectedResult, $encoded);
+        static::assertSame($message, $decoded);
     }
 
     /**
@@ -36,36 +34,16 @@ class Base64UrlTest extends TestCase
     public function getTestVectors(): array
     {
         return [
-            [
-                '000000', 'MDAwMDAw',
-            ],
-            [
-                "\0\0\0\0", 'AAAAAA',
-            ],
-            [
-                "\xff", '_w',
-            ],
-            [
-                "\xff\xff", '__8',
-            ],
-            [
-                "\xff\xff\xff", '____',
-            ],
-            [
-                "\xff\xff\xff\xff", '_____w',
-            ],
-            [
-                "\xfb", '-w',
-            ],
-            [
-                '', '',
-            ],
-            [
-                'f', 'Zg',
-            ],
-            [
-                'fo', 'Zm8',
-            ],
+            ['000000', 'MDAwMDAw'],
+            ["\0\0\0\0", 'AAAAAA'],
+            ["\xff", '_w'],
+            ["\xff\xff", '__8'],
+            ["\xff\xff\xff", '____'],
+            ["\xff\xff\xff\xff", '_____w'],
+            ["\xfb", '-w'],
+            ['', ''],
+            ['f', 'Zg'],
+            ['fo', 'Zm8'],
         ];
     }
 
@@ -77,7 +55,7 @@ class Base64UrlTest extends TestCase
     public function badInput(string $input): void
     {
         $decoded = Base64Url::decode($input);
-        static::assertEquals("\00", $decoded);
+        static::assertSame("\00", $decoded);
     }
 
     /**
@@ -85,20 +63,7 @@ class Base64UrlTest extends TestCase
      */
     public function getTestBadVectors(): array
     {
-        return [
-            [
-                ' AA',
-            ],
-            [
-                "\tAA",
-            ],
-            [
-                "\rAA",
-            ],
-            [
-                "\nAA",
-            ],
-        ];
+        return [[' AA'], ["\tAA"], ["\rAA"], ["\nAA"]];
     }
 
     /**
@@ -106,10 +71,6 @@ class Base64UrlTest extends TestCase
      */
     public function getTestNonsenseVectors(): array
     {
-        return [
-            [
-                'cxr0fdsezrewklerewxoz423ocfsa3bw432yjydsa9lhdsalw',
-            ],
-        ];
+        return [['cxr0fdsezrewklerewxoz423ocfsa3bw432yjydsa9lhdsalw']];
     }
 }

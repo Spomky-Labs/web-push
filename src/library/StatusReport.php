@@ -8,28 +8,33 @@ use Psr\Http\Message\ResponseInterface;
 
 class StatusReport implements StatusReportInterface
 {
-    private SubscriptionInterface $subscription;
-    private NotificationInterface $notification;
-    private int $code;
-    private string $location;
     private array $links;
 
-    public function __construct(SubscriptionInterface $subscription, NotificationInterface $notification, int $code, string $location, array $links)
-    {
-        $this->subscription = $subscription;
-        $this->notification = $notification;
-        $this->code = $code;
-        $this->location = $location;
+    public function __construct(
+        private SubscriptionInterface $subscription,
+        private NotificationInterface $notification,
+        private int $code,
+        private string $location,
+        array $links
+    ) {
         $this->links = $links;
     }
 
-    public static function create(SubscriptionInterface $subscription, NotificationInterface $notification, int $code, string $location, array $links): self
-    {
+    public static function create(
+        SubscriptionInterface $subscription,
+        NotificationInterface $notification,
+        int $code,
+        string $location,
+        array $links
+    ): self {
         return new self($subscription, $notification, $code, $location, $links);
     }
 
-    public static function createFromResponse(SubscriptionInterface $subscription, NotificationInterface $notification, ResponseInterface $response): self
-    {
+    public static function createFromResponse(
+        SubscriptionInterface $subscription,
+        NotificationInterface $notification,
+        ResponseInterface $response
+    ): self {
         $code = $response->getStatusCode();
         $headers = $response->getHeaders();
         $location = implode(', ', $headers['location'] ?? ['']);
@@ -55,7 +60,7 @@ class StatusReport implements StatusReportInterface
 
     public function isSubscriptionExpired(): bool
     {
-        return 404 === $this->code || 410 === $this->code;
+        return $this->code === 404 || $this->code === 410;
     }
 
     public function getLocation(): string

@@ -12,92 +12,41 @@ use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
 
 /**
- * @group unit
- *
  * @internal
  */
-class PayloadPaddingCompilerPassTest extends AbstractCompilerPassTestCase
+final class PayloadPaddingCompilerPassTest extends AbstractCompilerPassTestCase
 {
     /**
      * @test
      * @dataProvider paddingConfigurations
-     *
-     * @param mixed $configValue
      */
-    public function thePaddingIsCorrectlySet(string $class, string $parameterName, $configValue, string $methodName, array $methodParameters): void
-    {
+    public function thePaddingIsCorrectlySet(
+        string $class,
+        string $parameterName,
+        $configValue,
+        string $methodName,
+        array $methodParameters
+    ): void {
         $collectingService = new Definition();
         $this->setDefinition($class, $collectingService);
         $this->setParameter($parameterName, $configValue);
 
         $this->compile();
 
-        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            $class,
-            $methodName,
-            $methodParameters
-        );
+        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall($class, $methodName, $methodParameters);
     }
 
     public function paddingConfigurations(): array
     {
         return [
-            [
-                AES128GCM::class,
-                'webpush.payload.aes128gcm.padding',
-                'recommended',
-                'recommendedPadding',
-                [],
-            ],
-            [
-                AES128GCM::class,
-                'webpush.payload.aes128gcm.padding',
-                'none',
-                'noPadding',
-                [],
-            ],
-            [
-                AES128GCM::class,
-                'webpush.payload.aes128gcm.padding',
-                'max',
-                'maxPadding',
-                [],
-            ],
-            [
-                AES128GCM::class,
-                'webpush.payload.aes128gcm.padding',
-                50,
-                'customPadding',
-                [50],
-            ],
-            [
-                AESGCM::class,
-                'webpush.payload.aesgcm.padding',
-                'recommended',
-                'recommendedPadding',
-                [],
-            ],
-            [
-                AESGCM::class,
-                'webpush.payload.aesgcm.padding',
-                'none',
-                'noPadding',
-                [],
-            ],
-            [
-                AESGCM::class,
-                'webpush.payload.aesgcm.padding',
-                'max',
-                'maxPadding',
-                [],
-            ],
-            [
-                AESGCM::class,
-                'webpush.payload.aesgcm.padding',
-                50,
-                'customPadding',
-                [50],
-            ],
+            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'recommended', 'recommendedPadding', []],
+            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'none', 'noPadding', []],
+            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'max', 'maxPadding', []],
+            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 50, 'customPadding', [50]],
+            [AESGCM::class, 'webpush.payload.aesgcm.padding', 'recommended', 'recommendedPadding', []],
+            [AESGCM::class, 'webpush.payload.aesgcm.padding', 'none', 'noPadding', []],
+            [AESGCM::class, 'webpush.payload.aesgcm.padding', 'max', 'maxPadding', []],
+            [AESGCM::class, 'webpush.payload.aesgcm.padding', 50, 'customPadding', [50]],
         ];
     }
 

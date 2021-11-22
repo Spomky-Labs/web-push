@@ -13,8 +13,6 @@ use WebPush\UrgencyExtension;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class UrgencyExtensionTest extends TestCase
 {
@@ -37,11 +35,11 @@ final class UrgencyExtensionTest extends TestCase
             ->process($request, $notification, $subscription)
         ;
 
-        static::assertEquals($urgency, $request->getHeaderLine('urgency'));
+        static::assertSame($urgency, $request->getHeaderLine('urgency'));
         static::assertCount(1, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Processing with the Urgency extension', $logger->records[0]['message']);
-        static::assertEquals($urgency, $logger->records[0]['context']['Urgency']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Processing with the Urgency extension', $logger->records[0]['message']);
+        static::assertSame($urgency, $logger->records[0]['context']['Urgency']);
     }
 
     /**

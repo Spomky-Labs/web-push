@@ -22,13 +22,10 @@ final class Base64Url
         return rtrim($encoded, '=');
     }
 
-    /**
-     * @throws OperationException
-     */
     public static function decode(string $data): string
     {
         $encoded = base64_decode(strtr($data, '-_', '+/'), true);
-        if (false === $encoded) {
+        if ($encoded === false) {
             throw new OperationException('Unable to base64 encode the data');
         }
 

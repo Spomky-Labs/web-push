@@ -14,11 +14,9 @@ use WebPush\WebPush;
 use WebPush\WebPushService;
 
 /**
- * @group functional
- *
  * @internal
  */
-class NotificationTest extends KernelTestCase
+final class NotificationTest extends KernelTestCase
 {
     /**
      * @test
@@ -28,7 +26,9 @@ class NotificationTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
         /** @var WebPush $pushService */
-        $pushService = $kernel->getContainer()->get(WebPush::class);
+        $pushService = $kernel->getContainer()
+            ->get(WebPush::class)
+        ;
         /** @var MockClientCallback $responseFactory */
         $responseFactory = self::getContainer()->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
@@ -59,8 +59,8 @@ class NotificationTest extends KernelTestCase
         static::assertSame($notification, $report->getNotification());
         static::assertTrue($report->isSuccess());
         static::assertFalse($report->isSubscriptionExpired());
-        static::assertEquals('', $report->getLocation());
-        static::assertEquals([], $report->getLinks());
+        static::assertSame('', $report->getLocation());
+        static::assertSame([], $report->getLinks());
     }
 
     /**
@@ -71,7 +71,9 @@ class NotificationTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
         /** @var WebPush $pushService */
-        $pushService = $kernel->getContainer()->get(WebPush::class);
+        $pushService = $kernel->getContainer()
+            ->get(WebPush::class)
+        ;
         /** @var MockClientCallback $responseFactory */
         $responseFactory = self::getContainer()->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
@@ -102,8 +104,8 @@ class NotificationTest extends KernelTestCase
         static::assertSame($notification, $report->getNotification());
         static::assertTrue($report->isSuccess());
         static::assertFalse($report->isSubscriptionExpired());
-        static::assertEquals('', $report->getLocation());
-        static::assertEquals([], $report->getLinks());
+        static::assertSame('', $report->getLocation());
+        static::assertSame([], $report->getLinks());
     }
 
     /**
@@ -114,7 +116,9 @@ class NotificationTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
         /** @var WebPushService $pushService */
-        $pushService = $kernel->getContainer()->get('web_push.service');
+        $pushService = $kernel->getContainer()
+            ->get('web_push.service')
+        ;
         /** @var MockClientCallback $responseFactory */
         $responseFactory = self::getContainer()->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
@@ -145,8 +149,8 @@ class NotificationTest extends KernelTestCase
         static::assertSame($notification, $report->getNotification());
         static::assertTrue($report->isSuccess());
         static::assertFalse($report->isSubscriptionExpired());
-        static::assertEquals('', $report->getLocation());
-        static::assertEquals([], $report->getLinks());
+        static::assertSame('', $report->getLocation());
+        static::assertSame([], $report->getLinks());
     }
 
     /**
@@ -157,7 +161,9 @@ class NotificationTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
         /** @var WebPushService $pushService */
-        $pushService = $kernel->getContainer()->get('web_push.service');
+        $pushService = $kernel->getContainer()
+            ->get('web_push.service')
+        ;
         /** @var MockClientCallback $responseFactory */
         $responseFactory = self::getContainer()->get(MockClientCallback::class);
         $responseFactory->setResponse('', [
@@ -188,8 +194,8 @@ class NotificationTest extends KernelTestCase
         static::assertSame($notification, $report->getNotification());
         static::assertTrue($report->isSuccess());
         static::assertFalse($report->isSubscriptionExpired());
-        static::assertEquals('', $report->getLocation());
-        static::assertEquals([], $report->getLinks());
+        static::assertSame('', $report->getLocation());
+        static::assertSame([], $report->getLinks());
     }
 
     public function listOfSubscriptions(): array

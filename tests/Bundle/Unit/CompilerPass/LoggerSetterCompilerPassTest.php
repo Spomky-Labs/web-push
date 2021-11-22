@@ -12,11 +12,9 @@ use Symfony\Component\DependencyInjection\Reference;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 
 /**
- * @group unit
- *
  * @internal
  */
-class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
+final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 {
     /**
      * @test
@@ -36,9 +34,7 @@ class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             'collected_service',
             'setLogger',
-            [
-                new Reference(LoggerSetterCompilerPass::SERVICE),
-            ]
+            [new Reference(LoggerSetterCompilerPass::SERVICE)]
         );
     }
 

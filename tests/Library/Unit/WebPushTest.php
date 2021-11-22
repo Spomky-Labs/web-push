@@ -18,10 +18,8 @@ use WebPush\WebPush;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
-class WebPushTest extends TestCase
+final class WebPushTest extends TestCase
 {
     /**
      * @test
@@ -45,15 +43,15 @@ class WebPushTest extends TestCase
         ;
 
         static::assertCount(3, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Sending notification', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Sending notification', $logger->records[0]['message']);
         static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
         static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('Request ready', $logger->records[1]['message']);
+        static::assertSame('debug', $logger->records[1]['level']);
+        static::assertSame('Request ready', $logger->records[1]['message']);
         static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
-        static::assertEquals('debug', $logger->records[2]['level']);
-        static::assertEquals('Response received', $logger->records[2]['message']);
+        static::assertSame('debug', $logger->records[2]['level']);
+        static::assertSame('Response received', $logger->records[2]['message']);
         static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
         static::assertTrue($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
@@ -82,15 +80,15 @@ class WebPushTest extends TestCase
         ;
 
         static::assertCount(3, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Sending notification', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Sending notification', $logger->records[0]['message']);
         static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
         static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('Request ready', $logger->records[1]['message']);
+        static::assertSame('debug', $logger->records[1]['level']);
+        static::assertSame('Request ready', $logger->records[1]['message']);
         static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
-        static::assertEquals('debug', $logger->records[2]['level']);
-        static::assertEquals('Response received', $logger->records[2]['message']);
+        static::assertSame('debug', $logger->records[2]['level']);
+        static::assertSame('Response received', $logger->records[2]['message']);
         static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
         static::assertTrue($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
@@ -119,15 +117,15 @@ class WebPushTest extends TestCase
         ;
 
         static::assertCount(3, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Sending notification', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Sending notification', $logger->records[0]['message']);
         static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
         static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('Request ready', $logger->records[1]['message']);
+        static::assertSame('debug', $logger->records[1]['level']);
+        static::assertSame('Request ready', $logger->records[1]['message']);
         static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
-        static::assertEquals('debug', $logger->records[2]['level']);
-        static::assertEquals('Response received', $logger->records[2]['message']);
+        static::assertSame('debug', $logger->records[2]['level']);
+        static::assertSame('Response received', $logger->records[2]['message']);
         static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
         static::assertFalse($report->isSuccess());
         static::assertSame($notification, $report->getNotification());

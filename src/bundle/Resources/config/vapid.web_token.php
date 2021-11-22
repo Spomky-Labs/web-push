@@ -8,7 +8,8 @@ use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\WebTokenProvider;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()
@@ -16,9 +17,6 @@ return static function (ContainerConfigurator $container): void {
 
     $container->set(JWSProvider::class)
         ->class(WebTokenProvider::class)
-        ->args([
-            param('webpush.vapid.web_token.public_key'),
-            param('webpush.vapid.web_token.private_key'),
-        ])
+        ->args([param('webpush.vapid.web_token.public_key'), param('webpush.vapid.web_token.private_key')])
     ;
 };

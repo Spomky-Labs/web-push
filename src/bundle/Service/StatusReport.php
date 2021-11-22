@@ -11,18 +11,17 @@ use WebPush\SubscriptionInterface;
 
 class StatusReport implements StatusReportInterface
 {
-    private SubscriptionInterface $subscription;
-    private NotificationInterface $notification;
-    private ResponseInterface $response;
     private ?int $code = null;
+
     private ?string $location = null;
+
     private ?array $links = null;
 
-    public function __construct(SubscriptionInterface $subscription, NotificationInterface $notification, ResponseInterface $response)
-    {
-        $this->subscription = $subscription;
-        $this->notification = $notification;
-        $this->response = $response;
+    public function __construct(
+        private SubscriptionInterface $subscription,
+        private NotificationInterface $notification,
+        private ResponseInterface $response
+    ) {
     }
 
     public function getSubscription(): SubscriptionInterface
@@ -46,12 +45,12 @@ class StatusReport implements StatusReportInterface
     {
         $code = $this->prepareStatusCode();
 
-        return 404 === $code || 410 === $code;
+        return $code === 404 || $code === 410;
     }
 
     public function getLocation(): string
     {
-        if (null === $this->location) {
+        if ($this->location === null) {
             $headers = $this->response->getHeaders();
             $this->location = implode(', ', $headers['location'] ?? ['']);
         }
@@ -64,7 +63,7 @@ class StatusReport implements StatusReportInterface
      */
     public function getLinks(): array
     {
-        if (null === $this->links) {
+        if ($this->links === null) {
             $headers = $this->response->getHeaders();
             $this->links = $headers['link'] ?? [];
         }
@@ -74,7 +73,7 @@ class StatusReport implements StatusReportInterface
 
     private function prepareStatusCode(): int
     {
-        if (null === $this->code) {
+        if ($this->code === null) {
             $this->code = $this->response->getStatusCode();
         }
 

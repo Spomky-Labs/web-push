@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit\Configuration;
 
 /**
- * @group unit
- *
  * @internal
  */
-class CustomJwsProviderConfigurationTest extends AbstractConfigurationTest
+final class CustomJwsProviderConfigurationTest extends AbstractConfigurationTest
 {
     /**
      * @test

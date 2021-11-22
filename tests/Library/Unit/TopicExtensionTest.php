@@ -13,8 +13,6 @@ use WebPush\TopicExtension;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class TopicExtensionTest extends TestCase
 {
@@ -28,7 +26,7 @@ final class TopicExtensionTest extends TestCase
         $request = new Request('POST', 'https://foo.bar');
 
         $notification = Notification::create();
-        if (null !== $topic) {
+        if ($topic !== '') {
             $notification = $notification->withTopic($topic);
         }
 
@@ -39,11 +37,15 @@ final class TopicExtensionTest extends TestCase
             ->process($request, $notification, $subscription)
         ;
 
-        static::assertEquals($topic, $request->getHeaderLine('topic'));
+        static::assertSame($topic, $request->getHeaderLine('topic'));
         static::assertCount(1, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Processing with the Topic extension', $logger->records[0]['message']);
-        static::assertEquals($topic, $logger->records[0]['context']['Topic']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Processing with the Topic extension', $logger->records[0]['message']);
+        if ($topic === '') {
+            static::assertNull($logger->records[0]['context']['Topic']);
+        } else {
+            static::assertSame($topic, $logger->records[0]['context']['Topic']);
+        }
     }
 
     /**
@@ -51,10 +53,6 @@ final class TopicExtensionTest extends TestCase
      */
     public function dataTopicIsSetInHeader(): array
     {
-        return [
-            [null],
-            ['topic1'],
-            ['foo-bar'],
-        ];
+        return [[''], ['topic1'], ['foo-bar']];
     }
 }

@@ -9,19 +9,15 @@ use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\VAPIDExtension;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()
     ;
 
     $container->set(VAPIDExtension::class)
-        ->args([
-            param('webpush.vapid.subject'),
-            service(JWSProvider::class),
-        ])
-        ->call('setTokenExpirationTime', [
-            param('webpush.vapid.token_lifetime'),
-        ])
+        ->args([param('webpush.vapid.subject'), service(JWSProvider::class)])
+        ->call('setTokenExpirationTime', [param('webpush.vapid.token_lifetime')])
     ;
 };

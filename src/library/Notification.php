@@ -10,9 +10,13 @@ use Assert\Assertion;
 class Notification implements NotificationInterface
 {
     private ?string $payload = null;
+
     private int $ttl = 0;
+
     private string $urgency = self::URGENCY_NORMAL;
+
     private ?string $topic = null;
+
     private bool $respondAsync = false;
 
     /**
@@ -136,9 +140,6 @@ class Notification implements NotificationInterface
         return $this->metadata;
     }
 
-    /**
-     * @param mixed $data
-     */
     public function add(string $key, $data): self
     {
         $this->metadata[$key] = $data;
@@ -151,9 +152,6 @@ class Notification implements NotificationInterface
         return array_key_exists($key, $this->metadata);
     }
 
-    /**
-     * @return mixed
-     */
     public function get(string $key)
     {
         Assertion::true($this->has($key), 'Missing metadata');

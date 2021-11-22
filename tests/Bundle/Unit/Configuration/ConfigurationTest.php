@@ -9,11 +9,9 @@ use Psr\Http\Message\RequestFactoryInterface;
 use WebPush\Base64Url;
 
 /**
- * @group unit
- *
  * @internal
  */
-class ConfigurationTest extends AbstractConfigurationTest
+final class ConfigurationTest extends AbstractConfigurationTest
 {
     /**
      * @test
@@ -30,9 +28,15 @@ class ConfigurationTest extends AbstractConfigurationTest
                 'vapid' => [
                     'enabled' => false,
                     'token_lifetime' => 'now +1hour',
-                    'web_token' => ['enabled' => false],
-                    'lcobucci' => ['enabled' => false],
-                    'custom' => ['enabled' => false],
+                    'web_token' => [
+                        'enabled' => false,
+                    ],
+                    'lcobucci' => [
+                        'enabled' => false,
+                    ],
+                    'custom' => [
+                        'enabled' => false,
+                    ],
                 ],
                 'payload' => [
                     'aes128gcm' => [
@@ -110,19 +114,25 @@ class ConfigurationTest extends AbstractConfigurationTest
                 'web-token' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
                 'lcobucci' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
             ]],
             [[
                 'lcobucci' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
                 'custom' => [
                     'enabled' => true,
@@ -133,7 +143,9 @@ class ConfigurationTest extends AbstractConfigurationTest
                 'web-token' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
                 'custom' => [
                     'enabled' => true,
@@ -144,12 +156,16 @@ class ConfigurationTest extends AbstractConfigurationTest
                 'web-token' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
                 'lcobucci' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
                 'custom' => [
                     'enabled' => true,

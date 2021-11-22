@@ -8,13 +8,12 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
+use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
 use WebPush\VAPID\LcobucciProvider;
 
 /**
  * @internal
- * @group Functional
- * @group Library
  */
 final class LcobucciProviderTest extends TestCase
 {
@@ -27,10 +26,7 @@ final class LcobucciProviderTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage($expectedMessage);
 
-        LcobucciProvider::create(
-            Base64Url::encode($publicKey),
-            Base64Url::encode($privateKey)
-        );
+        LcobucciProvider::create(Base64Url::encode($publicKey), Base64Url::encode($privateKey));
     }
 
     /**
@@ -52,8 +48,11 @@ final class LcobucciProviderTest extends TestCase
             ])
         ;
 
-        static::assertStringStartsWith('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.', $header->getToken());
-        static::assertEquals($publicKey, $header->getKey());
+        static::assertStringStartsWith(
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.',
+            $header->getToken()
+        );
+        static::assertSame($publicKey, $header->getKey());
     }
 
     /**

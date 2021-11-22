@@ -9,19 +9,16 @@ use Psr\Http\Message\RequestFactoryInterface;
 use WebPush\Payload\AESGCM;
 
 /**
- * @group unit
- *
  * @internal
  */
-class AESGCMConfigurationTest extends AbstractConfigurationTest
+final class AESGCMConfigurationTest extends AbstractConfigurationTest
 {
     /**
      * @test
      *
-     * @param string|int|bool $padding
      * @dataProvider invalidPaddings
      */
-    public function invalidIfThePaddingDoesNotFulfillTheConstraints($padding): void
+    public function invalidIfThePaddingDoesNotFulfillTheConstraints(string|int|bool $padding): void
     {
         $this->assertConfigurationIsInvalid(
             [
@@ -39,20 +36,15 @@ class AESGCMConfigurationTest extends AbstractConfigurationTest
 
     public function invalidPaddings(): array
     {
-        return [
-            ['min'],
-            [-1],
-            [AESGCM::PADDING_MAX + 1],
-        ];
+        return [['min'], [-1], [AESGCM::PADDING_MAX + 1]];
     }
 
     /**
      * @test
      *
-     * @param string|int|bool $padding
      * @dataProvider validPaddings
      */
-    public function validPadding($padding): void
+    public function validPadding(string|int|bool $padding): void
     {
         $this->assertProcessedConfigurationEquals(
             [
@@ -72,9 +64,15 @@ class AESGCMConfigurationTest extends AbstractConfigurationTest
                 'vapid' => [
                     'enabled' => false,
                     'token_lifetime' => 'now +1hour',
-                    'web_token' => ['enabled' => false],
-                    'lcobucci' => ['enabled' => false],
-                    'custom' => ['enabled' => false],
+                    'web_token' => [
+                        'enabled' => false,
+                    ],
+                    'lcobucci' => [
+                        'enabled' => false,
+                    ],
+                    'custom' => [
+                        'enabled' => false,
+                    ],
                 ],
                 'payload' => [
                     'aes128gcm' => [
@@ -94,12 +92,6 @@ class AESGCMConfigurationTest extends AbstractConfigurationTest
 
     public function validPaddings(): array
     {
-        return [
-            ['none'],
-            ['recommended'],
-            ['max'],
-            [0],
-            [AESGCM::PADDING_MAX],
-        ];
+        return [['none'], ['recommended'], ['max'], [0], [AESGCM::PADDING_MAX]];
     }
 }

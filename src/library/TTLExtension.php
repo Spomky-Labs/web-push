@@ -29,10 +29,15 @@ class TTLExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
-    {
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
         $ttl = (string) $notification->getTTL();
-        $this->logger->debug('Processing with the TTL extension', ['TTL' => $ttl]);
+        $this->logger->debug('Processing with the TTL extension', [
+            'TTL' => $ttl,
+        ]);
 
         return $request
             ->withAddedHeader('TTL', $ttl)

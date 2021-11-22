@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace WebPush\VAPID;
 
 use DateTimeImmutable;
-use Exception;
 use function is_array;
 use function parse_url;
 use Psr\Http\Message\RequestInterface;
@@ -20,15 +19,14 @@ use WebPush\SubscriptionInterface;
 
 class VAPIDExtension implements Extension, Loggable
 {
-    private JWSProvider $jwsProvider;
     private string $tokenExpirationTime = 'now +1hour';
-    private LoggerInterface $logger;
-    private string $subject;
 
-    public function __construct(string $subject, JWSProvider $jwsProvider)
-    {
-        $this->subject = $subject;
-        $this->jwsProvider = $jwsProvider;
+    private LoggerInterface $logger;
+
+    public function __construct(
+        private string $subject,
+        private JWSProvider $jwsProvider
+    ) {
         $this->logger = new NullLogger();
     }
 
@@ -51,19 +49,19 @@ class VAPIDExtension implements Extension, Loggable
         return $this;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
-    {
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
         $this->logger->debug('Processing with VAPID header');
         $endpoint = $subscription->getEndpoint();
         $expiresAt = new DateTimeImmutable($this->tokenExpirationTime);
         $parsedEndpoint = parse_url($endpoint);
-        if (!is_array($parsedEndpoint) || !isset($parsedEndpoint['host'], $parsedEndpoint['scheme'])) {
+        if (! is_array($parsedEndpoint) || ! isset($parsedEndpoint['host'], $parsedEndpoint['scheme'])) {
             throw new OperationException('Invalid subscription endpoint');
         }
-        $origin = $parsedEndpoint['scheme'].'://'.$parsedEndpoint['host'].(isset($parsedEndpoint['port']) ? ':'.$parsedEndpoint['port'] : '');
+        $origin = $parsedEndpoint['scheme'] . '://' . $parsedEndpoint['host'] . (isset($parsedEndpoint['port']) ? ':' . $parsedEndpoint['port'] : '');
         $claims = [
             'aud' => $origin,
             'sub' => $this->subject,
@@ -72,7 +70,9 @@ class VAPIDExtension implements Extension, Loggable
 
         $this->logger->debug('Trying to get the header from the cache');
         $header = $this->jwsProvider->computeHeader($claims);
-        $this->logger->debug('Header from cache', ['header' => $header]);
+        $this->logger->debug('Header from cache', [
+            'header' => $header,
+        ]);
 
         return $request
             ->withAddedHeader('Authorization', sprintf('vapid t=%s, k=%s', $header->getToken(), $header->getKey()))

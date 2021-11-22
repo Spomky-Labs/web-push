@@ -18,7 +18,7 @@ final class SymfonyServiceCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition('http_client')) {
+        if (! $container->hasDefinition('http_client')) {
             return;
         }
 

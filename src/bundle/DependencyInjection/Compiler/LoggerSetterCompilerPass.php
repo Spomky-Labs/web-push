@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
 final class LoggerSetterCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webpush_loggable';
+
     public const SERVICE = 'webpush.logger';
 
     /**
@@ -18,7 +19,7 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasAlias(self::SERVICE)) {
+        if (! $container->hasAlias(self::SERVICE)) {
             return;
         }
 

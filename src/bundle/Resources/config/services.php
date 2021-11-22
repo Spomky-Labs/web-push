@@ -15,7 +15,8 @@ use WebPush\UrgencyExtension;
 use WebPush\WebPush;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()

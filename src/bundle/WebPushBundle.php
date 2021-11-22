@@ -32,8 +32,6 @@ final class WebPushBundle extends Bundle
 
     /**
      * {@inheritdoc}
-     *
-     * @throws InitializationException
      */
     public function build(ContainerBuilder $container): void
     {
@@ -48,20 +46,21 @@ final class WebPushBundle extends Bundle
         $this->registerMappings($container);
     }
 
-    /**
-     * @throws InitializationException
-     */
     private function registerMappings(ContainerBuilder $container): void
     {
-        if (!class_exists(DoctrineOrmMappingsPass::class)) {
+        if (! class_exists(DoctrineOrmMappingsPass::class)) {
             return;
         }
 
-        $realPath = realpath(__DIR__.'/Resources/config/doctrine-mapping');
-        if (false === $realPath) {
+        $realPath = realpath(__DIR__ . '/Resources/config/doctrine-mapping');
+        if ($realPath === false) {
             throw new InitializationException('Unaqble to get the real path for the doctrine mapping');
         }
-        $mappings = [$realPath => 'WebPush'];
-        $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping'));
+        $mappings = [
+            $realPath => 'WebPush',
+        ];
+        $container->addCompilerPass(
+            DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping')
+        );
     }
 }

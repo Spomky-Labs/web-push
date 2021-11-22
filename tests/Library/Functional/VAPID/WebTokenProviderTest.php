@@ -8,13 +8,12 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
+use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
 use WebPush\VAPID\WebTokenProvider;
 
 /**
  * @internal
- * @group Functional
- * @group Library
  */
 final class WebTokenProviderTest extends TestCase
 {
@@ -27,10 +26,7 @@ final class WebTokenProviderTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage($expectedMessage);
 
-        WebTokenProvider::create(
-            Base64Url::encode($publicKey),
-            Base64Url::encode($privateKey)
-        );
+        WebTokenProvider::create(Base64Url::encode($publicKey), Base64Url::encode($privateKey));
     }
 
     /**
@@ -52,8 +48,11 @@ final class WebTokenProviderTest extends TestCase
             ])
         ;
 
-        static::assertStringStartsWith('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.', $header->getToken());
-        static::assertEquals($publicKey, $header->getKey());
+        static::assertStringStartsWith(
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.',
+            $header->getToken()
+        );
+        static::assertSame($publicKey, $header->getKey());
     }
 
     /**

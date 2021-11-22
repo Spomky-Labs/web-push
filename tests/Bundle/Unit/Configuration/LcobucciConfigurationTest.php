@@ -9,11 +9,9 @@ use Psr\Http\Message\RequestFactoryInterface;
 use WebPush\Base64Url;
 
 /**
- * @group unit
- *
  * @internal
  */
-class LcobucciConfigurationTest extends AbstractConfigurationTest
+final class LcobucciConfigurationTest extends AbstractConfigurationTest
 {
     /**
      * @test
@@ -72,7 +70,9 @@ class LcobucciConfigurationTest extends AbstractConfigurationTest
                         'lcobucci' => [
                             'enabled' => true,
                             'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                            'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                            'public_key' => Base64Url::encode(
+                                '00000000000000000000000000000000000000000000000000000000000000000'
+                            ),
                         ],
                     ],
                 ],
@@ -86,13 +86,19 @@ class LcobucciConfigurationTest extends AbstractConfigurationTest
                     'enabled' => true,
                     'token_lifetime' => 'now +1hour',
                     'subject' => 'https://foo.bar',
-                    'web_token' => ['enabled' => false],
+                    'web_token' => [
+                        'enabled' => false,
+                    ],
                     'lcobucci' => [
                         'enabled' => true,
                         'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                        'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                        'public_key' => Base64Url::encode(
+                            '00000000000000000000000000000000000000000000000000000000000000000'
+                        ),
                     ],
-                    'custom' => ['enabled' => false],
+                    'custom' => [
+                        'enabled' => false,
+                    ],
                 ],
                 'payload' => [
                     'aes128gcm' => [

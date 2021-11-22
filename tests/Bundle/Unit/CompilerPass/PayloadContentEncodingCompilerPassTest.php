@@ -12,11 +12,9 @@ use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPa
 use WebPush\Payload\PayloadExtension;
 
 /**
- * @group unit
- *
  * @internal
  */
-class PayloadContentEncodingCompilerPassTest extends AbstractCompilerPassTestCase
+final class PayloadContentEncodingCompilerPassTest extends AbstractCompilerPassTestCase
 {
     /**
      * @test
@@ -35,9 +33,7 @@ class PayloadContentEncodingCompilerPassTest extends AbstractCompilerPassTestCas
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             PayloadExtension::class,
             'addContentEncoding',
-            [
-                new Reference('collected_service'),
-            ]
+            [new Reference('collected_service')]
         );
     }
 

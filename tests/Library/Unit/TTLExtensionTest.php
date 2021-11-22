@@ -13,8 +13,6 @@ use WebPush\TTLExtension;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class TTLExtensionTest extends TestCase
 {
@@ -37,11 +35,11 @@ final class TTLExtensionTest extends TestCase
             ->process($request, $notification, $subscription)
         ;
 
-        static::assertEquals($ttl, $request->getHeaderLine('ttl'));
+        static::assertSame((string) $ttl, $request->getHeaderLine('ttl'));
         static::assertCount(1, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Processing with the TTL extension', $logger->records[0]['message']);
-        static::assertEquals($ttl, $logger->records[0]['context']['TTL']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Processing with the TTL extension', $logger->records[0]['message']);
+        static::assertSame((string) $ttl, $logger->records[0]['context']['TTL']);
     }
 
     /**
@@ -49,10 +47,6 @@ final class TTLExtensionTest extends TestCase
      */
     public function dataTTLIsSetInHeader(): array
     {
-        return [
-            [0],
-            [10],
-            [3600],
-        ];
+        return [[0], [10], [3600]];
     }
 }

@@ -9,11 +9,9 @@ use Psr\Http\Message\RequestFactoryInterface;
 use WebPush\Base64Url;
 
 /**
- * @group unit
- *
  * @internal
  */
-class WebTokenConfigurationTest extends AbstractConfigurationTest
+final class WebTokenConfigurationTest extends AbstractConfigurationTest
 {
     /**
      * @test
@@ -72,7 +70,9 @@ class WebTokenConfigurationTest extends AbstractConfigurationTest
                         'web-token' => [
                             'enabled' => true,
                             'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                            'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                            'public_key' => Base64Url::encode(
+                                '00000000000000000000000000000000000000000000000000000000000000000'
+                            ),
                         ],
                     ],
                 ],
@@ -89,10 +89,16 @@ class WebTokenConfigurationTest extends AbstractConfigurationTest
                     'web_token' => [
                         'enabled' => true,
                         'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                        'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                        'public_key' => Base64Url::encode(
+                            '00000000000000000000000000000000000000000000000000000000000000000'
+                        ),
                     ],
-                    'lcobucci' => ['enabled' => false],
-                    'custom' => ['enabled' => false],
+                    'lcobucci' => [
+                        'enabled' => false,
+                    ],
+                    'custom' => [
+                        'enabled' => false,
+                    ],
                 ],
                 'payload' => [
                     'aes128gcm' => [

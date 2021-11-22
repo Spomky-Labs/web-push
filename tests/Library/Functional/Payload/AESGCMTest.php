@@ -8,6 +8,7 @@ use function chr;
 use InvalidArgumentException;
 use Nyholm\Psr7\Request;
 use function openssl_decrypt;
+use const OPENSSL_RAW_DATA;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
@@ -24,8 +25,6 @@ use WebPush\Utils;
 
 /**
  * @internal
- * @group Functional
- * @group Library
  */
 final class AESGCMTest extends TestCase
 {
@@ -79,7 +78,10 @@ final class AESGCMTest extends TestCase
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aesgcm'])
         ;
-        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey(
+            'p256dh',
+            'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+        );
 
         AESGCM::create()->encode('', $request, $subscription);
     }
@@ -90,8 +92,14 @@ final class AESGCMTest extends TestCase
      *
      * @see https://tests.peter.sh/push-encryption-verifier/
      */
-    public function encryptPayload(string $userAgentPrivateKey, string $userAgentPublicKey, string $userAgentAuthToken, string $payload, string $padding, CacheItemPoolInterface $cache): void
-    {
+    public function encryptPayload(
+        string $userAgentPrivateKey,
+        string $userAgentPublicKey,
+        string $userAgentAuthToken,
+        string $payload,
+        string $padding,
+        CacheItemPoolInterface $cache
+    ): void {
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aesgcm'])
         ;
@@ -119,7 +127,7 @@ final class AESGCMTest extends TestCase
 
         $encoder->setCache($cache);
 
-        static::assertEquals('aesgcm', $encoder->name());
+        static::assertSame('aesgcm', $encoder->name());
 
         $request = new Request('POST', 'https://foo.bar');
         $request = $encoder->encode($payload, $request, $subscription);
@@ -132,7 +140,7 @@ final class AESGCMTest extends TestCase
             true
         );
 
-        static::assertEquals($payload, $decryptedPayload);
+        static::assertSame($payload, $decryptedPayload);
     }
 
     /**
@@ -146,7 +154,10 @@ final class AESGCMTest extends TestCase
         $request = new Request('POST', 'https://foo.bar');
 
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey(
+            'p256dh',
+            'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+        );
         $subscription->setKey('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         $payload = str_pad('', 4079, '0');
@@ -169,75 +180,24 @@ final class AESGCMTest extends TestCase
         $payload = 'When I grow up, I want to be a watermelon';
 
         return [
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'noPadding',
-                $withoutCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                str_pad('', 4078, '1'),
-                'noPadding',
-                $withoutCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'recommendedPadding',
-                $withoutCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'maxPadding',
-                $withoutCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'customPadding',
-                $withoutCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'noPadding',
-                $withCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'recommendedPadding',
-                $withCache,
-            ],
-            [
-                $uaPrivateKey,
-                $uaPublicKey,
-                $uaAuthSecret,
-                $payload,
-                'maxPadding',
-                $withCache,
-            ],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'noPadding', $withoutCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, str_pad('', 4078, '1'), 'noPadding', $withoutCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'recommendedPadding', $withoutCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'maxPadding', $withoutCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'customPadding', $withoutCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'noPadding', $withCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'recommendedPadding', $withCache],
+            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'maxPadding', $withCache],
         ];
     }
 
-    private function decryptRequest(RequestInterface $request, string $authSecret, string $receiverPublicKey, string $receiverPrivateKey, bool $inverted = false): string
-    {
+    private function decryptRequest(
+        RequestInterface $request,
+        string $authSecret,
+        string $receiverPublicKey,
+        string $receiverPrivateKey,
+        bool $inverted = false
+    ): string {
         $requestBody = $request->getBody();
         $requestBody->rewind();
 
@@ -245,7 +205,8 @@ final class AESGCMTest extends TestCase
         $salt = Base64Url::decode(mb_substr($request->getHeaderLine('encryption'), 5));
         $keyid = Base64Url::decode(mb_substr($request->getHeaderLine('crypto-key'), 3));
 
-        $context = sprintf('%s%s%s%s',
+        $context = sprintf(
+            '%s%s%s%s',
             "P-256\0\0A",
             $inverted ? $receiverPublicKey : $keyid,
             "\0A",
@@ -253,17 +214,17 @@ final class AESGCMTest extends TestCase
         );
 
         // IKM
-        $keyInfo = 'Content-Encoding: auth'.chr(0);
+        $keyInfo = 'Content-Encoding: auth' . chr(0);
         $ikm = Utils::computeIKM($keyInfo, $authSecret, $keyid, $receiverPrivateKey, $receiverPublicKey);
 
         // We compute the PRK
         $prk = hash_hmac('sha256', $ikm, $salt, true);
 
-        $cekInfo = 'Content-Encoding: aesgcm'.chr(0).$context;
-        $cek = mb_substr(hash_hmac('sha256', $cekInfo.chr(1), $prk, true), 0, 16, '8bit');
+        $cekInfo = 'Content-Encoding: aesgcm' . chr(0) . $context;
+        $cek = mb_substr(hash_hmac('sha256', $cekInfo . chr(1), $prk, true), 0, 16, '8bit');
 
-        $nonceInfo = 'Content-Encoding: nonce'.chr(0).$context;
-        $nonce = mb_substr(hash_hmac('sha256', $nonceInfo.chr(1), $prk, true), 0, 12, '8bit');
+        $nonceInfo = 'Content-Encoding: nonce' . chr(0) . $context;
+        $nonce = mb_substr(hash_hmac('sha256', $nonceInfo . chr(1), $prk, true), 0, 12, '8bit');
 
         $C = mb_substr($ciphertext, 0, -16, '8bit');
         $T = mb_substr($ciphertext, -16, null, '8bit');
@@ -286,7 +247,9 @@ final class AESGCMTest extends TestCase
         $item = $cache->getItem('WEB_PUSH_PAYLOAD_ENCRYPTION');
         $item->set(
             new ServerKey(
-                Base64Url::decode('BNuH4FkvKM50iG9sNLmJxSJL-H5B7KzxdpVOMp8OCmJZIaiZhXWFEolBD3xAXpJbjqMuny5jznfDnjYKueWngnM'),
+                Base64Url::decode(
+                    'BNuH4FkvKM50iG9sNLmJxSJL-H5B7KzxdpVOMp8OCmJZIaiZhXWFEolBD3xAXpJbjqMuny5jznfDnjYKueWngnM'
+                ),
                 Base64Url::decode('Bw10H72jYRnlGZQytw8ruC9uJzqkWJqlOyFEEqQqYZ0')
             )
         );

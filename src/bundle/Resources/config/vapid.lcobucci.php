@@ -8,7 +8,8 @@ use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\LcobucciProvider;
 
 return static function (ContainerConfigurator $container): void {
-    $container = $container->services()->defaults()
+    $container = $container->services()
+        ->defaults()
         ->private()
         ->autoconfigure()
         ->autowire()
@@ -16,9 +17,6 @@ return static function (ContainerConfigurator $container): void {
 
     $container->set(JWSProvider::class)
         ->class(LcobucciProvider::class)
-        ->args([
-            param('webpush.vapid.lcobucci.public_key'),
-            param('webpush.vapid.lcobucci.private_key'),
-        ])
+        ->args([param('webpush.vapid.lcobucci.public_key'), param('webpush.vapid.lcobucci.private_key')])
     ;
 };

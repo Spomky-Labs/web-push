@@ -14,6 +14,7 @@ class ExtensionManager implements Loggable
      * @var Extension[]
      */
     private array $extensions = [];
+
     private LoggerInterface $logger;
 
     public function __construct()
@@ -36,13 +37,18 @@ class ExtensionManager implements Loggable
     public function add(Extension $extension): self
     {
         $this->extensions[] = $extension;
-        $this->logger->debug('Extension added', ['extension' => $extension]);
+        $this->logger->debug('Extension added', [
+            'extension' => $extension,
+        ]);
 
         return $this;
     }
 
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
-    {
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
         $this->logger->debug('Processing the request');
         foreach ($this->extensions as $extension) {
             $request = $extension->process($request, $notification, $subscription);

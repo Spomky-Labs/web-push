@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class MockClientCallback
 {
     private string $body = '';
+
     private array $info = [];
 
     public function __invoke(string $method, string $url, array $options = []): ResponseInterface

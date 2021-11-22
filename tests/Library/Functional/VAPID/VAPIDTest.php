@@ -16,8 +16,6 @@ use WebPush\VAPID\VAPIDExtension;
 
 /**
  * @internal
- * @group Functional
- * @group Library
  */
 final class VAPIDTest extends TestCase
 {
@@ -47,23 +45,23 @@ final class VAPIDTest extends TestCase
         static::assertStringStartsWith('vapid t=', $vapidHeader);
         $tokenPayload = mb_substr($vapidHeader, 45);
         $position = mb_strpos($tokenPayload, '.');
-        $tokenPayload = mb_substr($tokenPayload, 0, false === $position ? null : $position);
+        $tokenPayload = mb_substr($tokenPayload, 0, $position === false ? null : $position);
         $tokenPayload = Base64Url::decode($tokenPayload);
         $claims = json_decode($tokenPayload, true);
 
         static::assertArrayHasKey('aud', $claims);
         static::assertArrayHasKey('sub', $claims);
         static::assertArrayHasKey('exp', $claims);
-        static::assertEquals('https://foo.bar:1337', $claims['aud']);
-        static::assertEquals('subject', $claims['sub']);
+        static::assertSame('https://foo.bar:1337', $claims['aud']);
+        static::assertSame('subject', $claims['sub']);
         static::assertGreaterThanOrEqual(time(), $claims['exp']);
 
         static::assertCount(3, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Processing with VAPID header', $logger->records[0]['message']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('Trying to get the header from the cache', $logger->records[1]['message']);
-        static::assertEquals('debug', $logger->records[2]['level']);
-        static::assertEquals('Header from cache', $logger->records[2]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Processing with VAPID header', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[1]['level']);
+        static::assertSame('Trying to get the header from the cache', $logger->records[1]['message']);
+        static::assertSame('debug', $logger->records[2]['level']);
+        static::assertSame('Header from cache', $logger->records[2]['message']);
     }
 }

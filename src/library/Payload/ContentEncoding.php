@@ -9,7 +9,11 @@ use WebPush\SubscriptionInterface;
 
 interface ContentEncoding
 {
-    public function encode(string $payload, RequestInterface $request, SubscriptionInterface $subscription): RequestInterface;
+    public function encode(
+        string $payload,
+        RequestInterface $request,
+        SubscriptionInterface $subscription
+    ): RequestInterface;
 
     public function name(): string;
 }

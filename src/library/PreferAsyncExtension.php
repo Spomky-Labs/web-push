@@ -29,9 +29,12 @@ class PreferAsyncExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
-    {
-        if (!$notification->isAsync()) {
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
+        if (! $notification->isAsync()) {
             $this->logger->debug('Sending synchronous notification');
 
             return $request;

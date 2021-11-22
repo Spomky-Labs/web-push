@@ -12,11 +12,9 @@ use WebPush\Base64Url;
 use WebPush\VAPID\JWSProvider;
 
 /**
- * @group unit
- *
  * @internal
  */
-class ParametersTest extends AbstractExtensionTest
+final class ParametersTest extends AbstractExtensionTest
 {
     /**
      * @test
@@ -51,15 +49,23 @@ class ParametersTest extends AbstractExtensionTest
                 'web-token' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
             ],
         ]);
 
         $this->assertContainerBuilderHasParameter('webpush.vapid.subject', 'foo@bar.com');
         $this->assertContainerBuilderHasParameter('webpush.vapid.token_lifetime', 'now +1 hour');
-        $this->assertContainerBuilderHasParameter('webpush.vapid.web_token.private_key', Base64Url::encode('00000000000000000000000000000000'));
-        $this->assertContainerBuilderHasParameter('webpush.vapid.web_token.public_key', Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'));
+        $this->assertContainerBuilderHasParameter(
+            'webpush.vapid.web_token.private_key',
+            Base64Url::encode('00000000000000000000000000000000')
+        );
+        $this->assertContainerBuilderHasParameter(
+            'webpush.vapid.web_token.public_key',
+            Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000')
+        );
     }
 
     /**
@@ -75,15 +81,23 @@ class ParametersTest extends AbstractExtensionTest
                 'lcobucci' => [
                     'enabled' => true,
                     'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                    'public_key' => Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'),
+                    'public_key' => Base64Url::encode(
+                        '00000000000000000000000000000000000000000000000000000000000000000'
+                    ),
                 ],
             ],
         ]);
 
         $this->assertContainerBuilderHasParameter('webpush.vapid.subject', 'foo@bar.com');
         $this->assertContainerBuilderHasParameter('webpush.vapid.token_lifetime', 'now +1 hour');
-        $this->assertContainerBuilderHasParameter('webpush.vapid.lcobucci.private_key', Base64Url::encode('00000000000000000000000000000000'));
-        $this->assertContainerBuilderHasParameter('webpush.vapid.lcobucci.public_key', Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000'));
+        $this->assertContainerBuilderHasParameter(
+            'webpush.vapid.lcobucci.private_key',
+            Base64Url::encode('00000000000000000000000000000000')
+        );
+        $this->assertContainerBuilderHasParameter(
+            'webpush.vapid.lcobucci.public_key',
+            Base64Url::encode('00000000000000000000000000000000000000000000000000000000000000000')
+        );
     }
 
     /**

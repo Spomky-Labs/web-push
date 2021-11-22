@@ -18,7 +18,7 @@ final class ExtensionCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(ExtensionManager::class)) {
+        if (! $container->hasDefinition(ExtensionManager::class)) {
             return;
         }
 

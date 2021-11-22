@@ -9,9 +9,11 @@ use Assert\Assertion;
 class ServerKey
 {
     private const PUBLIC_KEY_SIZE = 65;
+
     private const PRIVATE_KEY_SIZE = 32;
 
     private string $publicKey;
+
     private string $privateKey;
 
     public function __construct(string $publicKey, string $privateKey)

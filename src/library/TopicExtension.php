@@ -29,11 +29,16 @@ class TopicExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
-    {
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
         $topic = $notification->getTopic();
-        $this->logger->debug('Processing with the Topic extension', ['Topic' => $topic]);
-        if (null === $topic) {
+        $this->logger->debug('Processing with the Topic extension', [
+            'Topic' => $topic,
+        ]);
+        if ($topic === null) {
             return $request;
         }
 

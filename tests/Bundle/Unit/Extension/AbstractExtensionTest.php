@@ -14,8 +14,6 @@ abstract class AbstractExtensionTest extends AbstractExtensionTestCase
 {
     protected function getContainerExtensions(): array
     {
-        return [
-            new WebPushExtension('webpush'),
-        ];
+        return [new WebPushExtension('webpush')];
     }
 }

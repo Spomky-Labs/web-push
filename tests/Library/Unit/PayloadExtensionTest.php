@@ -15,8 +15,6 @@ use WebPush\Subscription;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class PayloadExtensionTest extends TestCase
 {
@@ -35,13 +33,13 @@ final class PayloadExtensionTest extends TestCase
             ->process($request, $notification, $subscription)
         ;
 
-        static::assertEquals('0', $request->getHeaderLine('content-length'));
+        static::assertSame('0', $request->getHeaderLine('content-length'));
 
         static::assertCount(2, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Processing with payload', $logger->records[0]['message']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('No payload', $logger->records[1]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Processing with payload', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[1]['level']);
+        static::assertSame('No payload', $logger->records[1]['message']);
     }
 
     /**
@@ -54,7 +52,10 @@ final class PayloadExtensionTest extends TestCase
             ->withPayload('Payload')
         ;
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey(
+            'p256dh',
+            'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+        );
         $subscription->setKey('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         $request = new Request('POST', 'https://foo.bar');
@@ -65,14 +66,14 @@ final class PayloadExtensionTest extends TestCase
             ->process($request, $notification, $subscription)
         ;
 
-        static::assertEquals('application/octet-stream', $request->getHeaderLine('content-type'));
-        static::assertEquals('aesgcm', $request->getHeaderLine('content-encoding'));
+        static::assertSame('application/octet-stream', $request->getHeaderLine('content-type'));
+        static::assertSame('aesgcm', $request->getHeaderLine('content-encoding'));
 
         static::assertCount(2, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Processing with payload', $logger->records[0]['message']);
-        static::assertEquals('debug', $logger->records[1]['level']);
-        static::assertEquals('Encoder found: aesgcm. Processing with the encoder.', $logger->records[1]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Processing with payload', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[1]['level']);
+        static::assertSame('Encoder found: aesgcm. Processing with the encoder.', $logger->records[1]['message']);
     }
 
     /**
@@ -81,7 +82,9 @@ final class PayloadExtensionTest extends TestCase
     public function unsupportedContentEncoding(): void
     {
         self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('No content encoding found. Supported content encodings for the subscription are: aesgcm');
+        self::expectExceptionMessage(
+            'No content encoding found. Supported content encodings for the subscription are: aesgcm'
+        );
 
         $request = new Request('POST', 'https://foo.bar');
 
@@ -89,7 +92,10 @@ final class PayloadExtensionTest extends TestCase
             ->withPayload('Payload')
         ;
         $subscription = Subscription::create('https://foo.bar');
-        $subscription->setKey('p256dh', 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4');
+        $subscription->setKey(
+            'p256dh',
+            'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+        );
         $subscription->setKey('auth', 'BTBZMqHH6r4Tts7J_aSIgg');
 
         PayloadExtension::create()

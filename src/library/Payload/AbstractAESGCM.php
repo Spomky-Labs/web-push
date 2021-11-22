@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace WebPush\Payload;
 
 use Assert\Assertion;
-use Assert\AssertionFailedException;
 use DateTimeImmutable;
 use JetBrains\PhpStorm\Pure;
 use function openssl_encrypt;
+use const OPENSSL_KEYTYPE_EC;
 use function openssl_pkey_new;
+use const OPENSSL_RAW_DATA;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function sprintf;
+use const STR_PAD_LEFT;
 use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Exception\OperationException;
@@ -25,18 +27,27 @@ use WebPush\Utils;
 abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 {
     public const WEB_PUSH_PAYLOAD_ENCRYPTION = 'WEB_PUSH_PAYLOAD_ENCRYPTION';
+
     protected const PADDING_NONE = 0;
+
     protected const PADDING_RECOMMENDED = 3052;
+
     private const SIZE = 32;
+
     private const SALT_SIZE = 16;
+
     private const CEK_SIZE = 16;
+
     private const NONCE_SIZE = 12;
 
     protected int $padding = self::PADDING_RECOMMENDED;
 
     private ?CacheItemPoolInterface $cache = null;
+
     private LoggerInterface $logger;
+
     private string $cacheKey = self::WEB_PUSH_PAYLOAD_ENCRYPTION;
+
     private string $cacheExpirationTime = 'now + 30min';
 
     #[Pure]
@@ -76,8 +87,11 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     abstract public function maxPadding(): self;
 
-    public function encode(string $payload, RequestInterface $request, SubscriptionInterface $subscription): RequestInterface
-    {
+    public function encode(
+        string $payload,
+        RequestInterface $request,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
         $this->logger->debug('Trying to encode the following payload.');
         Assertion::true($subscription->hasKey('p256dh'), 'The user-agent public key is missing');
         $userAgentPublicKey = Base64Url::decode($subscription->getKey('p256dh'));
@@ -94,7 +108,13 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         //IKM
         $keyInfo = $this->getKeyInfo($userAgentPublicKey, $serverKey);
-        $ikm = Utils::computeIKM($keyInfo, $userAgentAuthToken, $userAgentPublicKey, $serverKey->getPrivateKey(), $serverKey->getPublicKey());
+        $ikm = Utils::computeIKM(
+            $keyInfo,
+            $userAgentAuthToken,
+            $userAgentPublicKey,
+            $serverKey->getPrivateKey(),
+            $serverKey->getPublicKey()
+        );
         $this->logger->debug(sprintf('IKM: %s', Base64Url::encode($ikm)));
 
         //PRK
@@ -106,22 +126,36 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         // Derive the Content Encryption Key
         $contentEncryptionKeyInfo = $this->createInfo($this->name(), $context);
-        $contentEncryptionKey = mb_substr(hash_hmac('sha256', $contentEncryptionKeyInfo."\1", $prk, true), 0, self::CEK_SIZE, '8bit');
+        $contentEncryptionKey = mb_substr(
+            hash_hmac('sha256', $contentEncryptionKeyInfo . "\1", $prk, true),
+            0,
+            self::CEK_SIZE,
+            '8bit'
+        );
         $this->logger->debug(sprintf('CEK: %s', Base64Url::encode($contentEncryptionKey)));
 
         // Derive the Nonce
         $nonceInfo = $this->createInfo('nonce', $context);
-        $nonce = mb_substr(hash_hmac('sha256', $nonceInfo."\1", $prk, true), 0, self::NONCE_SIZE, '8bit');
+        $nonce = mb_substr(hash_hmac('sha256', $nonceInfo . "\1", $prk, true), 0, self::NONCE_SIZE, '8bit');
         $this->logger->debug(sprintf('NONCE: %s', Base64Url::encode($nonce)));
 
         // Padding
         $paddedPayload = $this->addPadding($payload);
-        $this->logger->debug('Payload with padding', ['padded_payload' => $paddedPayload]);
+        $this->logger->debug('Payload with padding', [
+            'padded_payload' => $paddedPayload,
+        ]);
 
         // Encryption
         $tag = '';
-        $encryptedText = openssl_encrypt($paddedPayload, 'aes-128-gcm', $contentEncryptionKey, OPENSSL_RAW_DATA, $nonce, $tag);
-        if (false === $encryptedText) {
+        $encryptedText = openssl_encrypt(
+            $paddedPayload,
+            'aes-128-gcm',
+            $contentEncryptionKey,
+            OPENSSL_RAW_DATA,
+            $nonce,
+            $tag
+        );
+        if ($encryptedText === false) {
             throw new OperationException('Unable to encrypt the payload');
         }
         $this->logger->debug(sprintf('Encrypted payload: %s', Base64Url::encode($encryptedText)));
@@ -129,7 +163,9 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         // Body to be sent
         $body = $this->prepareBody($encryptedText, $serverKey, $tag, $salt);
-        $request->getBody()->write($body);
+        $request->getBody()
+            ->write($body)
+        ;
 
         $bodyLength = mb_strlen($body, '8bit');
         Assertion::max($bodyLength, 4096, 'The size of payload must not be greater than 4096 bytes.');
@@ -147,9 +183,18 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     abstract protected function addPadding(string $payload): string;
 
-    abstract protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string;
+    abstract protected function prepareBody(
+        string $encryptedText,
+        ServerKey $serverKey,
+        string $tag,
+        string $salt
+    ): string;
 
-    abstract protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface;
+    abstract protected function prepareHeaders(
+        RequestInterface $request,
+        ServerKey $serverKey,
+        string $salt
+    ): RequestInterface;
 
     private function createInfo(string $type, string $context): string
     {
@@ -161,14 +206,10 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         return $info;
     }
 
-    /**
-     * @throws AssertionFailedException
-     * @throws OperationException
-     */
     private function getServerKey(): ServerKey
     {
         $this->logger->debug('Getting key from the cache');
-        if (null === $this->cache) {
+        if ($this->cache === null) {
             $this->logger->debug('No cache');
 
             return $this->generateServerKey();
@@ -191,10 +232,6 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         return $serverKey;
     }
 
-    /**
-     * @throws AssertionFailedException
-     * @throws OperationException
-     */
     private function generateServerKey(): ServerKey
     {
         $this->logger->debug('Generating new key pair');
@@ -202,7 +239,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
             'curve_name' => 'prime256v1',
             'private_key_type' => OPENSSL_KEYTYPE_EC,
         ]);
-        if (false === $keyResource) {
+        if ($keyResource === false) {
             throw new OperationException('Unable to generate a server key');
         }
 

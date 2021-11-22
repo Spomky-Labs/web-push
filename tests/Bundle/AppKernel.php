@@ -29,13 +29,7 @@ final class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        return [
-            new FrameworkBundle(),
-            new DoctrineBundle(),
-            new MonologBundle(),
-
-            new WebPushBundle(),
-        ];
+        return [new FrameworkBundle(), new DoctrineBundle(), new MonologBundle(), new WebPushBundle()];
     }
 
     /**
@@ -43,6 +37,6 @@ final class AppKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(__DIR__.'/config/config.yml');
+        $loader->load(__DIR__ . '/config/config.yml');
     }
 }

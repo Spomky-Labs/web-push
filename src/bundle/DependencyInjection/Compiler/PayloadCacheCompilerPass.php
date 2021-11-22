@@ -17,21 +17,32 @@ final class PayloadCacheCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        $this->processForService($container, AES128GCM::class, 'webpush.payload.aes128gcm.cache', 'webpush.payload.aes128gcm.cache_lifetime');
-        $this->processForService($container, AESGCM::class, 'webpush.payload.aesgcm.cache', 'webpush.payload.aesgcm.cache_lifetime');
+        $this->processForService(
+            $container,
+            AES128GCM::class,
+            'webpush.payload.aes128gcm.cache',
+            'webpush.payload.aes128gcm.cache_lifetime'
+        );
+        $this->processForService(
+            $container,
+            AESGCM::class,
+            'webpush.payload.aesgcm.cache',
+            'webpush.payload.aesgcm.cache_lifetime'
+        );
     }
 
-    private function processForService(ContainerBuilder $container, string $class, string $cache, string $parameter): void
-    {
-        if (!$container->hasDefinition($class) || !$container->hasAlias($cache)) {
+    private function processForService(
+        ContainerBuilder $container,
+        string $class,
+        string $cache,
+        string $parameter
+    ): void {
+        if (! $container->hasDefinition($class) || ! $container->hasAlias($cache)) {
             return;
         }
 
         $cacheLifetime = $container->getParameter($parameter);
         $definition = $container->getDefinition($class);
-        $definition->addMethodCall('setCache', [
-            new Reference($cache),
-            $cacheLifetime,
-        ]);
+        $definition->addMethodCall('setCache', [new Reference($cache), $cacheLifetime]);
     }
 }

@@ -23,20 +23,20 @@ final class PayloadPaddingCompilerPass implements CompilerPassInterface
 
     private function processForService(ContainerBuilder $container, string $class, string $parameter): void
     {
-        if (!$container->hasDefinition($class)) {
+        if (! $container->hasDefinition($class)) {
             return;
         }
 
         $padding = $container->getParameter($parameter);
         $definition = $container->getDefinition($class);
         switch (true) {
-            case 'none' === $padding:
+            case $padding === 'none':
                 $definition->addMethodCall('noPadding');
                 break;
-            case 'recommended' === $padding:
+            case $padding === 'recommended':
                 $definition->addMethodCall('recommendedPadding');
                 break;
-            case 'max' === $padding:
+            case $padding === 'max':
                 $definition->addMethodCall('maxPadding');
                 break;
             case is_int($padding):

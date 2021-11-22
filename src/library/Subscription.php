@@ -11,11 +11,10 @@ use DateTimeInterface;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 use function json_decode;
+use const JSON_THROW_ON_ERROR;
 
 class Subscription implements SubscriptionInterface
 {
-    private string $endpoint;
-
     /**
      * @var string[]
      */
@@ -28,9 +27,9 @@ class Subscription implements SubscriptionInterface
 
     private ?int $expirationTime = null;
 
-    public function __construct(string $endpoint)
-    {
-        $this->endpoint = $endpoint;
+    public function __construct(
+        private string $endpoint
+    ) {
         $this->keys = [];
     }
 
@@ -93,7 +92,7 @@ class Subscription implements SubscriptionInterface
     #[Pure]
     public function expiresAt(): ?DateTimeInterface
     {
-        return null === $this->expirationTime ? null : (new DateTimeImmutable())->setTimestamp($this->expirationTime);
+        return $this->expirationTime === null ? null : (new DateTimeImmutable())->setTimestamp($this->expirationTime);
     }
 
     #[Pure]

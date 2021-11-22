@@ -6,7 +6,9 @@ namespace WebPush;
 
 use JetBrains\PhpStorm\Pure;
 use function json_encode;
-use JsonException;
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 use JsonSerializable;
 
 /**
@@ -14,19 +16,14 @@ use JsonSerializable;
  */
 class Action implements JsonSerializable
 {
-    private string $action;
-    private string $title;
     private ?string $icon = null;
 
-    public function __construct(string $action, string $title)
-    {
-        $this->action = $action;
-        $this->title = $title;
+    public function __construct(
+        private string $action,
+        private string $title
+    ) {
     }
 
-    /**
-     * @throws JsonException
-     */
     public function toString(): string
     {
         return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -69,7 +66,7 @@ class Action implements JsonSerializable
     public function jsonSerialize(): array
     {
         return array_filter(get_object_vars($this), static function ($v): bool {
-            return null !== $v;
+            return $v !== null;
         });
     }
 }

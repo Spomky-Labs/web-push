@@ -8,7 +8,9 @@ use function count;
 use function is_array;
 use JetBrains\PhpStorm\Pure;
 use function json_encode;
-use JsonException;
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 use JsonSerializable;
 
 /**
@@ -22,9 +24,6 @@ class Message implements JsonSerializable
      */
     private array $actions = [];
 
-    private string $title;
-    private ?string $body;
-
     /**
      * @var mixed|null
      */
@@ -33,13 +32,21 @@ class Message implements JsonSerializable
     private ?string $dir = null; // = auto
 
     private ?string $badge = null;
+
     private ?string $icon = null;
+
     private ?string $image = null;
+
     private ?string $lang = null;
+
     private ?bool $renotify = null;
+
     private ?bool $requireInteraction = null;
+
     private ?bool $silent = null;
+
     private ?string $tag = null;
+
     private ?int $timestamp = null;
 
     /**
@@ -47,15 +54,12 @@ class Message implements JsonSerializable
      */
     private ?array $vibrate = null;
 
-    public function __construct(string $title, ?string $body = null)
-    {
-        $this->title = $title;
-        $this->body = $body;
+    public function __construct(
+        private string $title,
+        private ?string $body = null
+    ) {
     }
 
-    /**
-     * @throws JsonException
-     */
     public function toString(): string
     {
         return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -325,11 +329,11 @@ class Message implements JsonSerializable
     private function getOptions(array $properties): array
     {
         return array_filter($properties, static function ($v): bool {
-            if (is_array($v) && 0 === count($v)) {
+            if (is_array($v) && count($v) === 0) {
                 return false;
             }
 
-            return null !== $v;
+            return $v !== null;
         });
     }
 }

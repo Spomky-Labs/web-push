@@ -10,8 +10,6 @@ use WebPush\Notification;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class NotificationTest extends TestCase
 {
@@ -32,10 +30,10 @@ final class NotificationTest extends TestCase
             ->sync()
         ;
 
-        static::assertEquals(Notification::URGENCY_HIGH, $subscription->getUrgency());
-        static::assertEquals(0, $subscription->getTTL());
-        static::assertEquals('payload', $subscription->getPayload());
-        static::assertEquals('topic', $subscription->getTopic());
+        static::assertSame(Notification::URGENCY_HIGH, $subscription->getUrgency());
+        static::assertSame(0, $subscription->getTTL());
+        static::assertSame('payload', $subscription->getPayload());
+        static::assertSame('topic', $subscription->getTopic());
         static::assertFalse($subscription->isAsync());
     }
 
@@ -48,10 +46,10 @@ final class NotificationTest extends TestCase
             ->withTTL(3600)
         ;
 
-        static::assertEquals(Notification::URGENCY_NORMAL, $subscription->getUrgency());
-        static::assertEquals(3600, $subscription->getTTL());
-        static::assertEquals(null, $subscription->getPayload());
-        static::assertEquals(null, $subscription->getTopic());
+        static::assertSame(Notification::URGENCY_NORMAL, $subscription->getUrgency());
+        static::assertSame(3600, $subscription->getTTL());
+        static::assertNull($subscription->getPayload());
+        static::assertNull($subscription->getTopic());
     }
 
     /**
@@ -86,7 +84,7 @@ final class NotificationTest extends TestCase
             ->withUrgency($urgency)
         ;
 
-        static::assertEquals($urgency, $subscription->getUrgency());
+        static::assertSame($urgency, $subscription->getUrgency());
     }
 
     /**
@@ -139,8 +137,10 @@ final class NotificationTest extends TestCase
 
         static::assertFalse($notification->has('nope'));
         static::assertTrue($notification->has('foo'));
-        static::assertEquals('BAR', $notification->get('foo'));
-        static::assertEquals(['foo' => 'BAR'], $notification->getMetadata());
+        static::assertSame('BAR', $notification->get('foo'));
+        static::assertSame([
+            'foo' => 'BAR',
+        ], $notification->getMetadata());
     }
 
     /**

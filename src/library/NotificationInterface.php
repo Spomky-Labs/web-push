@@ -7,8 +7,11 @@ namespace WebPush;
 interface NotificationInterface
 {
     public const URGENCY_VERY_LOW = 'very-low';
+
     public const URGENCY_LOW = 'low';
+
     public const URGENCY_NORMAL = 'normal';
+
     public const URGENCY_HIGH = 'high';
 
     public function getUrgency(): string;
@@ -28,8 +31,5 @@ interface NotificationInterface
 
     public function has(string $key): bool;
 
-    /**
-     * @return mixed
-     */
     public function get(string $key);
 }

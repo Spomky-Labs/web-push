@@ -8,7 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
 use function json_encode;
-use JsonException;
+use const JSON_THROW_ON_ERROR;
 use Throwable;
 use WebPush\Subscription;
 
@@ -16,17 +16,20 @@ final class SubscriptionType extends Type
 {
     /**
      * {@inheritdoc}
-     *
-     * @throws JsonException
-     * @throws ConversionException
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
-        if (!$value instanceof Subscription) {
-            throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', Subscription::class]);
+        if (! $value instanceof Subscription) {
+            throw ConversionException::conversionFailedInvalidType(
+                $value,
+                $this->getName(),
+                ['null',
+                Subscription::class,
+                
+            ]);
         }
 
         return json_encode($value, JSON_THROW_ON_ERROR);
@@ -37,7 +40,7 @@ final class SubscriptionType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Subscription
     {
-        if (null === $value || $value instanceof Subscription) {
+        if ($value === null || $value instanceof Subscription) {
             return $value;
         }
         try {

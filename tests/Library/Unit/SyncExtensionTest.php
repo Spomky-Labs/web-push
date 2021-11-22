@@ -13,8 +13,6 @@ use WebPush\Subscription;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class SyncExtensionTest extends TestCase
 {
@@ -35,10 +33,10 @@ final class SyncExtensionTest extends TestCase
             ->process($request, $notification, $subscription)
         ;
 
-        static::assertEquals('respond-async', $request->getHeaderLine('prefer'));
+        static::assertSame('respond-async', $request->getHeaderLine('prefer'));
         static::assertCount(1, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Sending asynchronous notification', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Sending asynchronous notification', $logger->records[0]['message']);
     }
 
     /**
@@ -60,7 +58,7 @@ final class SyncExtensionTest extends TestCase
 
         static::assertFalse($request->hasHeader('prefer'));
         static::assertCount(1, $logger->records);
-        static::assertEquals('debug', $logger->records[0]['level']);
-        static::assertEquals('Sending synchronous notification', $logger->records[0]['message']);
+        static::assertSame('debug', $logger->records[0]['level']);
+        static::assertSame('Sending synchronous notification', $logger->records[0]['message']);
     }
 }

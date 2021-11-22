@@ -22,6 +22,7 @@ class PayloadExtension implements Extension, Loggable
      * @var ContentEncoding[]
      */
     private array $contentEncodings = [];
+
     private LoggerInterface $logger;
 
     #[Pure]
@@ -50,11 +51,14 @@ class PayloadExtension implements Extension, Loggable
         return $this;
     }
 
-    public function process(RequestInterface $request, NotificationInterface $notification, SubscriptionInterface $subscription): RequestInterface
-    {
+    public function process(
+        RequestInterface $request,
+        NotificationInterface $notification,
+        SubscriptionInterface $subscription
+    ): RequestInterface {
         $this->logger->debug('Processing with payload');
         $payload = $notification->getPayload();
-        if (null === $payload || '' === $payload) {
+        if ($payload === null || $payload === '') {
             $this->logger->debug('No payload');
 
             return $request
@@ -81,6 +85,9 @@ class PayloadExtension implements Extension, Loggable
                 return $this->contentEncodings[$supportedContentEncoding];
             }
         }
-        throw new InvalidArgumentException(sprintf('No content encoding found. Supported content encodings for the subscription are: %s', implode(', ', $supportedContentEncodings)));
+        throw new InvalidArgumentException(sprintf(
+            'No content encoding found. Supported content encodings for the subscription are: %s',
+            implode(', ', $supportedContentEncodings)
+        ));
     }
 }

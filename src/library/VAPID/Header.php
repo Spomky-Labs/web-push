@@ -6,13 +6,10 @@ namespace WebPush\VAPID;
 
 class Header
 {
-    private string $token;
-    private string $key;
-
-    public function __construct(string $token, string $key)
-    {
-        $this->token = $token;
-        $this->key = $key;
+    public function __construct(
+        private string $token,
+        private string $key
+    ) {
     }
 
     public function getToken(): string

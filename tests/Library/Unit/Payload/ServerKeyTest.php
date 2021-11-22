@@ -10,8 +10,6 @@ use WebPush\Payload\ServerKey;
 
 /**
  * @internal
- * @group Unit
- * @group Library
  */
 final class ServerKeyTest extends TestCase
 {

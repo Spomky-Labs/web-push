@@ -44,7 +44,7 @@ performance-tests: vendor ## Run performance test suite
 
 .PHONY: rector
 rector: vendor ## Check all files using Rector
-	vendor/bin/rector process --ansi --dry-run
+	vendor/bin/rector process --ansi --dry-run --xdebug
 
 
 .DEFAULT_GOAL := help

@@ -7,10 +7,12 @@ namespace WebPush\Payload;
 use Assert\Assertion;
 use function pack;
 use Psr\Http\Message\RequestInterface;
+use const STR_PAD_RIGHT;
 
 final class AES128GCM extends AbstractAESGCM
 {
     public const PADDING_MAX = 3993; // as per RFC8291: 4096 -tag(16) -salt(16) -rs(4) -idlen(1) -keyid(65) -AEAD_AES_128_GCM expension(16) and 1 byte in case of
+
     private const ENCODING = 'aes128gcm';
 
     public static function create(): self
@@ -40,7 +42,7 @@ final class AES128GCM extends AbstractAESGCM
 
     protected function getKeyInfo(string $userAgentPublicKey, ServerKey $serverKey): string
     {
-        return 'WebPush: info'."\0".$userAgentPublicKey.$serverKey->getPublicKey();
+        return 'WebPush: info' . "\0" . $userAgentPublicKey . $serverKey->getPublicKey();
     }
 
     protected function getContext(string $userAgentPublicKey, ServerKey $serverKey): string
@@ -50,7 +52,7 @@ final class AES128GCM extends AbstractAESGCM
 
     protected function addPadding(string $payload): string
     {
-        return str_pad($payload."\2", $this->padding, "\0", STR_PAD_RIGHT);
+        return str_pad($payload . "\2", $this->padding, "\0", STR_PAD_RIGHT);
     }
 
     protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface
@@ -60,11 +62,11 @@ final class AES128GCM extends AbstractAESGCM
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string
     {
-        return $salt.
-            pack('N*', 4096).
-            pack('C*', mb_strlen($serverKey->getPublicKey(), '8bit')).
-            $serverKey->getPublicKey().
-            $encryptedText.
+        return $salt .
+            pack('N*', 4096) .
+            pack('C*', mb_strlen($serverKey->getPublicKey(), '8bit')) .
+            $serverKey->getPublicKey() .
+            $encryptedText .
             $tag
         ;
     }

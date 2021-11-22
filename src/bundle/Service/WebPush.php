@@ -16,16 +16,13 @@ use WebPush\WebPushService;
 
 class WebPush implements WebPushService, Loggable
 {
-    private HttpClientInterface $client;
     private LoggerInterface $logger;
-    private RequestFactoryInterface $requestFactory;
-    private ExtensionManager $extensionManager;
 
-    public function __construct(HttpClientInterface $client, RequestFactoryInterface $requestFactory, ExtensionManager $extensionManager)
-    {
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
-        $this->extensionManager = $extensionManager;
+    public function __construct(
+        private HttpClientInterface $client,
+        private RequestFactoryInterface $requestFactory,
+        private ExtensionManager $extensionManager
+    ) {
         $this->logger = new NullLogger();
     }
 
@@ -38,21 +35,25 @@ class WebPush implements WebPushService, Loggable
 
     public function send(NotificationInterface $notification, SubscriptionInterface $subscription): StatusReport
     {
-        $this->logger->debug('Sending notification', ['notification' => $notification, 'subscription' => $subscription]);
+        $this->logger->debug('Sending notification', [
+            'notification' => $notification,
+            'subscription' => $subscription,
+        ]);
         $request = $this->requestFactory->createRequest('POST', $subscription->getEndpoint());
         $request = $this->extensionManager->process($request, $notification, $subscription);
-        $this->logger->debug('Request ready', ['request' => $request]);
+        $this->logger->debug('Request ready', [
+            'request' => $request,
+        ]);
 
         $response = $this->client->request('POST', $subscription->getEndpoint(), [
-            'body' => $request->getBody()->getContents(),
+            'body' => $request->getBody()
+                ->getContents(),
             'headers' => $request->getHeaders(),
         ]);
-        $this->logger->debug('Response received', ['response' => $response]);
+        $this->logger->debug('Response received', [
+            'response' => $response,
+        ]);
 
-        return new StatusReport(
-            $subscription,
-            $notification,
-            $response
-        );
+        return new StatusReport($subscription, $notification, $response);
     }
 }
