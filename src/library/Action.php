@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use JetBrains\PhpStorm\Pure;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -29,7 +28,6 @@ class Action implements JsonSerializable
         return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    #[Pure]
     public static function create(string $action, string $title): self
     {
         return new self($action, $title);
@@ -42,19 +40,16 @@ class Action implements JsonSerializable
         return $this;
     }
 
-    #[Pure]
     public function getAction(): string
     {
         return $this->action;
     }
 
-    #[Pure]
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    #[Pure]
     public function getIcon(): ?string
     {
         return $this->icon;

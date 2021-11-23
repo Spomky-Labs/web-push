@@ -6,7 +6,6 @@ namespace WebPush;
 
 use function count;
 use function is_array;
-use JetBrains\PhpStorm\Pure;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -65,7 +64,6 @@ class Message implements JsonSerializable
         return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    #[Pure]
     public static function create(string $title, ?string $body = null): self
     {
         return new self($title, $body);
@@ -74,85 +72,71 @@ class Message implements JsonSerializable
     /**
      * @return array<int, Action>
      */
-    #[Pure]
     public function getActions(): array
     {
         return $this->actions;
     }
 
-    #[Pure]
     public function getBody(): ?string
     {
         return $this->body;
     }
 
-    #[Pure]
     public function getData(): mixed
     {
         return $this->data;
     }
 
-    #[Pure]
     public function getDir(): ?string
     {
         return $this->dir;
     }
 
-    #[Pure]
     public function getBadge(): ?string
     {
         return $this->badge;
     }
 
-    #[Pure]
     public function getIcon(): ?string
     {
         return $this->icon;
     }
 
-    #[Pure]
     public function getImage(): ?string
     {
         return $this->image;
     }
 
-    #[Pure]
     public function getLang(): ?string
     {
         return $this->lang;
     }
 
-    #[Pure]
     public function getRenotify(): ?bool
     {
         return $this->renotify;
     }
 
-    #[Pure]
     public function isInteractionRequired(): ?bool
     {
         return $this->requireInteraction;
     }
 
-    #[Pure]
     public function isSilent(): ?bool
     {
         return $this->silent;
     }
 
-    #[Pure]
     public function getTag(): ?string
     {
         return $this->tag;
     }
 
-    #[Pure]
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    #[Pure]
     public function getTimestamp(): ?int
     {
         return $this->timestamp;
@@ -161,7 +145,6 @@ class Message implements JsonSerializable
     /**
      * @return array<int, int>|null
      */
-    #[Pure]
     public function getVibrate(): ?array
     {
         return $this->vibrate;
@@ -302,7 +285,7 @@ class Message implements JsonSerializable
 
     public function vibrate(int ...$vibrations): self
     {
-        $this->vibrate = $vibrations;
+        $this->vibrate = array_values($vibrations);
 
         return $this;
     }

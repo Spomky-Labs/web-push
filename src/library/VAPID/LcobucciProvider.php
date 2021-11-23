@@ -78,6 +78,6 @@ final class LcobucciProvider implements JWSProvider, Loggable
             'key' => $this->publicKey,
         ]);
 
-        return new Header($token, $this->publicKey);
+        return Header::create($token, $this->publicKey);
     }
 }

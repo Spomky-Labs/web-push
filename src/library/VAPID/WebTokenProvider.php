@@ -90,7 +90,7 @@ final class WebTokenProvider implements JWSProvider, Loggable
             'key' => $key,
         ]);
 
-        return new Header($token, $key);
+        return Header::create($token, $key);
     }
 
     private function serializePublicKey(): string

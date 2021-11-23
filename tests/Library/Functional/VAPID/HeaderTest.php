@@ -17,7 +17,7 @@ final class HeaderTest extends TestCase
      */
     public function createHeader(): void
     {
-        $header = new Header('token', 'key');
+        $header = Header::create('token', 'key');
 
         static::assertSame('token', $header->getToken());
         static::assertSame('key', $header->getKey());

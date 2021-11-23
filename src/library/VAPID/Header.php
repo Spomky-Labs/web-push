@@ -12,6 +12,11 @@ class Header
     ) {
     }
 
+    public static function create(string $token, string $key): self
+    {
+        return new self($token, $key);
+    }
+
     public function getToken(): string
     {
         return $this->token;

@@ -9,7 +9,6 @@ use Assert\Assertion;
 use DateTimeImmutable;
 use DateTimeInterface;
 use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
@@ -33,7 +32,6 @@ class Subscription implements SubscriptionInterface
         $this->keys = [];
     }
 
-    #[Pure]
     public static function create(string $endpoint): self
     {
         return new self($endpoint);
@@ -49,19 +47,16 @@ class Subscription implements SubscriptionInterface
         return $this;
     }
 
-    #[Pure]
     public function getKeys(): array
     {
         return $this->keys;
     }
 
-    #[Pure]
     public function hasKey(string $key): bool
     {
         return isset($this->keys[$key]);
     }
 
-    #[Pure]
     public function getKey(string $key): string
     {
         Assertion::keyExists($this->keys, $key, 'The key does not exist');
@@ -76,7 +71,6 @@ class Subscription implements SubscriptionInterface
         return $this;
     }
 
-    #[Pure]
     public function getExpirationTime(): ?int
     {
         return $this->expirationTime;
@@ -89,13 +83,11 @@ class Subscription implements SubscriptionInterface
         return $this;
     }
 
-    #[Pure]
     public function expiresAt(): ?DateTimeInterface
     {
         return $this->expirationTime === null ? null : (new DateTimeImmutable())->setTimestamp($this->expirationTime);
     }
 
-    #[Pure]
     public function getEndpoint(): string
     {
         return $this->endpoint;
@@ -104,7 +96,6 @@ class Subscription implements SubscriptionInterface
     /**
      * @return string[]
      */
-    #[Pure]
     public function getSupportedContentEncodings(): array
     {
         return $this->supportedContentEncodings;

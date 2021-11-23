@@ -151,6 +151,6 @@ final class WebPushTest extends TestCase
 
         $requestFactory = new Psr17Factory();
 
-        return new WebPush($client, $requestFactory, $extensionManager);
+        return WebPush::create($client, $requestFactory, $extensionManager);
     }
 }

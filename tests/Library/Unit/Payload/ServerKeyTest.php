@@ -21,7 +21,7 @@ final class ServerKeyTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('Invalid public key length');
 
-        new ServerKey('', '');
+        ServerKey::create('', '');
     }
 
     /**
@@ -34,6 +34,6 @@ final class ServerKeyTest extends TestCase
 
         $fakePublicKey = str_pad('', 65, '-');
 
-        new ServerKey($fakePublicKey, '');
+        ServerKey::create($fakePublicKey, '');
     }
 }

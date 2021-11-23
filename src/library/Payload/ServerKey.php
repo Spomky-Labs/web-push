@@ -24,6 +24,11 @@ class ServerKey
         $this->privateKey = $privateKey;
     }
 
+    public static function create(string $publicKey, string $privateKey): self
+    {
+        return new self($publicKey, $privateKey);
+    }
+
     public function getPublicKey(): string
     {
         return $this->publicKey;

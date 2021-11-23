@@ -6,7 +6,6 @@ namespace WebPush\Payload;
 
 use Assert\Assertion;
 use DateTimeImmutable;
-use JetBrains\PhpStorm\Pure;
 use function openssl_encrypt;
 use const OPENSSL_KEYTYPE_EC;
 use function openssl_pkey_new;
@@ -50,7 +49,6 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     private string $cacheExpirationTime = 'now + 30min';
 
-    #[Pure]
     public function __construct()
     {
         $this->logger = new NullLogger();
@@ -251,7 +249,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $publicKey .= str_pad($details['ec']['x'], self::SIZE, "\0", STR_PAD_LEFT);
         $publicKey .= str_pad($details['ec']['y'], self::SIZE, "\0", STR_PAD_LEFT);
         $privateKey = str_pad($details['ec']['d'], self::SIZE, "\0", STR_PAD_LEFT);
-        $key = new ServerKey($publicKey, $privateKey);
+        $key = ServerKey::create($publicKey, $privateKey);
 
         $this->logger->debug('The key has been created.');
 

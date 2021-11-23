@@ -140,7 +140,7 @@ class Notification implements NotificationInterface
         return $this->metadata;
     }
 
-    public function add(string $key, $data): self
+    public function add(string $key, mixed $data): self
     {
         $this->metadata[$key] = $data;
 
@@ -152,7 +152,7 @@ class Notification implements NotificationInterface
         return array_key_exists($key, $this->metadata);
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         Assertion::true($this->has($key), 'Missing metadata');
 

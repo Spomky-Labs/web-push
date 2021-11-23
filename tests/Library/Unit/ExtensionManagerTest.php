@@ -30,8 +30,8 @@ final class ExtensionManagerTest extends TestCase
 
         ExtensionManager::create()
             ->setLogger($logger)
-            ->add(new TTLExtension())
-            ->add(new PreferAsyncExtension())
+            ->add(TTLExtension::create())
+            ->add(PreferAsyncExtension::create())
             ->process($request, $notification, $subscription)
         ;
 

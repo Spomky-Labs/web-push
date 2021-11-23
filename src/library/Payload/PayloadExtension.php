@@ -6,7 +6,6 @@ namespace WebPush\Payload;
 
 use function array_key_exists;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -25,13 +24,11 @@ class PayloadExtension implements Extension, Loggable
 
     private LoggerInterface $logger;
 
-    #[Pure]
     public function __construct()
     {
         $this->logger = new NullLogger();
     }
 
-    #[Pure]
     public static function create(): self
     {
         return new self();

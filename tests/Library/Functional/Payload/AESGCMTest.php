@@ -246,7 +246,7 @@ final class AESGCMTest extends TestCase
         $cache = new ArrayAdapter();
         $item = $cache->getItem('WEB_PUSH_PAYLOAD_ENCRYPTION');
         $item->set(
-            new ServerKey(
+            ServerKey::create(
                 Base64Url::decode(
                     'BNuH4FkvKM50iG9sNLmJxSJL-H5B7KzxdpVOMp8OCmJZIaiZhXWFEolBD3xAXpJbjqMuny5jznfDnjYKueWngnM'
                 ),

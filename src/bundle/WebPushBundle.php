@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace WebPush\Bundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use JetBrains\PhpStorm\Pure;
 use function realpath;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -24,7 +23,6 @@ final class WebPushBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    #[Pure]
     public function getContainerExtension(): ExtensionInterface
     {
         return new WebPushExtension('webpush');
