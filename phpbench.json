@@ -1,0 +1,36 @@
+{
+    "runner.bootstrap": "vendor/autoload.php",
+    "runner.path": "tests/Benchmark",
+    "runner.progress": "dots",
+    "runner.time_unit": "microseconds",
+    "runner.retry_threshold": 10,
+    "report.generators": {
+        "with-params": {
+            "extends": "aggregate",
+            "cols": ["subject", "groups", "mean", "params"]
+        },
+        "full": {
+            "extends": "aggregate",
+            "cols": ["subject", "groups", "revs", "best", "mean", "mode", "worst", "params"]
+        },
+        "simple": {
+            "extends": "aggregate",
+            "cols": ["subject", "groups", "mean"]
+        }
+    },
+    "report.outputs": {
+        "all": {
+            "extends": "html",
+            "file": "report.html",
+            "title": "WebPush Performance Test Suite"
+        },
+        "md": {
+            "extends": "markdown",
+            "file": "report.md",
+            "title": "WebPush Performance Test Suite"
+        }
+    },
+    "core.extensions": [
+        "PhpBench\\Extensions\\XDebug\\XDebugExtension"
+    ]
+}

@@ -1,0 +1,76 @@
+services:
+    WebPush\Tests\Bundle\MockClientCallback: ~
+    WebPush\Tests\Bundle\FakeApp\Repository\SubscriptionRepository:
+        public: true
+        arguments:
+          [ '@doctrine' ]
+    WebPush\Tests\Bundle\FakeApp\Repository\UserRepository:
+        public: true
+        arguments:
+          [ '@doctrine' ]
+    WebPush\Tests\Bundle\WebPushEventListener:
+        tags:
+            - { name: kernel.event_listener, event: WebPush\StatusReport }
+    Psr\Http\Message\RequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\ResponseFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\ServerRequestFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\StreamFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\UploadedFileFactoryInterface: '@nyholm.psr7.psr17_factory'
+    Psr\Http\Message\UriFactoryInterface: '@nyholm.psr7.psr17_factory'
+    nyholm.psr7.psr17_factory:
+        class: Nyholm\Psr7\Factory\Psr17Factory
+
+monolog:
+    handlers:
+        main:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+
+framework:
+    test: ~
+    secret: 'test'
+    annotations: ~
+    http_client:
+        mock_response_factory: WebPush\Tests\Bundle\MockClientCallback
+
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver: pdo_sqlite
+                memory: true
+    orm:
+        auto_generate_proxy_classes: true
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/'
+                prefix: 'WebPush\Tests\Bundle\FakeApp\Entity'
+                alias: App
+
+webpush:
+    #logger: Psr\Log\LoggerInterface
+    doctrine_mapping: true
+    vapid:
+        enabled: true
+        subject: 'https://foo.bar'
+        #cache: Psr\Cache\CacheItemPoolInterface
+        #cache_lifetime: '+1 hour'
+        #token_lifetime: '+2 hour'
+        web_token:
+            enabled: true
+            public_key: 'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ'
+            private_key: 'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
+    #payload:
+        #aesgcm:
+            #cache: Psr\Cache\CacheItemPoolInterface
+            #cache_lifetime: '+1 hour'
+            #padding: 'recommended'
+        #aes128gcm:
+            #cache: Psr\Cache\CacheItemPoolInterface
+            #cache_lifetime: '+1 hour'
+            #padding: 'recommended'

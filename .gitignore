@@ -1,0 +1,5 @@
+.*.cache
+report.md
+report.html
+composer.lock
+infection.log
