@@ -7,15 +7,15 @@ code-coverage: vendor ## Show test coverage rates
 
 .PHONY: fix-coding-standards
 fix-coding-standards: vendor ## Fix all files using defined PHP-CS-FIXER rules
-	vendor/bin/php-cs-fixer fix --diff --verbose
+	vendor/bin/ecs --fix
 
 .PHONY: coding-standards
 coding-standards: vendor ## Check all files using defined PHP-CS-FIXER rules
-	vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no
+	vendor/bin/ecs
 
 .PHONY: mutation-tests
 mutation-tests: vendor ## Run mutation tests with minimum MSI and covered MSI enabled
-	vendor/bin/infection --logger-github --git-diff-filter=AM -s --threads=$(nproc) --min-msi=83 --min-covered-msi=88
+	vendor/bin/infection --logger-github -s --threads=$(nproc) --min-msi=80 --min-covered-msi=88
 
 .PHONY: tests
 tests: vendor ## Run all tests
