@@ -16,7 +16,6 @@ use function preg_match;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\Test\TestLogger;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use function unpack;
@@ -24,6 +23,7 @@ use WebPush\Base64Url;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\ServerKey;
 use WebPush\Subscription;
+use WebPush\Tests\TestLogger;
 use WebPush\Utils;
 
 /**

@@ -10,10 +10,10 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\Test\TestLogger;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Subscription;
+use WebPush\Tests\TestLogger;
 use WebPush\WebPush;
 
 /**

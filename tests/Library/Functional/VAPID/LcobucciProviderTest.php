@@ -7,9 +7,9 @@ namespace WebPush\Tests\Library\Functional\VAPID;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
 use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
+use WebPush\Tests\TestLogger;
 use WebPush\VAPID\LcobucciProvider;
 
 /**

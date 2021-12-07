@@ -7,10 +7,10 @@ namespace WebPush\Tests\Library\Functional\VAPID;
 use function json_decode;
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
 use WebPush\Base64Url;
 use WebPush\Notification;
 use WebPush\Subscription;
+use WebPush\Tests\TestLogger;
 use WebPush\VAPID\LcobucciProvider;
 use WebPush\VAPID\VAPIDExtension;
 

@@ -7,11 +7,11 @@ namespace WebPush\Tests\Library\Unit;
 use InvalidArgumentException;
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
 use WebPush\Payload\AESGCM;
 use WebPush\Payload\PayloadExtension;
 use WebPush\Subscription;
+use WebPush\Tests\TestLogger;
 
 /**
  * @internal

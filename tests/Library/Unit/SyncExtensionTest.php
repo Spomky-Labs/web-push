@@ -6,10 +6,10 @@ namespace WebPush\Tests\Library\Unit;
 
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
 use WebPush\Notification;
 use WebPush\PreferAsyncExtension;
 use WebPush\Subscription;
+use WebPush\Tests\TestLogger;
 
 /**
  * @internal
