@@ -27,7 +27,7 @@ final class AppKernel extends Kernel
      *
      * @return iterable|BundleInterface[] An iterable of bundle instances
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [new FrameworkBundle(), new DoctrineBundle(), new MonologBundle(), new WebPushBundle()];
     }
