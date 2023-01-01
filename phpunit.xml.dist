@@ -6,7 +6,7 @@
     executionOrder="random"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
 >
-    <coverage cacheDirectory=".coverage-cache">
+    <coverage>
         <include>
             <directory suffix=".php">./src</directory>
         </include>
