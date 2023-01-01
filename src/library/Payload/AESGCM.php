@@ -6,6 +6,7 @@ namespace WebPush\Payload;
 
 use Assert\Assertion;
 use function pack;
+use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
 use function sprintf;
 use const STR_PAD_LEFT;
@@ -17,9 +18,9 @@ final class AESGCM extends AbstractAESGCM
 
     private const ENCODING = 'aesgcm';
 
-    public static function create(): self
+    public static function create(ClockInterface $clock): self
     {
-        return new self();
+        return new self($clock);
     }
 
     public function customPadding(int $padding): self

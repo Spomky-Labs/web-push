@@ -18,6 +18,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
+use Symfony\Component\Clock\NativeClock;
 use function unpack;
 use WebPush\Base64Url;
 use WebPush\Payload\AES128GCM;
@@ -39,7 +40,7 @@ final class AES128GCMTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('Invalid padding size');
 
-        AES128GCM::create()->customPadding(3994);
+        AES128GCM::create(new NativeClock())->customPadding(3994);
     }
 
     /**
@@ -50,7 +51,7 @@ final class AES128GCMTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('Invalid padding size');
 
-        AES128GCM::create()->customPadding(-1);
+        AES128GCM::create(new NativeClock())->customPadding(-1);
     }
 
     /**
@@ -66,7 +67,7 @@ final class AES128GCMTest extends TestCase
             ->withContentEncodings(['aes128gcm'])
         ;
 
-        AES128GCM::create()->encode('', $request, $subscription);
+        AES128GCM::create(new NativeClock())->encode('', $request, $subscription);
     }
 
     /**
@@ -86,7 +87,7 @@ final class AES128GCMTest extends TestCase
             'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
         );
 
-        AES128GCM::create()->encode('', $request, $subscription);
+        AES128GCM::create(new NativeClock())->encode('', $request, $subscription);
     }
 
     /**
@@ -139,7 +140,7 @@ final class AES128GCMTest extends TestCase
         $subscription->setKey('p256dh', $userAgentPublicKey);
         $subscription->setKey('auth', $userAgentAuthToken);
 
-        $encoder = AES128GCM::create();
+        $encoder = AES128GCM::create(new NativeClock());
 
         switch ($padding) {
             case 'noPadding':
@@ -200,7 +201,7 @@ final class AES128GCMTest extends TestCase
         $subscription->setKey('p256dh', $userAgentPublicKey);
         $subscription->setKey('auth', $userAgentAuthToken);
 
-        $encoder = AES128GCM::create();
+        $encoder = AES128GCM::create(new NativeClock());
 
         static::assertSame('aes128gcm', $encoder->name());
         $payload = str_pad('', 3994, '0');

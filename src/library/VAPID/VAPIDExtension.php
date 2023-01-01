@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use DateTimeImmutable;
 use function is_array;
 use function parse_url;
+use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -25,14 +25,15 @@ final class VAPIDExtension implements Extension, Loggable
 
     public function __construct(
         private readonly string $subject,
-        private readonly JWSProvider $jwsProvider
+        private readonly JWSProvider $jwsProvider,
+        private readonly ClockInterface $clock
     ) {
         $this->logger = new NullLogger();
     }
 
-    public static function create(string $subject, JWSProvider $jwsProvider): self
+    public static function create(string $subject, JWSProvider $jwsProvider, ClockInterface $clock): self
     {
-        return new self($subject, $jwsProvider);
+        return new self($subject, $jwsProvider, $clock);
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -56,7 +57,8 @@ final class VAPIDExtension implements Extension, Loggable
     ): RequestInterface {
         $this->logger->debug('Processing with VAPID header');
         $endpoint = $subscription->getEndpoint();
-        $expiresAt = new DateTimeImmutable($this->tokenExpirationTime);
+        $expiresAt = $this->clock->now()
+            ->modify($this->tokenExpirationTime);
         $parsedEndpoint = parse_url($endpoint);
         if (! is_array($parsedEndpoint) || ! isset($parsedEndpoint['host'], $parsedEndpoint['scheme'])) {
             throw new OperationException('Invalid subscription endpoint');

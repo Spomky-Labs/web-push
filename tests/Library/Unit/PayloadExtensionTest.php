@@ -7,6 +7,7 @@ namespace WebPush\Tests\Library\Unit;
 use InvalidArgumentException;
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\NativeClock;
 use WebPush\Notification;
 use WebPush\Payload\AESGCM;
 use WebPush\Payload\PayloadExtension;
@@ -62,7 +63,7 @@ final class PayloadExtensionTest extends TestCase
 
         $request = PayloadExtension::create()
             ->setLogger($logger)
-            ->addContentEncoding(AESGCM::create())
+            ->addContentEncoding(AESGCM::create(new NativeClock()))
             ->process($request, $notification, $subscription)
         ;
 

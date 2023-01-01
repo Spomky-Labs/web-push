@@ -7,6 +7,7 @@ namespace WebPush\Tests\Benchmark;
 use Nyholm\Psr7\Request;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Subject;
+use Symfony\Component\Clock\NativeClock;
 use WebPush\Action;
 use WebPush\Message;
 use WebPush\Payload\AbstractAESGCM;
@@ -33,9 +34,9 @@ final class AES128GCMPaddingBench
 
     public function init(): void
     {
-        $this->encoder = AES128GCM::create()->noPadding();
-        $this->encoderWithRecommendedPadding = AES128GCM::create()->recommendedPadding();
-        $this->encoderWithMaximumPadding = AES128GCM::create()->maxPadding();
+        $this->encoder = AES128GCM::create(new NativeClock())->noPadding();
+        $this->encoderWithRecommendedPadding = AES128GCM::create(new NativeClock())->recommendedPadding();
+        $this->encoderWithMaximumPadding = AES128GCM::create(new NativeClock())->maxPadding();
 
         $this->message = Message::create('Hello World!')
             ->withLang('en-GB')

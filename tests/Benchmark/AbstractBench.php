@@ -7,6 +7,7 @@ namespace WebPush\Tests\Benchmark;
 use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Clock\NativeClock;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Payload\AES128GCM;
@@ -38,18 +39,18 @@ abstract class AbstractBench
         $psr17Factory = new Psr17Factory();
 
         $jwsProvider = $this->jwtProvider();
-        $vapidExtension = VAPIDExtension::create('mailto:foo@bar.com', $jwsProvider);
+        $vapidExtension = VAPIDExtension::create('mailto:foo@bar.com', $jwsProvider, new NativeClock());
 
         $payloadExtension = PayloadExtension::create()
-            ->addContentEncoding(AES128GCM::create()->maxPadding())
-            ->addContentEncoding(AESGCM::create()->maxPadding())
+            ->addContentEncoding(AES128GCM::create(new NativeClock())->maxPadding())
+            ->addContentEncoding(AESGCM::create(new NativeClock())->maxPadding())
         ;
 
-        $aes128gcm = AES128GCM::create()
+        $aes128gcm = AES128GCM::create(new NativeClock())
             ->setCache(new FilesystemAdapter())
             ->maxPadding()
         ;
-        $aesgcm = AESGCM::create()
+        $aesgcm = AESGCM::create(new NativeClock())
             ->setCache(new FilesystemAdapter())
             ->maxPadding()
         ;

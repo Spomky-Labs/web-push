@@ -20,6 +20,8 @@ services:
     Psr\Http\Message\UriFactoryInterface: '@nyholm.psr7.psr17_factory'
     nyholm.psr7.psr17_factory:
         class: Nyholm\Psr7\Factory\Psr17Factory
+    Psr\Clock\ClockInterface:
+        class: Symfony\Component\Clock\NativeClock
 
 monolog:
     handlers:

@@ -8,6 +8,7 @@ use function json_decode;
 use const JSON_THROW_ON_ERROR;
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\NativeClock;
 use WebPush\Base64Url;
 use WebPush\Notification;
 use WebPush\Subscription;
@@ -36,7 +37,7 @@ final class VAPIDTest extends TestCase
         $notification = Notification::create();
         $subscription = Subscription::create('https://foo.bar:1337/test?a=foo&b=BAR');
 
-        $request = VAPIDExtension::create('subject', $jwsProvider)
+        $request = VAPIDExtension::create('subject', $jwsProvider, new NativeClock())
             ->setLogger($logger)
             ->setTokenExpirationTime('now +2hours')
             ->process($request, $notification, $subscription)

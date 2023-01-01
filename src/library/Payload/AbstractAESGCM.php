@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace WebPush\Payload;
 
 use Assert\Assertion;
-use DateTimeImmutable;
 use function openssl_encrypt;
 use const OPENSSL_KEYTYPE_EC;
 use function openssl_pkey_new;
 use const OPENSSL_RAW_DATA;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -49,8 +49,9 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     private string $cacheExpirationTime = 'now + 30min';
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly ClockInterface $clock
+    ) {
         $this->logger = new NullLogger();
     }
 
@@ -221,7 +222,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $serverKey = $this->generateServerKey();
         $item = $item
             ->set($serverKey)
-            ->expiresAt(new DateTimeImmutable($this->cacheExpirationTime))
+            ->expiresAt($this->clock->now()->modify($this->cacheExpirationTime))
         ;
         $this->cache->save($item);
         $this->logger->debug('Key saved');

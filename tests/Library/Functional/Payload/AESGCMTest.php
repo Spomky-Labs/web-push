@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
 use function sprintf;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
+use Symfony\Component\Clock\NativeClock;
 use function unpack;
 use WebPush\Base64Url;
 use WebPush\Payload\AESGCM;
@@ -36,7 +37,7 @@ final class AESGCMTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('Invalid padding size');
 
-        AESGCM::create()->customPadding(4079);
+        AESGCM::create(new NativeClock())->customPadding(4079);
     }
 
     /**
@@ -47,7 +48,7 @@ final class AESGCMTest extends TestCase
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('Invalid padding size');
 
-        AESGCM::create()->customPadding(-1);
+        AESGCM::create(new NativeClock())->customPadding(-1);
     }
 
     /**
@@ -63,7 +64,7 @@ final class AESGCMTest extends TestCase
             ->withContentEncodings(['aesgcm'])
         ;
 
-        AESGCM::create()->encode('', $request, $subscription);
+        AESGCM::create(new NativeClock())->encode('', $request, $subscription);
     }
 
     /**
@@ -83,7 +84,7 @@ final class AESGCMTest extends TestCase
             'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
         );
 
-        AESGCM::create()->encode('', $request, $subscription);
+        AESGCM::create(new NativeClock())->encode('', $request, $subscription);
     }
 
     /**
@@ -106,7 +107,7 @@ final class AESGCMTest extends TestCase
         $subscription->setKey('p256dh', $userAgentPublicKey);
         $subscription->setKey('auth', $userAgentAuthToken);
 
-        $encoder = AESGCM::create();
+        $encoder = AESGCM::create(new NativeClock());
 
         switch ($padding) {
             case 'noPadding':
@@ -162,7 +163,7 @@ final class AESGCMTest extends TestCase
 
         $payload = str_pad('', 4079, '0');
 
-        AESGCM::create()
+        AESGCM::create(new NativeClock())
             ->encode($payload, $request, $subscription)
         ;
     }

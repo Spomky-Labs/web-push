@@ -9,6 +9,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
+use Symfony\Component\Clock\NativeClock;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Payload\AES128GCM;
@@ -137,15 +138,16 @@ final class WebPushTest extends TestCase
             ->add(PreferAsyncExtension::create())
             ->add(
                 PayloadExtension::create()
-                    ->addContentEncoding(AESGCM::create()->maxPadding())
-                    ->addContentEncoding(AES128GCM::create()->maxPadding())
+                    ->addContentEncoding(AESGCM::create(new NativeClock())->maxPadding())
+                    ->addContentEncoding(AES128GCM::create(new NativeClock())->maxPadding())
             )
             ->add(VAPIDExtension::create(
                 'http://localhost:8000',
                 WebTokenProvider::create(
                     'BB4W1qfBi7MF_Lnrc6i2oL-glAuKF4kevy9T0k2vyKV4qvuBrN3T6o9-7-NR3mKHwzDXzD3fe7XvIqIU1iADpGQ',
                     'C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU'
-                )
+                ),
+                new NativeClock()
             ))
         ;
 

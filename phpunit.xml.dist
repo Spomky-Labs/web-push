@@ -4,7 +4,7 @@
   bootstrap="vendor/autoload.php"
   colors="true"
   executionOrder="random"
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
 >
   <coverage cacheDirectory=".coverage-cache">
     <include>
