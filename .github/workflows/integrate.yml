@@ -80,8 +80,9 @@ jobs:
       - name: "Execute tests (PHP)"
         run: "make ci-cc"
 
-      - name: "Execute tests (JS)"
-        run: "make js"
+      - name: "Deptrac"
+        run: |
+          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
 
   #      - name: Send coverage to Coveralls
   #        if: "matrix.php-version == '8.1' && matrix.dependencies == 'highest'"
