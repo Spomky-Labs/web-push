@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class TTLExtension implements Extension, Loggable
+final class TTLExtension implements Extension, Loggable
 {
     private LoggerInterface $logger;
 

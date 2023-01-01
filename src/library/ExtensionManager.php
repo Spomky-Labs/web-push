@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class ExtensionManager implements Loggable
+final class ExtensionManager implements Loggable
 {
     /**
      * @var Extension[]

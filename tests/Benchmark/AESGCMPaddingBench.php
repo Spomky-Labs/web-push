@@ -17,7 +17,7 @@ use WebPush\Subscription;
  * @BeforeMethods({"init"})
  * @Revs(4096)
  */
-class AESGCMPaddingBench
+final class AESGCMPaddingBench
 {
     private AbstractAESGCM $encoder;
 

@@ -9,14 +9,14 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class WebPush implements WebPushService, Loggable
+final class WebPush implements WebPushService, Loggable
 {
     private LoggerInterface $logger;
 
     public function __construct(
-        private ClientInterface $client,
-        private RequestFactoryInterface $requestFactory,
-        private ExtensionManager $extensionManager
+        private readonly ClientInterface $client,
+        private readonly RequestFactoryInterface $requestFactory,
+        private readonly ExtensionManager $extensionManager
     ) {
         $this->logger = new NullLogger();
     }

@@ -7,7 +7,7 @@ namespace WebPush;
 use function array_key_exists;
 use Assert\Assertion;
 
-class Notification implements NotificationInterface
+final class Notification implements NotificationInterface
 {
     private ?string $payload = null;
 

@@ -7,7 +7,7 @@ namespace WebPush\Tests\Benchmark;
 use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\WebTokenProvider;
 
-class WebTokenBench extends AbstractBench
+final class WebTokenBench extends AbstractBench
 {
     protected function jwtProvider(): JWSProvider
     {

@@ -6,6 +6,7 @@ namespace WebPush\Bundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use function realpath;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -34,12 +35,12 @@ final class WebPushBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
-        $container->addCompilerPass(new ExtensionCompilerPass());
-        $container->addCompilerPass(new LoggerSetterCompilerPass());
-        $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
-        $container->addCompilerPass(new PayloadCacheCompilerPass());
-        $container->addCompilerPass(new PayloadPaddingCompilerPass());
-        $container->addCompilerPass(new SymfonyServiceCompilerPass());
+        $container->addCompilerPass(new ExtensionCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(new LoggerSetterCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(new PayloadContentEncodingCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(new PayloadCacheCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(new PayloadPaddingCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
+        $container->addCompilerPass(new SymfonyServiceCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
 
         $this->registerMappings($container);
     }
@@ -58,7 +59,9 @@ final class WebPushBundle extends Bundle
             $realPath => 'WebPush',
         ];
         $container->addCompilerPass(
-            DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping')
+            DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping'),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
         );
     }
 }

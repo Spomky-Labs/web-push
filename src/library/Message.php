@@ -16,7 +16,7 @@ use JsonSerializable;
  * @see https://notifications.spec.whatwg.org/#notifications
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Notification/Notification
  */
-class Message implements JsonSerializable
+final class Message implements JsonSerializable
 {
     /**
      * @var Action[]

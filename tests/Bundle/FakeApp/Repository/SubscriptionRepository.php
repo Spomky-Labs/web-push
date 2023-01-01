@@ -15,8 +15,9 @@ use WebPush\Tests\Bundle\FakeApp\Entity\Subscription;
  * @method Subscription|null findOneBy(array $criteria, array $orderBy = null)
  * @method Subscription[]    findAll()
  * @method Subscription[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @internal
  */
-class SubscriptionRepository extends ServiceEntityRepository
+final class SubscriptionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

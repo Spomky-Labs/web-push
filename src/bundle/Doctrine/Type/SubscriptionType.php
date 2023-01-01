@@ -26,10 +26,8 @@ final class SubscriptionType extends Type
             throw ConversionException::conversionFailedInvalidType(
                 $value,
                 $this->getName(),
-                ['null',
-                Subscription::class,
-                
-            ]);
+                ['null', Subscription::class]
+            );
         }
 
         return json_encode($value, JSON_THROW_ON_ERROR);

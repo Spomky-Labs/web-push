@@ -6,18 +6,15 @@ namespace WebPush;
 
 use Psr\Http\Message\ResponseInterface;
 
-class StatusReport implements StatusReportInterface
+final class StatusReport implements StatusReportInterface
 {
-    private array $links;
-
     public function __construct(
-        private SubscriptionInterface $subscription,
-        private NotificationInterface $notification,
-        private int $code,
-        private string $location,
-        array $links
+        private readonly SubscriptionInterface $subscription,
+        private readonly NotificationInterface $notification,
+        private readonly int $code,
+        private readonly string $location,
+        private readonly array $links
     ) {
-        $this->links = $links;
     }
 
     public static function create(

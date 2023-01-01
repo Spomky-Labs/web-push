@@ -15,7 +15,7 @@ use WebPush\Loggable;
 use WebPush\NotificationInterface;
 use WebPush\SubscriptionInterface;
 
-class PayloadExtension implements Extension, Loggable
+final class PayloadExtension implements Extension, Loggable
 {
     /**
      * @var ContentEncoding[]

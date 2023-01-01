@@ -56,8 +56,9 @@ use Psr\Log\LogLevel;
  * @method bool hasNoticeThatPasses($message)
  * @method bool hasInfoThatPasses($message)
  * @method bool hasDebugThatPasses($message)
+ * @internal
  */
-class TestLogger implements LoggerInterface
+final class TestLogger implements LoggerInterface
 {
     public array $records = [];
 
@@ -65,7 +66,11 @@ class TestLogger implements LoggerInterface
 
     public function __call($method, $args)
     {
-        if (preg_match('/(.*)(Debug|Info|Notice|Warning|Error|Critical|Alert|Emergency)(.*)/', $method, $matches) > 0) {
+        if (preg_match(
+            '/(.*)(Debug|Info|Notice|Warning|Error|Critical|Alert|Emergency)(.*)/',
+            (string) $method,
+            $matches
+        ) > 0) {
             $genericMethod = $matches[1] . ($matches[3] !== 'Records' ? 'Record' : '') . $matches[3];
             $level = mb_strtolower($matches[2]);
             if (method_exists($this, $genericMethod)) {

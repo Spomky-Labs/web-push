@@ -25,11 +25,11 @@ final class WebTokenProvider implements JWSProvider, Loggable
 
     public const PRIVATE_KEY_LENGTH = 32;
 
-    private JWK $signatureKey;
+    private readonly JWK $signatureKey;
 
-    private CompactSerializer $serializer;
+    private readonly CompactSerializer $serializer;
 
-    private JWSBuilder $jwsBuilder;
+    private readonly JWSBuilder $jwsBuilder;
 
     private LoggerInterface $logger;
 
@@ -39,20 +39,18 @@ final class WebTokenProvider implements JWSProvider, Loggable
         Assertion::eq(mb_strlen($privateKeyBin, '8bit'), self::PRIVATE_KEY_LENGTH, 'Invalid private key size');
 
         $publicKeyBin = Base64Url::decode($publicKey);
-        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_LENGTH, 'Invalid public key size',);
+        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_LENGTH, 'Invalid public key size');
         Assertion::startsWith($publicKeyBin, "\4", 'Invalid public key', null, '8bit');
         $x = mb_substr($publicKeyBin, 1, self::PRIVATE_KEY_LENGTH, '8bit');
         $y = mb_substr($publicKeyBin, -self::PRIVATE_KEY_LENGTH, null, '8bit');
 
-        $jwk = new JWK([
+        $this->signatureKey = new JWK([
             'kty' => 'EC',
             'crv' => 'P-256',
             'd' => $privateKey,
             'x' => Base64Url::encode($x),
             'y' => Base64Url::encode($y),
         ]);
-
-        $this->signatureKey = $jwk;
         $algorithmManager = new AlgorithmManager([new ES256()]);
         $this->serializer = new CompactSerializer();
         $this->jwsBuilder = new JWSBuilder($algorithmManager);

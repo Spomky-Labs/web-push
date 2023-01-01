@@ -2,25 +2,29 @@
 
 declare(strict_types=1);
 
-use Rector\Core\Configuration\Option;
+use Rector\Config\RectorConfig;
 use Rector\Core\ValueObject\PhpVersion;
-use Rector\Php74\Rector\Property\TypedPropertyRector;
+use Rector\PHPUnit\Set\PHPUnitSetList;
+use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use Rector\Symfony\Set\SymfonyLevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $containerConfigurator->import(SetList::DEAD_CODE);
-    $containerConfigurator->import(SetList::PHP_80);
-    $containerConfigurator->import(SymfonySetList::SYMFONY_52);
-    $containerConfigurator->import(SymfonySetList::SYMFONY_CODE_QUALITY);
-    $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PATHS, [__DIR__ . '/src', __DIR__ . '/tests']);
-    $parameters->set(Option::PHP_VERSION_FEATURES, PhpVersion::PHP_80);
-    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
-    $parameters->set(Option::IMPORT_SHORT_CLASSES, false);
-    $parameters->set(Option::IMPORT_DOC_BLOCKS, false);
-
-    $services = $containerConfigurator->services();
-    $services->set(TypedPropertyRector::class);
+return static function (RectorConfig $config): void {
+    $config->import(SetList::DEAD_CODE);
+    $config->import(LevelSetList::UP_TO_PHP_81);
+    $config->import(SymfonyLevelSetList::UP_TO_SYMFONY_62);
+    $config->import(SymfonySetList::SYMFONY_CODE_QUALITY);
+    $config->import(SymfonySetList::SYMFONY_52_VALIDATOR_ATTRIBUTES);
+    $config->import(SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION);
+    $config->import(SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES);
+    $config->import(PHPUnitSetList::PHPUNIT_EXCEPTION);
+    $config->import(PHPUnitSetList::PHPUNIT_SPECIFIC_METHOD);
+    $config->import(PHPUnitSetList::PHPUNIT_91);
+    $config->import(PHPUnitSetList::PHPUNIT_YIELD_DATA_PROVIDER);
+    $config->paths([__DIR__ . '/src', __DIR__ . '/tests']);
+    $config->phpVersion(PhpVersion::PHP_81);
+    $config->parallel();
+    $config->importNames();
+    $config->importShortClasses();
 };

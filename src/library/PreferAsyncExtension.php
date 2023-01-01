@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class PreferAsyncExtension implements Extension, Loggable
+final class PreferAsyncExtension implements Extension, Loggable
 {
     private LoggerInterface $logger;
 

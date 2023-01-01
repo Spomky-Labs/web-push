@@ -32,7 +32,7 @@ iR6/L1PSTa/IpXiq+4Gs3dPqj37v41HeYofDMNfMPd97te8iohTWIAOkZA==
 -----END PUBLIC KEY-----
 
 CODE_SAMPLE
-, $pem);
+            , $pem);
     }
 
     /**
@@ -54,7 +54,7 @@ j37v41HeYofDMNfMPd97te8iohTWIAOkZA==
 -----END EC PRIVATE KEY-----
 
 CODE_SAMPLE
-, $pem);
+            , $pem);
     }
 
     /**
@@ -74,7 +74,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
 -----END EC PRIVATE KEY-----
 
 CODE_SAMPLE
-, $pem);
+            , $pem);
     }
 
     /**

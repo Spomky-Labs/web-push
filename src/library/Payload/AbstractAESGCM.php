@@ -25,7 +25,7 @@ use WebPush\Utils;
 
 abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 {
-    public const WEB_PUSH_PAYLOAD_ENCRYPTION = 'WEB_PUSH_PAYLOAD_ENCRYPTION';
+    final public const WEB_PUSH_PAYLOAD_ENCRYPTION = 'WEB_PUSH_PAYLOAD_ENCRYPTION';
 
     protected const PADDING_NONE = 0;
 
@@ -199,9 +199,8 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $info = 'Content-Encoding: ';
         $info .= $type;
         $info .= "\0";
-        $info .= $context;
 
-        return $info;
+        return $info . $context;
     }
 
     private function getServerKey(): ServerKey
@@ -246,9 +245,9 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         Assertion::isArray($details, 'Unable to get the key details');
 
         $publicKey = "\4";
-        $publicKey .= str_pad($details['ec']['x'], self::SIZE, "\0", STR_PAD_LEFT);
-        $publicKey .= str_pad($details['ec']['y'], self::SIZE, "\0", STR_PAD_LEFT);
-        $privateKey = str_pad($details['ec']['d'], self::SIZE, "\0", STR_PAD_LEFT);
+        $publicKey .= str_pad((string) $details['ec']['x'], self::SIZE, "\0", STR_PAD_LEFT);
+        $publicKey .= str_pad((string) $details['ec']['y'], self::SIZE, "\0", STR_PAD_LEFT);
+        $privateKey = str_pad((string) $details['ec']['d'], self::SIZE, "\0", STR_PAD_LEFT);
         $key = ServerKey::create($publicKey, $privateKey);
 
         $this->logger->debug('The key has been created.');

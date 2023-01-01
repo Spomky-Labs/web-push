@@ -7,7 +7,7 @@ namespace WebPush\Tests\Benchmark;
 use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\LcobucciProvider;
 
-class LcobucciBench extends AbstractBench
+final class LcobucciBench extends AbstractBench
 {
     protected function jwtProvider(): JWSProvider
     {

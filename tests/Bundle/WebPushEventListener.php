@@ -6,7 +6,10 @@ namespace WebPush\Tests\Bundle;
 
 use WebPush\StatusReport;
 
-class WebPushEventListener
+/**
+ * @internal
+ */
+final class WebPushEventListener
 {
     /**
      * @var StatusReport[]

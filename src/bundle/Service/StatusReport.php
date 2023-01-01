@@ -9,7 +9,7 @@ use WebPush\NotificationInterface;
 use WebPush\StatusReportInterface;
 use WebPush\SubscriptionInterface;
 
-class StatusReport implements StatusReportInterface
+final class StatusReport implements StatusReportInterface
 {
     private ?int $code = null;
 
@@ -18,9 +18,9 @@ class StatusReport implements StatusReportInterface
     private ?array $links = null;
 
     public function __construct(
-        private SubscriptionInterface $subscription,
-        private NotificationInterface $notification,
-        private ResponseInterface $response
+        private readonly SubscriptionInterface $subscription,
+        private readonly NotificationInterface $notification,
+        private readonly ResponseInterface $response
     ) {
     }
 

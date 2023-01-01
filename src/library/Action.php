@@ -13,13 +13,13 @@ use JsonSerializable;
 /**
  * @see https://notifications.spec.whatwg.org/#actions
  */
-class Action implements JsonSerializable
+final class Action implements JsonSerializable
 {
     private ?string $icon = null;
 
     public function __construct(
-        private string $action,
-        private string $title
+        private readonly string $action,
+        private readonly string $title
     ) {
     }
 
@@ -60,8 +60,6 @@ class Action implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return array_filter(get_object_vars($this), static function ($v): bool {
-            return $v !== null;
-        });
+        return array_filter(get_object_vars($this), static fn ($v): bool => $v !== null);
     }
 }

@@ -52,7 +52,7 @@ final class MessageTest extends TestCase
         $action = Action::create('A', 'T');
         $message = Message::create('TITLE', 'BODY')
             ->withTag('TAG')
-            ->withTimestamp(1604141464)
+            ->withTimestamp(1_604_141_464)
             ->withLang('en-GB')
             ->withImage('https://image.svg')
             ->withBadge('BADGE')
@@ -68,7 +68,7 @@ final class MessageTest extends TestCase
         ;
 
         static::assertSame('BODY', $message->getBody());
-        static::assertSame(1604141464, $message->getTimestamp());
+        static::assertSame(1_604_141_464, $message->getTimestamp());
         static::assertSame('TAG', $message->getTag());
         static::assertSame([
             'foo' => 'BAR',
@@ -104,7 +104,7 @@ final class MessageTest extends TestCase
             ->mute()
             ->interactionRequired()
             ->withTag('TAG')
-            ->withTimestamp(1604141464)
+            ->withTimestamp(1_604_141_464)
             ->withLang('en-GB')
             ->withImage('https://image.svg')
             ->withBadge('BADGE')
@@ -121,7 +121,7 @@ final class MessageTest extends TestCase
 
         static::assertSame('TITLE', $message->getTitle());
         static::assertSame('BODY', $message->getBody());
-        static::assertSame(1604141464, $message->getTimestamp());
+        static::assertSame(1_604_141_464, $message->getTimestamp());
         static::assertSame('TAG', $message->getTag());
         static::assertSame([
             'foo' => 'BAR',

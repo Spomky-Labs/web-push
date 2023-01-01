@@ -27,7 +27,7 @@ class Subscription implements SubscriptionInterface
     private ?int $expirationTime = null;
 
     public function __construct(
-        private string $endpoint
+        private readonly string $endpoint
     ) {
         $this->keys = [];
     }

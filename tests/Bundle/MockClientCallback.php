@@ -7,7 +7,10 @@ namespace WebPush\Tests\Bundle;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class MockClientCallback
+/**
+ * @internal
+ */
+final class MockClientCallback
 {
     private string $body = '';
 

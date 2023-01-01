@@ -26,7 +26,7 @@ use WebPush\VAPID\JWSProvider;
 final class WebPushExtension extends Extension implements PrependExtensionInterface
 {
     public function __construct(
-        private string $alias
+        private readonly string $alias
     ) {
     }
 

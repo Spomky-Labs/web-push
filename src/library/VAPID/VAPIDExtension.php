@@ -17,15 +17,15 @@ use WebPush\Loggable;
 use WebPush\NotificationInterface;
 use WebPush\SubscriptionInterface;
 
-class VAPIDExtension implements Extension, Loggable
+final class VAPIDExtension implements Extension, Loggable
 {
     private string $tokenExpirationTime = 'now +1hour';
 
     private LoggerInterface $logger;
 
     public function __construct(
-        private string $subject,
-        private JWSProvider $jwsProvider
+        private readonly string $subject,
+        private readonly JWSProvider $jwsProvider
     ) {
         $this->logger = new NullLogger();
     }

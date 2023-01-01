@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-class Header
+final class Header
 {
     public function __construct(
-        private string $token,
-        private string $key
+        private readonly string $token,
+        private readonly string $key
     ) {
     }
 

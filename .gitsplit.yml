@@ -5,6 +5,5 @@ splits:
       target: "https://${GH_TOKEN}@github.com/spomky-labs/web-push-bundle.git"
 
 origins:
-    - ^master$
-    - ^v\d+\.\d+$
-    - ^v\d+\.\d+\.\d+.*$
+    - ^\d+\.\d+\.x$
+    - ^\d+\.\d+\.\d+$

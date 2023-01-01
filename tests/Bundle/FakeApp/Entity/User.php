@@ -20,14 +20,12 @@ class User
      */
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="webpush_subscription")
-     */
-    private Subscription $subscription;
-
-    public function __construct(Subscription $subscription)
-    {
-        $this->subscription = $subscription;
+    public function __construct(
+        /**
+         * @ORM\Column(type="webpush_subscription")
+         */
+        private Subscription $subscription
+    ) {
     }
 
     public function getId(): ?int
