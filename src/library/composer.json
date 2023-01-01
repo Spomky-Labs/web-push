@@ -1,40 +1,40 @@
 {
-  "name": "spomky-labs/web-push-lib",
-  "type": "library",
-  "description": "Web-Push library for PHP",
-  "keywords": ["push", "notifications", "web", "WebPush", "Push API"],
-  "homepage": "https://github.com/spomky-labs/web-push",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Spomky-Labs",
-      "homepage": "https://github.com/Spomky-Labs"
+    "name": "spomky-labs/web-push-lib",
+    "type": "library",
+    "description": "Web-Push library for PHP",
+    "keywords": ["push", "notifications", "web", "WebPush", "Push API"],
+    "homepage": "https://github.com/spomky-labs/web-push",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Spomky-Labs",
+            "homepage": "https://github.com/Spomky-Labs"
+        },
+        {
+            "name": "All contributors",
+            "homepage": "https://github.com/Spomky-Labs/web-push-lib/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "psr/cache": "^1.0|^2.0|^3.0",
+        "psr/clock": "^1.0",
+        "psr/http-client": "^1.0.1",
+        "psr/http-factory": "^1.0.1",
+        "psr/http-message": "^1.0.1",
+        "psr/log": "^1.1|^2.0|^3.0"
     },
-    {
-      "name": "All contributors",
-      "homepage": "https://github.com/Spomky-Labs/web-push-lib/contributors"
+    "autoload": {
+        "psr-4" : {
+            "WebPush\\" : ""
+        }
+    },
+    "suggest": {
+        "ext-mbstring": "Mandatory when using Payload or VAPID extensions",
+        "ext-openssl": "Mandatory when using Payload or VAPID extensions",
+        "web-token/jwt-signature-algorithm-ecdsa": "Mandatory if you want to use VAPID using web-token/jwt-framework",
+        "lcobucci/jwt": "Mandatory if you want to use VAPID using lcobucci/jwt",
+        "psr/log-implementation": "Recommended to receive logs from the library"
     }
-  ],
-  "require": {
-    "php": ">=8.1",
-    "ext-json": "*",
-    "psr/cache": "^1.0|^2.0|^3.0",
-    "psr/clock": "^1.0",
-    "psr/http-client": "^1.0.1",
-    "psr/http-factory": "^1.0.1",
-    "psr/http-message": "^1.0.1",
-    "psr/log": "^1.1|^2.0|^3.0"
-  },
-  "autoload": {
-    "psr-4" : {
-      "WebPush\\" : ""
-    }
-  },
-  "suggest": {
-    "ext-mbstring": "Mandatory when using Payload or VAPID extensions",
-    "ext-openssl": "Mandatory when using Payload or VAPID extensions",
-    "web-token/jwt-signature-algorithm-ecdsa": "Mandatory if you want to use VAPID using web-token/jwt-framework",
-    "lcobucci/jwt": "Mandatory if you want to use VAPID using lcobucci/jwt",
-    "psr/log-implementation": "Recommended to receive logs from the library"
-  }
 }
