@@ -1,5 +1,4 @@
 services:
-    WebPush\Tests\Bundle\Logger: ~
     WebPush\Tests\Bundle\MockClientCallback: ~
     WebPush\Tests\Bundle\FakeApp\Repository\SubscriptionRepository:
         public: true
@@ -56,7 +55,6 @@ doctrine:
                 alias: App
 
 webpush:
-    logger: WebPush\Tests\Bundle\Logger
     doctrine_mapping: true
     vapid:
         enabled: true

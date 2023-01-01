@@ -116,9 +116,6 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         }
     }
 
-    /**
-     * @param array<string, mixed> $config
-     */
     private function configurePayloadSection(ContainerBuilder $container, array $config): void
     {
         $container->setParameter('webpush.payload.aesgcm.cache_lifetime', $config['aesgcm']['cache_lifetime']);
@@ -134,9 +131,6 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         }
     }
 
-    /**
-     * @return array<string, mixed>|null
-     */
     private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
     {
         $bundles = $container->hasParameter('kernel.bundles') ? $container->getParameter('kernel.bundles') : [];

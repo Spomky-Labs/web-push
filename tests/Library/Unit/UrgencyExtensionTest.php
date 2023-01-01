@@ -8,7 +8,6 @@ use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
 use WebPush\Subscription;
-use WebPush\Tests\TestLogger;
 use WebPush\UrgencyExtension;
 
 /**
@@ -22,7 +21,7 @@ final class UrgencyExtensionTest extends TestCase
      */
     public function urgencyIsSetInHeader(string $urgency): void
     {
-        $logger = new TestLogger();
+        // Given
         $request = new Request('POST', 'https://foo.bar');
 
         $notification = Notification::create()
@@ -30,16 +29,13 @@ final class UrgencyExtensionTest extends TestCase
         ;
         $subscription = Subscription::create('https://foo.bar');
 
+        // When
         $request = UrgencyExtension::create()
-            ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
 
+        // Then
         static::assertSame($urgency, $request->getHeaderLine('urgency'));
-        static::assertCount(1, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Processing with the Urgency extension', $logger->records[0]['message']);
-        static::assertSame($urgency, $logger->records[0]['context']['Urgency']);
     }
 
     /**

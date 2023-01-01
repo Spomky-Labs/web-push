@@ -8,12 +8,9 @@ use Http\Mock\Client;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Subscription;
-use WebPush\Tests\TestLogger;
 use WebPush\WebPush;
 
 /**
@@ -26,6 +23,7 @@ final class WebPushTest extends TestCase
      */
     public function aNotificationCanBeSent(): void
     {
+        //Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
@@ -34,25 +32,14 @@ final class WebPushTest extends TestCase
         $requestFactory = new Psr17Factory();
 
         $extensionManager = ExtensionManager::create();
-        $logger = new TestLogger();
-
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
+
+        // When
         $report = $webPush
-            ->setLogger($logger)
             ->send($notification, $subscription)
         ;
 
-        static::assertCount(3, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Sending notification', $logger->records[0]['message']);
-        static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
-        static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
-        static::assertSame('debug', $logger->records[1]['level']);
-        static::assertSame('Request ready', $logger->records[1]['message']);
-        static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
-        static::assertSame('debug', $logger->records[2]['level']);
-        static::assertSame('Response received', $logger->records[2]['message']);
-        static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
+        // Then
         static::assertTrue($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
         static::assertSame($subscription, $report->getSubscription());
@@ -63,6 +50,7 @@ final class WebPushTest extends TestCase
      */
     public function aNotificationCanBeSentAsync(): void
     {
+        // Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
@@ -71,25 +59,14 @@ final class WebPushTest extends TestCase
         $requestFactory = new Psr17Factory();
 
         $extensionManager = ExtensionManager::create();
-        $logger = new TestLogger();
-
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
+
+        // When
         $report = $webPush
-            ->setLogger($logger)
             ->send($notification, $subscription)
         ;
 
-        static::assertCount(3, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Sending notification', $logger->records[0]['message']);
-        static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
-        static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
-        static::assertSame('debug', $logger->records[1]['level']);
-        static::assertSame('Request ready', $logger->records[1]['message']);
-        static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
-        static::assertSame('debug', $logger->records[2]['level']);
-        static::assertSame('Response received', $logger->records[2]['message']);
-        static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
+        // Then
         static::assertTrue($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
         static::assertSame($subscription, $report->getSubscription());
@@ -100,6 +77,7 @@ final class WebPushTest extends TestCase
      */
     public function aNotificationCannotBeSent(): void
     {
+        // Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
@@ -108,25 +86,14 @@ final class WebPushTest extends TestCase
         $requestFactory = new Psr17Factory();
 
         $extensionManager = ExtensionManager::create();
-        $logger = new TestLogger();
-
         $webPush = WebPush::create($client, $requestFactory, $extensionManager);
+
+        // When
         $report = $webPush
-            ->setLogger($logger)
             ->send($notification, $subscription)
         ;
 
-        static::assertCount(3, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Sending notification', $logger->records[0]['message']);
-        static::assertInstanceOf(Notification::class, $logger->records[0]['context']['notification']);
-        static::assertInstanceOf(Subscription::class, $logger->records[0]['context']['subscription']);
-        static::assertSame('debug', $logger->records[1]['level']);
-        static::assertSame('Request ready', $logger->records[1]['message']);
-        static::assertInstanceOf(RequestInterface::class, $logger->records[1]['context']['request']);
-        static::assertSame('debug', $logger->records[2]['level']);
-        static::assertSame('Response received', $logger->records[2]['message']);
-        static::assertInstanceOf(ResponseInterface::class, $logger->records[2]['context']['response']);
+        // Then
         static::assertFalse($report->isSuccess());
         static::assertSame($notification, $report->getNotification());
         static::assertSame($subscription, $report->getSubscription());

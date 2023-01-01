@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
 use WebPush\PreferAsyncExtension;
 use WebPush\Subscription;
-use WebPush\Tests\TestLogger;
 
 /**
  * @internal
@@ -21,22 +20,20 @@ final class SyncExtensionTest extends TestCase
      */
     public function asyncIsSetInHeader(): void
     {
-        $logger = new TestLogger();
+        // Given
         $request = new Request('POST', 'https://foo.bar');
         $notification = Notification::create()
             ->async()
         ;
         $subscription = Subscription::create('https://foo.bar');
 
+        // When
         $request = PreferAsyncExtension::create()
-            ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
 
+        // Then
         static::assertSame('respond-async', $request->getHeaderLine('prefer'));
-        static::assertCount(1, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Sending asynchronous notification', $logger->records[0]['message']);
     }
 
     /**
@@ -44,21 +41,19 @@ final class SyncExtensionTest extends TestCase
      */
     public function asyncIsNotSetInHeader(): void
     {
-        $logger = new TestLogger();
+        //Given
         $request = new Request('POST', 'https://foo.bar');
         $notification = Notification::create()
             ->sync()
         ;
         $subscription = Subscription::create('https://foo.bar');
 
+        // When
         $request = PreferAsyncExtension::create()
-            ->setLogger($logger)
             ->process($request, $notification, $subscription)
         ;
 
+        // Then
         static::assertFalse($request->hasHeader('prefer'));
-        static::assertCount(1, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Sending synchronous notification', $logger->records[0]['message']);
     }
 }

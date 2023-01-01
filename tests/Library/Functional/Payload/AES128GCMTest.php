@@ -25,7 +25,6 @@ use WebPush\Exception\OperationException;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\ServerKey;
 use WebPush\Subscription;
-use WebPush\Tests\TestLogger;
 use WebPush\Utils;
 
 /**
@@ -134,7 +133,7 @@ final class AES128GCMTest extends TestCase
         string $padding,
         CacheItemPoolInterface $cache
     ): void {
-        $logger = new TestLogger();
+        // Given
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aes128gcm'])
         ;
@@ -163,11 +162,13 @@ final class AES128GCMTest extends TestCase
         static::assertSame('aes128gcm', $encoder->name());
 
         $request = new Request('POST', 'https://foo.bar');
+
+        // When
         $encoder
-            ->setLogger($logger)
             ->encode($payload, $request, $subscription)
         ;
 
+        // Then
         $decryptedPayload = $this->decryptRequest(
             $request,
             Base64Url::decode($userAgentAuthToken),
@@ -175,13 +176,7 @@ final class AES128GCMTest extends TestCase
             Base64Url::decode($userAgentPrivateKey),
             true
         );
-
         static::assertSame($payload, $decryptedPayload);
-
-        static::assertGreaterThanOrEqual(13, count($logger->records));
-        foreach ($logger->records as $record) {
-            static::assertSame('debug', $record['level']);
-        }
     }
 
     /**

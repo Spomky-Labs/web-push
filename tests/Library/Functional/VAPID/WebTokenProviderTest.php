@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
-use WebPush\Tests\TestLogger;
 use WebPush\VAPID\WebTokenProvider;
 
 /**
@@ -35,12 +34,11 @@ final class WebTokenProviderTest extends TestCase
      */
     public function computeHeader(string $publicKey, string $privateKey): void
     {
+        //Given
         $expiresAt = new DateTimeImmutable('@1580253757');
 
-        $logger = new TestLogger();
-
+        // When
         $header = WebTokenProvider::create($publicKey, $privateKey)
-            ->setLogger($logger)
             ->computeHeader([
                 'aud' => 'audience',
                 'sub' => 'subject',
@@ -48,6 +46,7 @@ final class WebTokenProviderTest extends TestCase
             ])
         ;
 
+        //Then
         static::assertStringStartsWith(
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.',
             $header->getToken()

@@ -4,11 +4,15 @@
             "src"
         ]
     },
+    "timeout": 3,
     "logs": {
         "text": "infection.log"
     },
     "mutators": {
         "@default": true,
+        "global-ignoreSourceCodeByRegex": [
+            "\\$this->logger.*"
+        ],
         "MBString": {
             "settings": {
                 "mb_substr": false,

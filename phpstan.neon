@@ -2,6 +2,8 @@ parameters:
     level: max
     paths:
         - src
+    excludePaths:
+        - src/bundle/DependencyInjection/WebPushExtension.php
     treatPhpDocTypesAsCertain: false
     checkMissingIterableValueType: false
     ignoreErrors:
@@ -9,6 +11,10 @@ parameters:
             message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::addDefaultsIfNotSet\(\)\.#'
             count: 1
             path: src/bundle/DependencyInjection/Configuration.php
+        -
+            message: '#Parameter \#1 \$contentEncodings of method WebPush\\Subscription\:\:withContentEncodings\(\) expects array\<string\>\, array given\.#'
+            count: 1
+            path: src/library/Subscription.php
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

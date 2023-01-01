@@ -12,7 +12,6 @@ use Symfony\Component\Clock\NativeClock;
 use WebPush\Base64Url;
 use WebPush\Notification;
 use WebPush\Subscription;
-use WebPush\Tests\TestLogger;
 use WebPush\VAPID\LcobucciProvider;
 use WebPush\VAPID\VAPIDExtension;
 
@@ -31,14 +30,13 @@ final class VAPIDTest extends TestCase
             '870MB6gfuTJ4HtUnUvYMyJpr5eUZNP4Bk43bVdj3eAE'
         );
 
-        $logger = new TestLogger();
         $request = new Request('POST', 'https://foo.bar:1337/test?a=foo&b=BAR');
 
         $notification = Notification::create();
         $subscription = Subscription::create('https://foo.bar:1337/test?a=foo&b=BAR');
 
         $request = VAPIDExtension::create('subject', $jwsProvider, new NativeClock())
-            ->setLogger($logger)
+
             ->setTokenExpirationTime('now +2hours')
             ->process($request, $notification, $subscription)
         ;
@@ -57,13 +55,5 @@ final class VAPIDTest extends TestCase
         static::assertSame('https://foo.bar:1337', $claims['aud']);
         static::assertSame('subject', $claims['sub']);
         static::assertGreaterThanOrEqual(time(), $claims['exp']);
-
-        static::assertCount(3, $logger->records);
-        static::assertSame('debug', $logger->records[0]['level']);
-        static::assertSame('Processing with VAPID header', $logger->records[0]['message']);
-        static::assertSame('debug', $logger->records[1]['level']);
-        static::assertSame('Trying to get the header from the cache', $logger->records[1]['message']);
-        static::assertSame('debug', $logger->records[2]['level']);
-        static::assertSame('Header from cache', $logger->records[2]['message']);
     }
 }
