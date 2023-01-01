@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit;
 
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ClassExistsMock;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -71,31 +70,6 @@ final class BundleTest extends TestCase
         static::assertTrue($found, 'Unable to find the compiler pass ' . $class);
     }
 
-    public function theBundleDoesNotAddDoctrineCompilerPassesIfNotAvailableHasTheCompilerPass(): void
-    {
-        ClassExistsMock::withMockedClasses([
-            DoctrineOrmMappingsPass::class => false,
-        ]);
-
-        $containerBuilder = new ContainerBuilder();
-        $bundle = new WebPushBundle();
-        $bundle->build($containerBuilder);
-
-        $passes = $containerBuilder->getCompiler()
-            ->getPassConfig()
-            ->getPasses()
-        ;
-        $found = false;
-        foreach ($passes as $pass) {
-            if ($pass instanceof DoctrineOrmMappingsPass) {
-                $found = true;
-                break;
-            }
-        }
-
-        static::assertFalse($found, 'The compiler pass DoctrineOrmMappingsPass has been found');
-    }
-
     public function compilerPasses(): array
     {
         return [
@@ -104,7 +78,6 @@ final class BundleTest extends TestCase
             [PayloadCacheCompilerPass::class],
             [PayloadContentEncodingCompilerPass::class],
             [PayloadPaddingCompilerPass::class],
-            [DoctrineOrmMappingsPass::class],
         ];
     }
 }

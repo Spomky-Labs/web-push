@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\FakeApp\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use WebPush\Subscription;
 
 /**
  * @ORM\Table(name="users")
@@ -15,26 +14,17 @@ class User
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="string")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
-    private ?int $id = null;
+    public readonly string $id;
 
     public function __construct(
         /**
-         * @ORM\Column(type="webpush_subscription")
+         * @ORM\OneToOne(targetEntity=\WebPush\Tests\Bundle\FakeApp\Entity\Subscription::class, cascade={"all"})
          */
-        private Subscription $subscription
+        public readonly Subscription $subscription
     ) {
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getSubscription(): Subscription
-    {
-        return $this->subscription;
+        $this->id = bin2hex(random_bytes(16));
     }
 }

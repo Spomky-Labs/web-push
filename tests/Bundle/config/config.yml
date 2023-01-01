@@ -55,7 +55,6 @@ doctrine:
                 alias: App
 
 webpush:
-    doctrine_mapping: true
     vapid:
         enabled: true
         subject: 'https://foo.bar'

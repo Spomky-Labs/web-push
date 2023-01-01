@@ -4,27 +4,21 @@ declare(strict_types=1);
 
 namespace WebPush\Bundle\DependencyInjection;
 
-use function array_key_exists;
-use function count;
-use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
-use WebPush\Bundle\Doctrine\Type\SubscriptionType;
-use WebPush\Exception\OperationException;
 use WebPush\Loggable;
 use WebPush\Payload\ContentEncoding;
 use WebPush\VAPID\JWSProvider;
 
-final class WebPushExtension extends Extension implements PrependExtensionInterface
+final class WebPushExtension extends Extension
 {
     public function __construct(
         private readonly string $alias
@@ -50,9 +44,6 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config/'));
         $loader->load('services.php');
 
-        if ($config['doctrine_mapping']) {
-            $container->setParameter('webpush.doctrine_mapping', $config['doctrine_mapping']);
-        }
         $container->setAlias('webpush.http_client', $config['http_client']);
         $container->setAlias('webpush.request_factory', $config['request_factory']);
         if ($config['logger'] !== null) {
@@ -66,21 +57,6 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this->alias);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container): void
-    {
-        $config = $this->getDoctrineBundleConfiguration($container);
-        if ($config === null) {
-            return;
-        }
-        $config['dbal']['types'] += [
-            'webpush_subscription' => SubscriptionType::class,
-        ];
-        $container->prependExtensionConfig('doctrine', $config);
     }
 
     /**
@@ -129,28 +105,5 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         if ($config['aes128gcm']['cache'] !== null) {
             $container->setAlias('webpush.payload.aes128gcm.cache', $config['aes128gcm']['cache']);
         }
-    }
-
-    private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
-    {
-        $bundles = $container->hasParameter('kernel.bundles') ? $container->getParameter('kernel.bundles') : [];
-        is_array($bundles) || throw new OperationException('Invalid bundle list');
-        if (! array_key_exists('DoctrineBundle', $bundles)) {
-            return null;
-        }
-        $configs = $container->getExtensionConfig('doctrine');
-        if (count($configs) === 0) {
-            return null;
-        }
-
-        $config = current($configs);
-        if (! isset($config['dbal'])) {
-            $config['dbal'] = [];
-        }
-        if (! isset($config['dbal']['types'])) {
-            $config['dbal']['types'] = [];
-        }
-
-        return $config;
     }
 }

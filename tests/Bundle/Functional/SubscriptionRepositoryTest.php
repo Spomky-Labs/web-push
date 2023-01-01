@@ -9,6 +9,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use WebPush\Tests\Bundle\FakeApp\Entity\Subscription;
+use WebPush\Tests\Bundle\FakeApp\Entity\User;
 use WebPush\Tests\Bundle\FakeApp\Repository\SubscriptionRepository;
 
 /**
@@ -28,10 +29,7 @@ final class SubscriptionRepositoryTest extends KernelTestCase
         $cmf = $em->getMetadataFactory();
 
         $schemaTool = new SchemaTool($em);
-        $schemaTool->createSchema([
-            $cmf->getMetadataFor(Subscription::class),
-            $cmf->getMetadataFor(\WebPush\Subscription::class),
-        ]);
+        $schemaTool->createSchema([$cmf->getMetadataFor(User::class), $cmf->getMetadataFor(Subscription::class)]);
     }
 
     /**
@@ -55,15 +53,16 @@ final class SubscriptionRepositoryTest extends KernelTestCase
         static::assertNotNull($fetched, 'Unable to fetch the user');
         static::assertSame(
             'https://fcm.googleapis.com/fcm/send/fsTzuK_gGAE:APA91bGOo_qYwoGQoiKt6tM_GX9-jNXU9yGF4stivIeRX4cMZibjiXUAojfR_OfAT36AZ7UgfLbts011308MY7IYUljCxqEKKhwZk0yPjf9XOb-A7usa47gu1t__TfCrvQoXkrTiLuOt',
-            $fetched->getEndpoint()
+            $fetched->endpoint
         );
-        static::assertSame(['aesgcm'], $fetched->getSupportedContentEncodings());
-        static::assertNull($fetched->getExpirationTime());
-        static::assertSame(['p256dh', 'auth'], array_keys($fetched->getKeys()));
+        static::assertSame(['aesgcm'], $fetched->supportedContentEncodings);
+        static::assertNull($fetched->expirationTime);
         static::assertSame(
-            'BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4',
-            $fetched->getKey('p256dh')
+            [
+                'p256dh' => 'BGx19OjV00A00o9DThFSX-q40h6FA3t_UATZLrYvJGHdruyY_6T1ug6gOczcSI2HtjV5NUGZKGmykaucnLuZgY4',
+                'auth' => 'gW9ZePDxvjUILvlYe3Dnug',
+            ],
+            $fetched->keys
         );
-        static::assertSame('gW9ZePDxvjUILvlYe3Dnug', $fetched->getKey('auth'));
     }
 }
