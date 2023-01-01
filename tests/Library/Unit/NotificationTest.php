@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Assert\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use WebPush\Exception\OperationException;
 use WebPush\Notification;
 
 /**
@@ -92,7 +92,7 @@ final class NotificationTest extends TestCase
      */
     public function invalidUrgency(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(OperationException::class);
         $this->expectExceptionMessage('Invalid urgency parameter');
 
         Notification::create()
@@ -105,7 +105,7 @@ final class NotificationTest extends TestCase
      */
     public function invalidTopic(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(OperationException::class);
         $this->expectExceptionMessage('Invalid topic');
 
         Notification::create()
@@ -118,7 +118,7 @@ final class NotificationTest extends TestCase
      */
     public function invalidTTL(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(OperationException::class);
         $this->expectExceptionMessage('Invalid TTL');
 
         Notification::create()
@@ -148,7 +148,7 @@ final class NotificationTest extends TestCase
      */
     public function missingMetadata(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Missing metadata');
         $notification = Notification::create();
 

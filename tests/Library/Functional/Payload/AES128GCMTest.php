@@ -21,6 +21,7 @@ use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Clock\NativeClock;
 use function unpack;
 use WebPush\Base64Url;
+use WebPush\Exception\OperationException;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\ServerKey;
 use WebPush\Subscription;
@@ -37,7 +38,7 @@ final class AES128GCMTest extends TestCase
      */
     public function paddingLengthToHigh(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Invalid padding size');
 
         AES128GCM::create(new NativeClock())->customPadding(3994);
@@ -48,7 +49,7 @@ final class AES128GCMTest extends TestCase
      */
     public function paddingLengthToLow(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Invalid padding size');
 
         AES128GCM::create(new NativeClock())->customPadding(-1);
@@ -59,7 +60,7 @@ final class AES128GCMTest extends TestCase
      */
     public function missingUserAgentPublicKey(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('The user-agent public key is missing');
 
         $request = new Request('POST', 'https://foo.bar');
@@ -75,7 +76,7 @@ final class AES128GCMTest extends TestCase
      */
     public function missingUserAgentAuthenticationToken(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('The user-agent authentication token is missing');
 
         $request = new Request('POST', 'https://foo.bar');
@@ -188,7 +189,7 @@ final class AES128GCMTest extends TestCase
      */
     public function largePayloadForbidden(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('The size of payload must not be greater than 4096 bytes.');
 
         $userAgentPrivateKey = 'q1dXpw3UpT5VOmu_cf_v6ih07Aems3njxI-JWgLcM94';

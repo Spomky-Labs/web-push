@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use Assert\Assertion;
+use WebPush\Exception\OperationException;
 
 final class ServerKey
 {
@@ -18,8 +18,12 @@ final class ServerKey
 
     public function __construct(string $publicKey, string $privateKey)
     {
-        Assertion::length($publicKey, self::PUBLIC_KEY_SIZE, 'Invalid public key length', null, '8bit');
-        Assertion::length($privateKey, self::PRIVATE_KEY_SIZE, 'Invalid private key length', null, '8bit');
+        mb_strlen($publicKey, '8bit') === self::PUBLIC_KEY_SIZE || throw new OperationException(
+            'Invalid public key length'
+        );
+        mb_strlen($privateKey, '8bit') === self::PRIVATE_KEY_SIZE || throw new OperationException(
+            'Invalid private key length'
+        );
         $this->publicKey = $publicKey;
         $this->privateKey = $privateKey;
     }

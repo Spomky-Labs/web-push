@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use Assert\Assertion;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -16,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function sprintf;
 use WebPush\Base64Url;
+use WebPush\Exception\OperationException;
 use WebPush\Loggable;
 use WebPush\Utils;
 
@@ -36,14 +36,19 @@ final class LcobucciProvider implements JWSProvider, Loggable
     public function __construct(string $publicKey, string $privateKey)
     {
         $privateKeyBin = Base64Url::decode($privateKey);
-        Assertion::eq(mb_strlen($privateKeyBin, '8bit'), self::PRIVATE_KEY_LENGTH, 'Invalid private key size');
+        mb_strlen($privateKeyBin, '8bit') === self::PRIVATE_KEY_LENGTH || throw new OperationException(
+            'Invalid private key size'
+        );
 
         $publicKeyBin = Base64Url::decode($publicKey);
-        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_LENGTH, 'Invalid public key size');
-        Assertion::startsWith($publicKeyBin, "\4", 'Invalid public key', null, '8bit');
+        mb_strlen($publicKeyBin, '8bit') === self::PUBLIC_KEY_LENGTH || throw new OperationException(
+            'Invalid public key size'
+        );
+        str_starts_with($publicKeyBin, "\4") || throw new OperationException('Invalid public key');
 
         $this->publicKey = $publicKey;
         $pem = Utils::privateKeyToPEM(Base64Url::decode($privateKey), Base64Url::decode($publicKey));
+        $pem !== '' || throw new OperationException('Invalid PEM');
         $this->key = InMemory::plainText($pem);
         $this->logger = new NullLogger();
     }

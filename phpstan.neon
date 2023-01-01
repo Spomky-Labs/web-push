@@ -1,11 +1,10 @@
 parameters:
-    level: 8
+    level: max
     paths:
         - src
     treatPhpDocTypesAsCertain: false
     checkMissingIterableValueType: false
     ignoreErrors:
-        - '#Attribute class JetBrains\\PhpStorm\\.* does not exist\.#'
         -
             message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::addDefaultsIfNotSet\(\)\.#'
             count: 1

@@ -8,6 +8,9 @@ use Psr\Http\Message\ResponseInterface;
 
 final class StatusReport implements StatusReportInterface
 {
+    /**
+     * @param string[] $links
+     */
     public function __construct(
         private readonly SubscriptionInterface $subscription,
         private readonly NotificationInterface $notification,
@@ -17,6 +20,9 @@ final class StatusReport implements StatusReportInterface
     ) {
     }
 
+    /**
+     * @param string[] $links
+     */
     public static function create(
         SubscriptionInterface $subscription,
         NotificationInterface $notification,

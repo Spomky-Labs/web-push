@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use Assert\Assertion;
+use function is_array;
 use function openssl_encrypt;
 use const OPENSSL_KEYTYPE_EC;
 use function openssl_pkey_new;
@@ -92,11 +92,15 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         SubscriptionInterface $subscription
     ): RequestInterface {
         $this->logger->debug('Trying to encode the following payload.');
-        Assertion::true($subscription->hasKey('p256dh'), 'The user-agent public key is missing');
+        $subscription->hasKey('p256dh') === true || throw new OperationException(
+            'The user-agent public key is missing'
+        );
         $userAgentPublicKey = Base64Url::decode($subscription->getKey('p256dh'));
         $this->logger->debug(sprintf('User-agent public key: %s', Base64Url::encode($userAgentPublicKey)));
 
-        Assertion::true($subscription->hasKey('auth'), 'The user-agent authentication token is missing');
+        $subscription->hasKey('auth') === true || throw new OperationException(
+            'The user-agent authentication token is missing'
+        );
         $userAgentAuthToken = Base64Url::decode($subscription->getKey('auth'));
         $this->logger->debug(sprintf('User-agent auth token: %s', Base64Url::encode($userAgentAuthToken)));
 
@@ -167,7 +171,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         ;
 
         $bodyLength = mb_strlen($body, '8bit');
-        Assertion::max($bodyLength, 4096, 'The size of payload must not be greater than 4096 bytes.');
+        $bodyLength <= 4096 || throw new OperationException('The size of payload must not be greater than 4096 bytes.');
 
         $request = $this->prepareHeaders($request, $serverKey, $salt);
 
@@ -215,8 +219,10 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $item = $this->cache->getItem($this->cacheKey);
         if ($item->isHit()) {
             $this->logger->debug('The key is available from the cache.');
+            $serverKey = $item->get();
+            $serverKey instanceof ServerKey || throw new OperationException('Invalid cache value');
 
-            return $item->get();
+            return $serverKey;
         }
         $this->logger->debug('No key from the cache');
         $serverKey = $this->generateServerKey();
@@ -243,7 +249,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         $details = openssl_pkey_get_details($keyResource);
 
-        Assertion::isArray($details, 'Unable to get the key details');
+        is_array($details) || throw new OperationException('Unable to get the key details');
 
         $publicKey = "\4";
         $publicKey .= str_pad((string) $details['ec']['x'], self::SIZE, "\0", STR_PAD_LEFT);

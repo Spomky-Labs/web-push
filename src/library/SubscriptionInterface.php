@@ -8,6 +8,9 @@ use JsonSerializable;
 
 interface SubscriptionInterface extends JsonSerializable
 {
+    /**
+     * @return string[]
+     */
     public function getKeys(): array;
 
     public function hasKey(string $key): bool;

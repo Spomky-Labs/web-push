@@ -16,5 +16,8 @@ interface StatusReportInterface
 
     public function getLocation(): string;
 
+    /**
+     * @return string[]
+     */
     public function getLinks(): array;
 }

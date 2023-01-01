@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace WebPush\Bundle\DependencyInjection;
 
 use function array_key_exists;
-use Assert\Assertion;
 use function count;
+use function is_array;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -19,6 +19,7 @@ use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadContentEncodingCompilerPass;
 use WebPush\Bundle\Doctrine\Type\SubscriptionType;
+use WebPush\Exception\OperationException;
 use WebPush\Loggable;
 use WebPush\Payload\ContentEncoding;
 use WebPush\VAPID\JWSProvider;
@@ -82,6 +83,9 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         $container->prependExtensionConfig('doctrine', $config);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function configureVapidSection(ContainerBuilder $container, LoaderInterface $loader, array $config): void
     {
         if (! $config['enabled']) {
@@ -112,6 +116,9 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         }
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function configurePayloadSection(ContainerBuilder $container, array $config): void
     {
         $container->setParameter('webpush.payload.aesgcm.cache_lifetime', $config['aesgcm']['cache_lifetime']);
@@ -127,10 +134,13 @@ final class WebPushExtension extends Extension implements PrependExtensionInterf
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     private function getDoctrineBundleConfiguration(ContainerBuilder $container): ?array
     {
         $bundles = $container->hasParameter('kernel.bundles') ? $container->getParameter('kernel.bundles') : [];
-        Assertion::isArray($bundles, 'Invalid bundle list');
+        is_array($bundles) || throw new OperationException('Invalid bundle list');
         if (! array_key_exists('DoctrineBundle', $bundles)) {
             return null;
         }

@@ -7,13 +7,17 @@ namespace WebPush\Bundle\Doctrine\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
+use function is_string;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use Throwable;
+use WebPush\Exception\OperationException;
 use WebPush\Subscription;
 
 final class SubscriptionType extends Type
 {
+    private const TYPE = 'webpush_subscription';
+
     /**
      * {@inheritdoc}
      */
@@ -25,7 +29,7 @@ final class SubscriptionType extends Type
         if (! $value instanceof Subscription) {
             throw ConversionException::conversionFailedInvalidType(
                 $value,
-                $this->getName(),
+                self::TYPE,
                 ['null', Subscription::class]
             );
         }
@@ -42,9 +46,11 @@ final class SubscriptionType extends Type
             return $value;
         }
         try {
+            is_string($value) || throw new OperationException('Invalid value');
+
             return Subscription::createFromString($value);
         } catch (Throwable $e) {
-            throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', 'string'], $e);
+            throw ConversionException::conversionFailedInvalidType($value, self::TYPE, ['null', 'string'], $e);
         }
     }
 

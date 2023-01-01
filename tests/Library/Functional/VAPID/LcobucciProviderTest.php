@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Functional\VAPID;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
+use WebPush\Exception\OperationException;
 use WebPush\Tests\TestLogger;
 use WebPush\VAPID\LcobucciProvider;
 
@@ -23,7 +23,7 @@ final class LcobucciProviderTest extends TestCase
      */
     public function invalidKey(string $publicKey, string $privateKey, string $expectedMessage): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage($expectedMessage);
 
         LcobucciProvider::create(Base64Url::encode($publicKey), Base64Url::encode($privateKey));

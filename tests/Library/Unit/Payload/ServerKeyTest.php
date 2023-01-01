@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit\Payload;
 
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use WebPush\Exception\OperationException;
 use WebPush\Payload\ServerKey;
 
 /**
@@ -18,7 +18,7 @@ final class ServerKeyTest extends TestCase
      */
     public function invalidPublicKeyLength(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Invalid public key length');
 
         ServerKey::create('', '');
@@ -29,7 +29,7 @@ final class ServerKeyTest extends TestCase
      */
     public function invalidPrivateKeyLength(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Invalid private key length');
 
         $fakePublicKey = str_pad('', 65, '-');

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Unit;
 
 use function chr;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use WebPush\Base64Url;
+use WebPush\Exception\OperationException;
 use WebPush\Utils;
 
 /**
@@ -105,7 +105,7 @@ CODE_SAMPLE
      */
     public function unableToComputeIKM(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Unable to compute the agreement key');
 
         $senderPublicKey = '';

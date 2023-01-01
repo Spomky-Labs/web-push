@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace WebPush;
 
 use function array_key_exists;
-use Assert\Assertion;
+use function in_array;
+use WebPush\Exception\OperationException;
 
 final class Notification implements NotificationInterface
 {
@@ -59,12 +60,12 @@ final class Notification implements NotificationInterface
 
     public function withUrgency(string $urgency): self
     {
-        Assertion::inArray($urgency, [
+        in_array($urgency, [
             self::URGENCY_VERY_LOW,
             self::URGENCY_LOW,
             self::URGENCY_NORMAL,
             self::URGENCY_HIGH,
-        ], 'Invalid urgency parameter');
+        ], true) || throw new OperationException('Invalid urgency parameter');
         $this->urgency = $urgency;
 
         return $this;
@@ -89,7 +90,7 @@ final class Notification implements NotificationInterface
 
     public function withTopic(string $topic): self
     {
-        Assertion::notBlank($topic, 'Invalid topic');
+        $topic !== '' || throw new OperationException('Invalid topic');
         $this->topic = $topic;
 
         return $this;
@@ -102,7 +103,7 @@ final class Notification implements NotificationInterface
 
     public function withTTL(int $ttl): self
     {
-        Assertion::greaterOrEqualThan($ttl, 0, 'Invalid TTL');
+        $ttl >= 0 || throw new OperationException('Invalid TTL');
         $this->ttl = $ttl;
 
         return $this;
@@ -154,7 +155,7 @@ final class Notification implements NotificationInterface
 
     public function get(string $key): mixed
     {
-        Assertion::true($this->has($key), 'Missing metadata');
+        $this->has($key) === true || throw new OperationException('Missing metadata');
 
         return $this->metadata[$key];
     }

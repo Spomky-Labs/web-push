@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Assert\InvalidArgumentException;
 use DatetimeImmutable;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use JsonException;
 use PHPUnit\Framework\TestCase;
+use WebPush\Exception\OperationException;
 use WebPush\Subscription;
 
 /**
@@ -174,7 +174,7 @@ final class SubscriptionTest extends TestCase
         return [
             [
                 'input' => json_encode(0, JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
@@ -184,14 +184,14 @@ final class SubscriptionTest extends TestCase
             ],
             [
                 'input' => '[]',
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
                 'input' => json_encode([
                     'endpoint' => 0,
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
@@ -200,7 +200,7 @@ final class SubscriptionTest extends TestCase
                     'supportedContentEncodings' => 'FOO',
                     'keys' => 'foo',
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
@@ -209,7 +209,7 @@ final class SubscriptionTest extends TestCase
                     'supportedContentEncodings' => [123],
                     'keys' => 'foo',
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
@@ -218,7 +218,7 @@ final class SubscriptionTest extends TestCase
                     'supportedContentEncodings' => ['FOO'],
                     'keys' => 'foo',
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
@@ -229,7 +229,7 @@ final class SubscriptionTest extends TestCase
                         12 => 0,
                     ],
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid key name',
             ],
             [
@@ -241,7 +241,7 @@ final class SubscriptionTest extends TestCase
                         'publicKey' => 0,
                     ],
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid key value',
             ],
             [
@@ -254,7 +254,7 @@ final class SubscriptionTest extends TestCase
                     ],
                     'expirationTime' => 'Monday',
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
             [
@@ -267,7 +267,7 @@ final class SubscriptionTest extends TestCase
                     ],
                     'expirationTime' => 'Monday',
                 ], JSON_THROW_ON_ERROR),
-                'exception' => InvalidArgumentException::class,
+                'exception' => OperationException::class,
                 'message' => 'Invalid input',
             ],
         ];

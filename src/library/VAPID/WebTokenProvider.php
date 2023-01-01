@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use Assert\Assertion;
 use function hex2bin;
+use function is_string;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -36,11 +36,15 @@ final class WebTokenProvider implements JWSProvider, Loggable
     public function __construct(string $publicKey, string $privateKey)
     {
         $privateKeyBin = Base64Url::decode($privateKey);
-        Assertion::eq(mb_strlen($privateKeyBin, '8bit'), self::PRIVATE_KEY_LENGTH, 'Invalid private key size');
+        mb_strlen($privateKeyBin, '8bit') === self::PRIVATE_KEY_LENGTH || throw new OperationException(
+            'Invalid private key size'
+        );
 
         $publicKeyBin = Base64Url::decode($publicKey);
-        Assertion::eq(mb_strlen($publicKeyBin, '8bit'), self::PUBLIC_KEY_LENGTH, 'Invalid public key size');
-        Assertion::startsWith($publicKeyBin, "\4", 'Invalid public key', null, '8bit');
+        mb_strlen($publicKeyBin, '8bit') === self::PUBLIC_KEY_LENGTH || throw new OperationException(
+            'Invalid public key size'
+        );
+        str_starts_with($publicKeyBin, "\4") || throw new OperationException('Invalid public key');
         $x = mb_substr($publicKeyBin, 1, self::PRIVATE_KEY_LENGTH, '8bit');
         $y = mb_substr($publicKeyBin, -self::PRIVATE_KEY_LENGTH, null, '8bit');
 
@@ -93,9 +97,14 @@ final class WebTokenProvider implements JWSProvider, Loggable
 
     private function serializePublicKey(): string
     {
+        $x = $this->signatureKey->get('x');
+        is_string($x) || throw new OperationException('Invalid key');
+        $y = $this->signatureKey->get('y');
+        is_string($y) || throw new OperationException('Invalid key');
+
         $hexString = '04';
-        $hexString .= bin2hex(Base64Url::decode($this->signatureKey->get('x')));
-        $hexString .= bin2hex(Base64Url::decode($this->signatureKey->get('y')));
+        $hexString .= bin2hex(Base64Url::decode($x));
+        $hexString .= bin2hex(Base64Url::decode($y));
         $bin = hex2bin($hexString);
         if ($bin === false) {
             throw new OperationException('Unable to encode the public key');

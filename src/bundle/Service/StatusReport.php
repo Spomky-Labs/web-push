@@ -15,6 +15,9 @@ final class StatusReport implements StatusReportInterface
 
     private ?string $location = null;
 
+    /**
+     * @var string[]|null
+     */
     private ?array $links = null;
 
     public function __construct(

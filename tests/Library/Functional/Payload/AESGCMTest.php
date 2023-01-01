@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Functional\Payload;
 
 use function chr;
-use InvalidArgumentException;
 use Nyholm\Psr7\Request;
 use function openssl_decrypt;
 use const OPENSSL_RAW_DATA;
@@ -19,6 +18,7 @@ use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Clock\NativeClock;
 use function unpack;
 use WebPush\Base64Url;
+use WebPush\Exception\OperationException;
 use WebPush\Payload\AESGCM;
 use WebPush\Payload\ServerKey;
 use WebPush\Subscription;
@@ -34,7 +34,7 @@ final class AESGCMTest extends TestCase
      */
     public function paddingLengthToHigh(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Invalid padding size');
 
         AESGCM::create(new NativeClock())->customPadding(4079);
@@ -45,7 +45,7 @@ final class AESGCMTest extends TestCase
      */
     public function paddingLengthToLow(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('Invalid padding size');
 
         AESGCM::create(new NativeClock())->customPadding(-1);
@@ -56,7 +56,7 @@ final class AESGCMTest extends TestCase
      */
     public function missingUserAgentPublicKey(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('The user-agent public key is missing');
 
         $request = new Request('POST', 'https://foo.bar');
@@ -72,7 +72,7 @@ final class AESGCMTest extends TestCase
      */
     public function missingUserAgentAuthenticationToken(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('The user-agent authentication token is missing');
 
         $request = new Request('POST', 'https://foo.bar');
@@ -149,7 +149,7 @@ final class AESGCMTest extends TestCase
      */
     public function largePayloadForbidden(): void
     {
-        static::expectException(InvalidArgumentException::class);
+        static::expectException(OperationException::class);
         static::expectExceptionMessage('The size of payload must not be greater than 4096 bytes.');
 
         $request = new Request('POST', 'https://foo.bar');

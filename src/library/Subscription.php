@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace WebPush;
 
 use function array_key_exists;
-use Assert\Assertion;
 use DateTimeImmutable;
 use DateTimeInterface;
-use JetBrains\PhpStorm\ArrayShape;
+use function is_array;
+use function is_int;
+use function is_string;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
+use WebPush\Exception\OperationException;
 
 class Subscription implements SubscriptionInterface
 {
@@ -59,7 +61,7 @@ class Subscription implements SubscriptionInterface
 
     public function getKey(string $key): string
     {
-        Assertion::keyExists($this->keys, $key, 'The key does not exist');
+        array_key_exists($key, $this->keys) || throw new OperationException('The key does not exist');
 
         return $this->keys[$key];
     }
@@ -105,7 +107,7 @@ class Subscription implements SubscriptionInterface
     {
         $data = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
 
-        Assertion::isArray($data, 'Invalid input');
+        is_array($data) || throw new OperationException('Invalid input');
 
         return self::createFromAssociativeArray($data);
     }
@@ -113,11 +115,6 @@ class Subscription implements SubscriptionInterface
     /**
      * @return array<string, string|string[]>
      */
-    #[ArrayShape([
-        'endpoint' => 'string',
-        'supportedContentEncodings' => 'string[]',
-        'keys' => 'string[]',
-    ])]
     public function jsonSerialize(): array
     {
         return [
@@ -132,25 +129,29 @@ class Subscription implements SubscriptionInterface
      */
     private static function createFromAssociativeArray(array $input): self
     {
-        Assertion::keyExists($input, 'endpoint', 'Invalid input');
-        Assertion::string($input['endpoint'], 'Invalid input');
+        array_key_exists('endpoint', $input) || throw new OperationException('Invalid input');
+        is_string($input['endpoint']) || throw new OperationException('Invalid input');
 
         $object = new self($input['endpoint']);
         if (array_key_exists('supportedContentEncodings', $input)) {
             $encodings = $input['supportedContentEncodings'];
-            Assertion::isArray($encodings, 'Invalid input');
-            Assertion::allString($encodings, 'Invalid input');
+            is_array($encodings) || throw new OperationException('Invalid input');
+            array_walk($encodings, static function (mixed $item): void {
+                is_string($item) || throw new OperationException('Invalid input');
+            });
             $object->withContentEncodings($encodings);
         }
         if (array_key_exists('expirationTime', $input)) {
-            Assertion::nullOrInteger($input['expirationTime'], 'Invalid input');
+            $input['expirationTime'] === null || is_int($input['expirationTime']) || throw new OperationException(
+                'Invalid input'
+            );
             $object->setExpirationTime($input['expirationTime']);
         }
         if (array_key_exists('keys', $input)) {
-            Assertion::isArray($input['keys'], 'Invalid input');
+            is_array($input['keys']) || throw new OperationException('Invalid input');
             foreach ($input['keys'] as $k => $v) {
-                Assertion::string($k, 'Invalid key name');
-                Assertion::string($v, 'Invalid key value');
+                is_string($k) || throw new OperationException('Invalid key name');
+                is_string($v) || throw new OperationException('Invalid key value');
                 $object->setKey($k, $v);
             }
         }

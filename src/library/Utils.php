@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Assert\Assertion;
 use function is_array;
+use function is_string;
 use function pack;
 use const PHP_EOL;
 use const STR_PAD_LEFT;
@@ -96,7 +96,7 @@ abstract class Utils
         $serverPrivateKeyPEM = self::privateKeyToPEM($serverPrivateKey, $serverPublicKey);
         $userAgentPublicKeyPEM = self::publicKeyToPEM($userAgentPublicKey);
         $result = openssl_pkey_derive($userAgentPublicKeyPEM, $serverPrivateKeyPEM, self::HASH_SIZE);
-        Assertion::string($result, 'Unable to compute the agreement key');
+        is_string($result) || throw new OperationException('Unable to compute the agreement key');
 
         return str_pad($result, self::PART_SIZE, "\0", STR_PAD_LEFT);
     }

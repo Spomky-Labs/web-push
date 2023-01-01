@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use Assert\Assertion;
 use function pack;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
 use const STR_PAD_RIGHT;
+use WebPush\Exception\OperationException;
 
 final class AES128GCM extends AbstractAESGCM
 {
@@ -23,7 +23,9 @@ final class AES128GCM extends AbstractAESGCM
 
     public function customPadding(int $padding): self
     {
-        Assertion::range($padding, self::PADDING_NONE, self::PADDING_MAX, 'Invalid padding size');
+        ($padding >= self::PADDING_NONE && $padding <= self::PADDING_MAX) || throw new OperationException(
+            'Invalid padding size'
+        );
         $this->padding = $padding;
 
         return $this;
