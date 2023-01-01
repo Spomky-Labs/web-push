@@ -1,0 +1,25 @@
+parameters:
+  paths:
+    - './src'
+  layers:
+    - name: 'Library'
+      collectors:
+        - type: 'directory'
+          regex: 'src/library/.*'
+    - name: 'SymfonyBundle'
+      collectors:
+        - type: 'directory'
+          regex: 'src/bundle/.*'
+    - name: 'Vendors'
+      collectors:
+        - { type: className, regex: '^Psr\\' }
+        - { type: className, regex: '^Symfony\\' }
+        - { type: className, regex: '^Doctrine\\' }
+        - { type: className, regex: '^Lcobucci\\JWT\\' }
+        - { type: className, regex: '^Jose\\Component\\' }
+  ruleset:
+    Library:
+      - 'Vendors'
+    SymfonyBundle:
+      - 'Library'
+      - 'Vendors'
