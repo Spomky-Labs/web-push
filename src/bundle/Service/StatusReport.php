@@ -54,7 +54,7 @@ final class StatusReport implements StatusReportInterface
     public function getLocation(): string
     {
         if ($this->location === null) {
-            $headers = $this->response->getHeaders();
+            $headers = $this->response->getHeaders(false);
             $this->location = implode(', ', $headers['location'] ?? ['']);
         }
 
@@ -67,7 +67,7 @@ final class StatusReport implements StatusReportInterface
     public function getLinks(): array
     {
         if ($this->links === null) {
-            $headers = $this->response->getHeaders();
+            $headers = $this->response->getHeaders(false);
             $this->links = $headers['link'] ?? [];
         }
 
