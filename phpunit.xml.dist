@@ -4,7 +4,7 @@
     bootstrap="vendor/autoload.php"
     colors="true"
     executionOrder="random"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
 >
     <coverage>
         <include>
@@ -15,6 +15,12 @@
         <testsuite name="WebPush Test Suite">
             <directory suffix=".php">./tests/</directory>
         </testsuite>
+        <testsuite name="WebPush Bundle Test">
+            <directory suffix=".php">./tests/Bundle</directory>
+        </testsuite>
+        <testsuite name="WebPush Library Test">
+            <directory suffix=".php">./tests/Library</directory>
+        </testsuite>
     </testsuites>
     <php>
         <ini name="error_reporting" value="-1"/>
@@ -22,8 +28,8 @@
         <ini name="intl.error_level" value="0"/>
         <ini name="memory_limit" value="-1"/>
         <server name="KERNEL_CLASS" value="WebPush\Tests\Bundle\AppKernel"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
-        <server name="SYMFONY_PHPUNIT_VERSION" value="9"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+        <server name="SYMFONY_PHPUNIT_VERSION" value="9.6"/>
         <server name="APP_DEBUG" value="false" />
     </php>
     <listeners>
