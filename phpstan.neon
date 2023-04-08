@@ -15,6 +15,10 @@ parameters:
             message: '#Parameter \#1 \$contentEncodings of method WebPush\\Subscription\:\:withContentEncodings\(\) expects array\<string\>\, array given\.#'
             count: 1
             path: src/library/Subscription.php
+        -
+            message: '#Parameter \#1 \$input of static method WebPush\\Subscription\:\:createFromAssociativeArray\(\) expects array\<string, mixed\>\, array given\.#'
+            count: 1
+            path: src/library/Subscription.php
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon

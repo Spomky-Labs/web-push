@@ -13,9 +13,6 @@
         </include>
     </coverage>
     <testsuites>
-        <testsuite name="WebPush Test Suite">
-            <directory suffix=".php">./tests/</directory>
-        </testsuite>
         <testsuite name="WebPush Bundle Test">
             <directory suffix=".php">./tests/Bundle</directory>
         </testsuite>

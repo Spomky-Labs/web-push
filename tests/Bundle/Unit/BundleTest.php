@@ -7,7 +7,6 @@ namespace WebPush\Tests\Bundle\Unit;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\PhpUnit\ClassExistsMock;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use WebPush\Bundle\DependencyInjection\Compiler\ExtensionCompilerPass;
 use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
@@ -22,21 +21,6 @@ use WebPush\Bundle\WebPushBundle;
  */
 final class BundleTest extends TestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        ClassExistsMock::register(WebPushBundle::class);
-    }
-
-    protected function setUp(): void
-    {
-        ClassExistsMock::withMockedClasses([]);
-    }
-
-    protected function tearDown(): void
-    {
-        ClassExistsMock::withMockedClasses([]);
-    }
-
     #[Test]
     public function theBundleHasTheCorrectExtension(): void
     {

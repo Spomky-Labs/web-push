@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Benchmark;
 
+use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpClient\MockHttpClient;
