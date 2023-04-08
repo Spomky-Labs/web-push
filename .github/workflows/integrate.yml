@@ -31,7 +31,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           coverage: "none"
 
       - name: "Checkout code"
@@ -55,7 +55,7 @@ jobs:
         operating-system:
           - "ubuntu-latest"
         php-version:
-          - "8.1"
+          - "8.2"
         dependencies:
           - "lowest"
           - "highest"
@@ -102,7 +102,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "none"
 
@@ -134,7 +134,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "none"
 
@@ -167,7 +167,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
@@ -196,7 +196,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
           coverage: "xdebug"
 
