@@ -11,7 +11,6 @@ use function openssl_pkey_new;
 use const OPENSSL_RAW_DATA;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function sprintf;
@@ -20,6 +19,7 @@ use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Exception\OperationException;
 use WebPush\Loggable;
+use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
 use WebPush\Utils;
 
@@ -86,11 +86,8 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
     abstract public function maxPadding(): self;
 
-    public function encode(
-        string $payload,
-        RequestInterface $request,
-        SubscriptionInterface $subscription
-    ): RequestInterface {
+    public function encode(string $payload, RequestData $requestData, SubscriptionInterface $subscription): void
+    {
         $this->logger->debug('Trying to encode the following payload.');
         $subscription->hasKey('p256dh') === true || throw new OperationException(
             'The user-agent public key is missing'
@@ -166,18 +163,13 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         // Body to be sent
         $body = $this->prepareBody($encryptedText, $serverKey, $tag, $salt);
-        $request->getBody()
-            ->write($body)
-        ;
+        $requestData->setBody($body);
 
         $bodyLength = mb_strlen($body, '8bit');
         $bodyLength <= 4096 || throw new OperationException('The size of payload must not be greater than 4096 bytes.');
 
-        $request = $this->prepareHeaders($request, $serverKey, $salt);
-
-        return $request
-            ->withAddedHeader('Content-Length', (string) $bodyLength)
-        ;
+        $requestData->addHeader('Content-Length', (string) $bodyLength);
+        $this->prepareHeaders($requestData, $serverKey, $salt);
     }
 
     abstract protected function getKeyInfo(string $userAgentPublicKey, ServerKey $serverKey): string;
@@ -193,11 +185,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         string $salt
     ): string;
 
-    abstract protected function prepareHeaders(
-        RequestInterface $request,
-        ServerKey $serverKey,
-        string $salt
-    ): RequestInterface;
+    abstract protected function prepareHeaders(RequestData $requestData, ServerKey $serverKey, string $salt): void;
 
     private function createInfo(string $type, string $context): string
     {

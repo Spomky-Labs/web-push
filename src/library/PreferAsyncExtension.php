@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -30,20 +29,20 @@ final class PreferAsyncExtension implements Extension, Loggable
     }
 
     public function process(
-        RequestInterface $request,
+        RequestData $requestData,
         NotificationInterface $notification,
         SubscriptionInterface $subscription
-    ): RequestInterface {
+    ): void {
         if (! $notification->isAsync()) {
             $this->logger->debug('Sending synchronous notification');
 
-            return $request;
+            return;
         }
 
         $this->logger->debug('Sending asynchronous notification');
 
-        return $request
-            ->withAddedHeader('Prefer', 'respond-async')
+        $requestData
+            ->addHeader('Prefer', 'respond-async')
         ;
     }
 }

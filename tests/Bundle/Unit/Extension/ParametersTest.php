@@ -4,28 +4,25 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit\Extension;
 
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Base64Url;
 use WebPush\VAPID\JWSProvider;
 
 /**
  * @internal
  */
-final class ParametersTest extends AbstractExtensionTest
+final class ParametersTest extends AbstractExtensionTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function theMinimalParametersAndAliasesAreSet(): void
     {
         $this->load();
 
         $this->assertContainerBuilderHasAlias('webpush.logger', LoggerInterface::class);
-        $this->assertContainerBuilderHasAlias('webpush.http_client', ClientInterface::class);
-        $this->assertContainerBuilderHasAlias('webpush.request_factory', RequestFactoryInterface::class);
+        $this->assertContainerBuilderHasAlias('webpush.http_client', HttpClientInterface::class);
 
         $this->assertContainerBuilderHasParameter('webpush.payload.aesgcm.cache_lifetime', 'now + 30min');
         $this->assertContainerBuilderHasParameter('webpush.payload.aesgcm.padding', 'recommended');
@@ -36,9 +33,7 @@ final class ParametersTest extends AbstractExtensionTest
         $this->assertContainerBuilderHasAlias('webpush.payload.aes128gcm.cache', CacheItemPoolInterface::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theVapidWebTokenParametersAndAliasesAreSet(): void
     {
         $this->load([
@@ -68,9 +63,7 @@ final class ParametersTest extends AbstractExtensionTest
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theVapidLcobucciParametersAndAliasesAreSet(): void
     {
         $this->load([
@@ -100,9 +93,7 @@ final class ParametersTest extends AbstractExtensionTest
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theVapidCustomParametersAndAliasesAreSet(): void
     {
         $this->load([
@@ -126,8 +117,8 @@ final class ParametersTest extends AbstractExtensionTest
     {
         return [
             'logger' => LoggerInterface::class,
-            'http_client' => ClientInterface::class,
-            'request_factory' => RequestFactoryInterface::class,
+            'http_client' => HttpClientInterface::class,
+
             'payload' => [
                 'aes128gcm' => [
                     'padding' => 'recommended',

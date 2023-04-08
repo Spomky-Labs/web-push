@@ -8,6 +8,7 @@ use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Action;
 
@@ -16,9 +17,7 @@ use WebPush\Action;
  */
 final class ActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createAction(): void
     {
         $action = Action::create('ACTION', '---TITLE---');
@@ -32,9 +31,7 @@ final class ActionTest extends TestCase
         static::assertSame($expectedJson, json_encode($action, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createActionWithIcon(): void
     {
         $action = Action::create('ACTION', '---TITLE---')

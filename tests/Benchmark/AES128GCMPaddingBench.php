@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Benchmark;
 
-use Nyholm\Psr7\Request;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Subject;
 use Symfony\Component\Clock\NativeClock;

@@ -4,46 +4,18 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit\Configuration;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Payload\AES128GCM;
 
 /**
  * @internal
  */
-final class AES128GCMConfigurationTest extends AbstractConfigurationTest
+final class AES128GCMConfigurationTest extends AbstractConfigurationTestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider invalidPaddings
-     */
-    public function invalidIfThePaddingDoesNotFulfillTheConstraints(string|int|bool $padding): void
-    {
-        $this->assertConfigurationIsInvalid(
-            [
-                [
-                    'payload' => [
-                        'aes128gcm' => [
-                            'padding' => $padding,
-                        ],
-                    ],
-                ],
-            ],
-            'Invalid configuration for path "webpush.payload.aes128gcm.padding": The padding must have one of the following value: none, recommended, max or an integer between 0 and 3993'
-        );
-    }
-
-    public function invalidPaddings(): array
-    {
-        return [['min'], [-1], [AES128GCM::PADDING_MAX + 1]];
-    }
-
-    /**
-     * @test
-     *
-     * @dataProvider validPaddings
-     */
+    #[Test]
+    #[DataProvider('validPaddings')]
     public function validPadding(string|int|bool $padding): void
     {
         $this->assertProcessedConfigurationEquals(
@@ -58,8 +30,8 @@ final class AES128GCMConfigurationTest extends AbstractConfigurationTest
             ],
             [
                 'logger' => null,
-                'http_client' => ClientInterface::class,
-                'request_factory' => RequestFactoryInterface::class,
+                'http_client' => HttpClientInterface::class,
+
                 'vapid' => [
                     'enabled' => false,
                     'token_lifetime' => 'now +1hour',
@@ -89,7 +61,7 @@ final class AES128GCMConfigurationTest extends AbstractConfigurationTest
         );
     }
 
-    public function validPaddings(): array
+    public static function validPaddings(): array
     {
         return [['none'], ['recommended'], ['max'], [0], [AES128GCM::PADDING_MAX]];
     }

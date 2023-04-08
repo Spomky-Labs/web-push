@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -17,10 +19,8 @@ use WebPush\Payload\AESGCM;
  */
 final class PayloadPaddingCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @test
-     * @dataProvider paddingConfigurations
-     */
+    #[Test]
+    #[DataProvider('paddingConfigurations')]
     public function thePaddingIsCorrectlySet(
         string $class,
         string $parameterName,
@@ -37,7 +37,7 @@ final class PayloadPaddingCompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall($class, $methodName, $methodParameters);
     }
 
-    public function paddingConfigurations(): array
+    public static function paddingConfigurations(): array
     {
         return [
             [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'recommended', 'recommendedPadding', []],

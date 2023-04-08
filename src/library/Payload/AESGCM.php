@@ -6,11 +6,11 @@ namespace WebPush\Payload;
 
 use function pack;
 use Psr\Clock\ClockInterface;
-use Psr\Http\Message\RequestInterface;
 use function sprintf;
 use const STR_PAD_LEFT;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
+use WebPush\RequestData;
 
 final class AESGCM extends AbstractAESGCM
 {
@@ -63,11 +63,11 @@ final class AESGCM extends AbstractAESGCM
         return pack('n*', $paddingLength) . str_pad($payload, $this->padding, "\0", STR_PAD_LEFT);
     }
 
-    protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface
+    protected function prepareHeaders(RequestData $requestData, ServerKey $serverKey, string $salt): void
     {
-        return $request
-            ->withAddedHeader('Crypto-Key', sprintf('dh=%s', Base64Url::encode($serverKey->getPublicKey())))
-            ->withAddedHeader('Encryption', 'salt=' . Base64Url::encode($salt))
+        $requestData
+            ->addHeader('Crypto-Key', sprintf('dh=%s', Base64Url::encode($serverKey->getPublicKey())))
+            ->addHeader('Encryption', 'salt=' . Base64Url::encode($salt))
         ;
     }
 

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Benchmark;
 
-use Http\Mock\Client;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Clock\NativeClock;
+use Symfony\Component\HttpClient\MockHttpClient;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Payload\AES128GCM;
@@ -35,8 +34,7 @@ abstract class AbstractBench
 
     public function init(): void
     {
-        $client = new Client();
-        $psr17Factory = new Psr17Factory();
+        $client = new MockHttpClient();
 
         $jwsProvider = $this->jwtProvider();
         $vapidExtension = VAPIDExtension::create('mailto:foo@bar.com', $jwsProvider, new NativeClock());
@@ -76,8 +74,8 @@ abstract class AbstractBench
             ->add($payloadExtensionWithCache)
         ;
 
-        $this->webPush = WebPush::create($client, $psr17Factory, $extensionManager);
-        $this->webPushWithCache = WebPush::create($client, $psr17Factory, $extensionManagerWithCache);
+        $this->webPush = WebPush::create($client, $extensionManager);
+        $this->webPushWithCache = WebPush::create($client, $extensionManagerWithCache);
 
         $this->subscription = Subscription::createFromString(
             '{"endpoint":"https://updates.push.services.mozilla.com/wpush/v2/gAAAAABfcsdu1p9BdbYIByt9F76MHcSiuix-ZIiICzAkU9z_p0gnolYLMOi71rqss5pMOZuYJVZLa7rRN58uOgfdsux7k51Ph6KJRFEkf1LqTRMv2d8OhQaL2TR36WUR2d5twzYVwcQJAnTLrhVrWqKVo8ekAonuwyFHDUGzD8oUWpFTK9y2F68","keys":{"auth":"wSfP1pfACMwFesCEfJx4-w","p256dh":"BIlDpD05YLrVPXfANOKOCNSlTvjpb5vdFo-1e0jNcbGlFrP49LyOjYyIIAZIVCDAHEcX-135b859bdsse-PgosU"},"contentEncoding":"aes128gcm"}'

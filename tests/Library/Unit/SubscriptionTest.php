@@ -8,6 +8,8 @@ use DatetimeImmutable;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use JsonException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Exception\OperationException;
 use WebPush\Subscription;
@@ -17,10 +19,8 @@ use WebPush\Subscription;
  */
 final class SubscriptionTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataInvalidSubscription
-     */
+    #[Test]
+    #[DataProvider('dataInvalidSubscription')]
     public function invalidInputCannotBeLoaded(string $input, string $exception, string $message): void
     {
         $this->expectException($exception);
@@ -29,9 +29,7 @@ final class SubscriptionTest extends TestCase
         Subscription::createFromString($input);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createSubscriptionFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar');
@@ -46,9 +44,7 @@ final class SubscriptionTest extends TestCase
         static::assertSame(['aesgcm'], $subscription->getSupportedContentEncodings());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createSubscriptionFromJson(): void
     {
         $subscription = Subscription::createFromString(
@@ -70,9 +66,7 @@ final class SubscriptionTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createSubscriptionWithoutExpirationTimeFromJson(): void
     {
         $subscription = Subscription::createFromString(
@@ -91,9 +85,7 @@ final class SubscriptionTest extends TestCase
         static::assertNull($subscription->expiresAt());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createSubscriptionWithAESGCMENCODINGFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
@@ -104,9 +96,7 @@ final class SubscriptionTest extends TestCase
         static::assertSame(['aesgcm'], $subscription->getSupportedContentEncodings());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createSubscriptionWithAES128GCMENCODINGFluent(): void
     {
         $subscription = Subscription::create('https://foo.bar')
@@ -117,9 +107,7 @@ final class SubscriptionTest extends TestCase
         static::assertSame(['aes128gcm'], $subscription->getSupportedContentEncodings());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidEncodingIsDetected(): void
     {
         $this->expectException(OperationException::class);
@@ -131,11 +119,10 @@ final class SubscriptionTest extends TestCase
     }
 
     /**
-     * @test
-     * @dataProvider dataSubscription
-     *
      * @param array<string, string> $keys
      */
+    #[Test]
+    #[DataProvider('dataSubscription')]
     public function createSubscription(string $endpoint, string $contentEncoding, array $keys): void
     {
         $subscription = Subscription::create($endpoint)
@@ -160,7 +147,7 @@ final class SubscriptionTest extends TestCase
     /**
      * @return array<int, array<string, array<string, string>|string>>
      */
-    public function dataSubscription(): array
+    public static function dataSubscription(): array
     {
         return [
             [
@@ -182,7 +169,7 @@ final class SubscriptionTest extends TestCase
     /**
      * @return array<int, array<string, string>>
      */
-    public function dataInvalidSubscription(): array
+    public static function dataInvalidSubscription(): array
     {
         return [
             [

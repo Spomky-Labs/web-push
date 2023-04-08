@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -30,17 +29,17 @@ final class UrgencyExtension implements Extension, Loggable
     }
 
     public function process(
-        RequestInterface $request,
+        RequestData $requestData,
         NotificationInterface $notification,
         SubscriptionInterface $subscription
-    ): RequestInterface {
+    ): void {
         $urgency = $notification->getUrgency();
         $this->logger->debug('Processing with the Urgency extension', [
             'Urgency' => $urgency,
         ]);
 
-        return $request
-            ->withAddedHeader('Urgency', $urgency)
+        $requestData
+            ->addHeader('Urgency', $urgency)
         ;
     }
 }

@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit\Extension;
 
-use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use WebPush\Bundle\DependencyInjection\WebPushExtension;
 
 /**
  * @internal
  */
-abstract class AbstractExtensionTest extends AbstractExtensionTestCase
+abstract class AbstractExtensionTestCase extends \Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase
 {
     protected function getContainerExtensions(): array
     {

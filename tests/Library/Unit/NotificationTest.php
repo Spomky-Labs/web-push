@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Exception\OperationException;
 use WebPush\Notification;
@@ -13,9 +15,7 @@ use WebPush\Notification;
  */
 final class NotificationTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createNotificationFluent(): void
     {
         $subscription = Notification::create()
@@ -37,9 +37,7 @@ final class NotificationTest extends TestCase
         static::assertFalse($subscription->isAsync());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createNotificationWithTTL(): void
     {
         $subscription = Notification::create()
@@ -52,9 +50,7 @@ final class NotificationTest extends TestCase
         static::assertNull($subscription->getTopic());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createAsyncNotification(): void
     {
         $subscription = Notification::create()
@@ -64,9 +60,7 @@ final class NotificationTest extends TestCase
         static::assertTrue($subscription->isAsync());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function defaultNotificationIsSync(): void
     {
         $subscription = Notification::create();
@@ -74,10 +68,8 @@ final class NotificationTest extends TestCase
         static::assertFalse($subscription->isAsync());
     }
 
-    /**
-     * @test
-     * @dataProvider dataUrgencies
-     */
+    #[Test]
+    #[DataProvider('dataUrgencies')]
     public function urgencies(string $urgency): void
     {
         $subscription = Notification::create()
@@ -87,9 +79,7 @@ final class NotificationTest extends TestCase
         static::assertSame($urgency, $subscription->getUrgency());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidUrgency(): void
     {
         $this->expectException(OperationException::class);
@@ -100,9 +90,7 @@ final class NotificationTest extends TestCase
         ;
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidTopic(): void
     {
         $this->expectException(OperationException::class);
@@ -113,9 +101,7 @@ final class NotificationTest extends TestCase
         ;
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidTTL(): void
     {
         $this->expectException(OperationException::class);
@@ -126,9 +112,7 @@ final class NotificationTest extends TestCase
         ;
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createNotificationWithMetadata(): void
     {
         $notification = Notification::create()
@@ -143,9 +127,7 @@ final class NotificationTest extends TestCase
         ], $notification->getMetadata());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function missingMetadata(): void
     {
         static::expectException(OperationException::class);
@@ -158,7 +140,7 @@ final class NotificationTest extends TestCase
     /**
      * @return array<int, array<int, string>>
      */
-    public function dataUrgencies(): array
+    public static function dataUrgencies(): array
     {
         return [
             [Notification::URGENCY_VERY_LOW],

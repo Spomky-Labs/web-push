@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
+use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\TopicExtension;
 
@@ -15,36 +17,34 @@ use WebPush\TopicExtension;
  */
 final class TopicExtensionTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataTopicIsSetInHeader
-     */
+    #[Test]
+    #[DataProvider('dataTopicIsSetInHeader')]
     public function topicIsSetInHeader(?string $topic): void
     {
         // Given
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
 
         $notification = Notification::create();
-        if ($topic !== '') {
+        if ($topic !== null) {
             $notification = $notification->withTopic($topic);
         }
 
         $subscription = Subscription::create('https://foo.bar');
 
         // When
-        $request = TopicExtension::create()
-            ->process($request, $notification, $subscription)
+        TopicExtension::create()
+            ->process($requestData, $notification, $subscription)
         ;
 
         // Then
-        static::assertSame($topic, $request->getHeaderLine('topic'));
+        static::assertSame($topic, $requestData->getHeaders()['Topic']);
     }
 
     /**
      * @return array<int, array<int, string|null>>
      */
-    public function dataTopicIsSetInHeader(): array
+    public static function dataTopicIsSetInHeader(): array
     {
-        return [[''], ['topic1'], ['foo-bar']];
+        return [[null], ['topic1'], ['foo-bar']];
     }
 }

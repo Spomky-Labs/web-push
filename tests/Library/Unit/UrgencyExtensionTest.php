@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
+use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\UrgencyExtension;
 
@@ -15,14 +17,12 @@ use WebPush\UrgencyExtension;
  */
 final class UrgencyExtensionTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataUrgencyIsSetInHeader
-     */
+    #[Test]
+    #[DataProvider('dataUrgencyIsSetInHeader')]
     public function urgencyIsSetInHeader(string $urgency): void
     {
         // Given
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
 
         $notification = Notification::create()
             ->withUrgency($urgency)
@@ -30,18 +30,18 @@ final class UrgencyExtensionTest extends TestCase
         $subscription = Subscription::create('https://foo.bar');
 
         // When
-        $request = UrgencyExtension::create()
-            ->process($request, $notification, $subscription)
+        UrgencyExtension::create()
+            ->process($requestData, $notification, $subscription)
         ;
 
         // Then
-        static::assertSame($urgency, $request->getHeaderLine('urgency'));
+        static::assertSame($urgency, $requestData->getHeaders()['Urgency']);
     }
 
     /**
      * @return array<int, array<int, string>>
      */
-    public function dataUrgencyIsSetInHeader(): array
+    public static function dataUrgencyIsSetInHeader(): array
     {
         return [
             [Notification::URGENCY_VERY_LOW],

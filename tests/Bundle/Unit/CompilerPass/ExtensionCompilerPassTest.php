@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -17,9 +18,7 @@ use WebPush\ExtensionManager;
  */
 final class ExtensionCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function ifTheExtensionManagerExistsThenTaggedServicesAreAdded(): void
     {
         $collectingService = new Definition();
@@ -38,9 +37,7 @@ final class ExtensionCompilerPassTest extends AbstractCompilerPassTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function ifTheExtensionManagerDoesNotExistThenTaggedServicesAreAdded(): void
     {
         $collectedService = new Definition();

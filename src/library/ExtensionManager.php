@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -45,16 +44,16 @@ final class ExtensionManager implements Loggable
     }
 
     public function process(
-        RequestInterface $request,
         NotificationInterface $notification,
         SubscriptionInterface $subscription
-    ): RequestInterface {
+    ): RequestData {
         $this->logger->debug('Processing the request');
+        $requestData = new RequestData();
         foreach ($this->extensions as $extension) {
-            $request = $extension->process($request, $notification, $subscription);
+            $extension->process($requestData, $notification, $subscription);
         }
         $this->logger->debug('Processing done');
 
-        return $request;
+        return $requestData;
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Functional;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use WebPush\Action;
 use WebPush\Message;
@@ -18,10 +20,8 @@ use WebPush\WebPushService;
  */
 final class NotificationTest extends KernelTestCase
 {
-    /**
-     * @test
-     * @dataProvider listOfSubscriptions
-     */
+    #[Test]
+    #[DataProvider('listOfSubscriptions')]
     public function iCanSendNotificationsWithAESGCMEncryptionAndTheNewService(string $data): void
     {
         $kernel = self::bootKernel();
@@ -63,10 +63,8 @@ final class NotificationTest extends KernelTestCase
         static::assertSame([], $report->getLinks());
     }
 
-    /**
-     * @test
-     * @dataProvider listOfSubscriptions
-     */
+    #[Test]
+    #[DataProvider('listOfSubscriptions')]
     public function iCanSendNotificationsWithAES125GCMEncryptionAndTheNewService(string $data): void
     {
         $kernel = self::bootKernel();
@@ -108,10 +106,8 @@ final class NotificationTest extends KernelTestCase
         static::assertSame([], $report->getLinks());
     }
 
-    /**
-     * @test
-     * @dataProvider listOfSubscriptions
-     */
+    #[Test]
+    #[DataProvider('listOfSubscriptions')]
     public function iCanSendNotificationsUsingAESGCMEncryption(string $data): void
     {
         $kernel = self::bootKernel();
@@ -153,10 +149,8 @@ final class NotificationTest extends KernelTestCase
         static::assertSame([], $report->getLinks());
     }
 
-    /**
-     * @test
-     * @dataProvider listOfSubscriptions
-     */
+    #[Test]
+    #[DataProvider('listOfSubscriptions')]
     public function iCanSendNotificationsUsingAES128GCMEncryption(string $data): void
     {
         $kernel = self::bootKernel();
@@ -198,7 +192,7 @@ final class NotificationTest extends KernelTestCase
         static::assertSame([], $report->getLinks());
     }
 
-    public function listOfSubscriptions(): array
+    public static function listOfSubscriptions(): array
     {
         return [
             [

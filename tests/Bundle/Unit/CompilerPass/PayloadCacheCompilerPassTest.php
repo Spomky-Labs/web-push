@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,10 +21,8 @@ use WebPush\Payload\AESGCM;
  */
 final class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @test
-     * @dataProvider cacheParameters
-     */
+    #[Test]
+    #[DataProvider('cacheParameters')]
     public function ifTheCacheIsSetAndTheDefinitionExistThenItTheCacheIsSet(
         string $class,
         string $cacheDefinition,
@@ -47,7 +47,7 @@ final class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
         );
     }
 
-    public function cacheParameters(): array
+    public static function cacheParameters(): array
     {
         return [
             [

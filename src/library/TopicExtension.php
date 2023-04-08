@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -30,20 +29,20 @@ final class TopicExtension implements Extension, Loggable
     }
 
     public function process(
-        RequestInterface $request,
+        RequestData $requestData,
         NotificationInterface $notification,
         SubscriptionInterface $subscription
-    ): RequestInterface {
+    ): void {
         $topic = $notification->getTopic();
         $this->logger->debug('Processing with the Topic extension', [
             'Topic' => $topic,
         ]);
         if ($topic === null) {
-            return $request;
+            return;
         }
 
-        return $request
-            ->withAddedHeader('Topic', $topic)
+        $requestData
+            ->addHeader('Topic', $topic)
         ;
     }
 }

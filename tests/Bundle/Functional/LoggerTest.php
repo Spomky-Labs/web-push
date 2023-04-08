@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Functional;
 
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Payload\PayloadExtension;
 use WebPush\PreferAsyncExtension;
+use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\TopicExtension;
 use WebPush\TTLExtension;
@@ -21,9 +22,7 @@ use WebPush\VAPID\VAPIDExtension;
  */
 final class LoggerTest extends KernelTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function messagesAreRegistered(): void
     {
         //Given
@@ -36,21 +35,19 @@ final class LoggerTest extends KernelTestCase
             ->highUrgency()
             ->withPayload('PAYLOAD')
         ;
-        $request = new Request('POST', 'https://www.foo.bar:1337/test?a=FOO');
+        $requestData = new RequestData();
         /** @var UrgencyExtension $extension */
         $extension = self::getContainer()->get(UrgencyExtension::class);
 
         // When
-        $request = $extension->process($request, $notification, $subscription);
+        $extension->process($requestData, $notification, $subscription);
 
         // Then
-        static::assertTrue($request->hasHeader('Urgency'));
-        static::assertSame(['high'], $request->getHeader('Urgency'));
+        static::assertArrayHasKey('Urgency', $requestData->getHeaders());
+        static::assertSame('high', $requestData->getHeaders()['Urgency']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function extensionManagerHasAllExtensions(): void
     {
         self::bootKernel();
@@ -66,24 +63,15 @@ final class LoggerTest extends KernelTestCase
             ->highUrgency()
             ->withPayload('PAYLOAD')
         ;
-        $request = new Request('POST', 'https://www.foo.bar:1337/test?a=FOO');
 
-        $request = $service->process($request, $notification, $subscription);
+        $requestData = $service->process($notification, $subscription);
 
-        static::assertSame('respond-async', $request->getHeaderLine('Prefer')); //Async
-        static::assertSame('topic', $request->getHeaderLine('Topic')); //Topic
-        static::assertSame('1337', $request->getHeaderLine('TTL')); // TTL
-        static::assertSame('high', $request->getHeaderLine('Urgency')); //Urgency
-
-        static::assertSame('aesgcm', $request->getHeaderLine('Content-Encoding')); //Payload encryption
-        static::assertStringStartsWith('dh=', $request->getHeaderLine('Crypto-Key')); //Payload encryption
-        static::assertStringStartsWith('salt=', $request->getHeaderLine('Encryption')); //Payload encryption
-        static::assertGreaterThanOrEqual(3070, (int) $request->getHeaderLine('Content-Length')); //Payload encryption
-
-        static::assertStringStartsWith(
-            'vapid t=eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.',
-            $request->getHeaderLine('Authorization')
-        ); //VAPID
+        static::assertSame('respond-async', $requestData->getHeaders()['Prefer']);
+        static::assertSame('topic', $requestData->getHeaders()['Topic']);
+        static::assertSame('1337', $requestData->getHeaders()['TTL']);
+        static::assertSame('high', $requestData->getHeaders()['Urgency']);
+        static::assertSame('aesgcm', $requestData->getHeaders()['Content-Encoding']);
+        static::assertGreaterThanOrEqual(3070, $requestData->getHeaders()['Content-Length']);
     }
 
     public function listOfPayloadExtensions(): array

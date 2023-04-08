@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
@@ -16,24 +16,21 @@ use WebPush\TTLExtension;
  */
 final class ExtensionManagerTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function topicIsSetInHeader(): void
     {
         // Given
-        $request = new Request('POST', 'https://foo.bar');
         $notification = Notification::create();
         $subscription = Subscription::create('https://foo.bar');
 
         // When
-        $request = ExtensionManager::create()
+        $requestData = ExtensionManager::create()
             ->add(TTLExtension::create())
-            ->process($request, $notification, $subscription)
+            ->process($notification, $subscription)
         ;
 
         // Then
-        static::assertTrue($request->hasHeader('TTL'));
-        static::assertSame('0', $request->getHeaderLine('TTL'));
+        static::assertArrayHasKey('TTL', $requestData->getHeaders());
+        static::assertSame('0', $requestData->getHeaders()['TTL']);
     }
 }

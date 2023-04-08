@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Functional\VAPID;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
@@ -16,10 +18,8 @@ use WebPush\VAPID\WebTokenProvider;
  */
 final class WebTokenProviderTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataInvalidKey
-     */
+    #[Test]
+    #[DataProvider('dataInvalidKey')]
     public function invalidKey(string $publicKey, string $privateKey, string $expectedMessage): void
     {
         static::expectException(OperationException::class);
@@ -28,10 +28,8 @@ final class WebTokenProviderTest extends TestCase
         WebTokenProvider::create(Base64Url::encode($publicKey), Base64Url::encode($privateKey));
     }
 
-    /**
-     * @test
-     * @dataProvider dataComputeHeader
-     */
+    #[Test]
+    #[DataProvider('dataComputeHeader')]
     public function computeHeader(string $publicKey, string $privateKey): void
     {
         //Given
@@ -57,7 +55,7 @@ final class WebTokenProviderTest extends TestCase
     /**
      * @return array<int, array<string, string>>
      */
-    public function dataComputeHeader(): array
+    public static function dataComputeHeader(): array
     {
         return [
             [
@@ -74,7 +72,7 @@ final class WebTokenProviderTest extends TestCase
     /**
      * @return array<int, array<string, string>>
      */
-    public function dataInvalidKey(): array
+    public static function dataInvalidKey(): array
     {
         return [
             [

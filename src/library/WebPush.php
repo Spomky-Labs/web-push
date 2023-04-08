@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class WebPush implements WebPushService, Loggable
 {
     private LoggerInterface $logger;
 
     public function __construct(
-        private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory,
+        private readonly HttpClientInterface $client,
         private readonly ExtensionManager $extensionManager
     ) {
         $this->logger = new NullLogger();
     }
 
-    public static function create(
-        ClientInterface $client,
-        RequestFactoryInterface $requestFactory,
-        ExtensionManager $extensionManager
-    ): self {
-        return new self($client, $requestFactory, $extensionManager);
+    public static function create(HttpClientInterface $client, ExtensionManager $extensionManager): self
+    {
+        return new self($client, $extensionManager);
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -44,13 +39,19 @@ final class WebPush implements WebPushService, Loggable
             'notification' => $notification,
             'subscription' => $subscription,
         ]);
-        $request = $this->requestFactory->createRequest('POST', $subscription->getEndpoint());
-        $request = $this->extensionManager->process($request, $notification, $subscription);
-        $this->logger->debug('Request ready', [
-            'request' => $request,
+        $requestData = $this->extensionManager->process($notification, $subscription);
+        $this->logger->debug('Request data ready', [
+            'requestData' => $requestData,
         ]);
 
-        $response = $this->client->sendRequest($request);
+        $response = $this->client->request(
+            'POST',
+            $subscription->getEndpoint(),
+            [
+                'headers' => $requestData->getHeaders(),
+                'body' => $requestData->getBody(),
+            ]
+        );
         $this->logger->debug('Response received', [
             'response' => $response,
         ]);

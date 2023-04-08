@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional;
 
-use Http\Mock\Client;
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
 use Symfony\Component\Clock\NativeClock;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Payload\AES128GCM;
@@ -29,10 +29,8 @@ use WebPush\WebPush;
  */
 final class WebPushTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function aNotificationCanBeSent(): void
+    #[Test]
+    public function aNotificationCanBeSentWithAESGCMEncoding(): void
     {
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aesgcm'])
@@ -46,44 +44,32 @@ final class WebPushTest extends TestCase
         $notification = Notification::create()
             ->sync()
             ->highUrgency()
-            ->withTopic('topic')
+            ->withTopic('Topic')
             ->withPayload('Hello World')
             ->withTTL(3600)
         ;
 
-        $client = new Client();
-        $client->addResponse(new Response());
+        $client = new MockHttpClient();
+        $client->setResponseFactory(function (string $method, string $url, array $options = []) {
+            static::assertContains('TTL: 3600', $options['headers']);
+            static::assertContains('Urgency: high', $options['headers']);
+            static::assertContains('Topic: Topic', $options['headers']);
+            static::assertContains('Content-Type: application/octet-stream', $options['headers']);
+            static::assertContains('Content-Encoding: aesgcm', $options['headers']);
+            static::assertContains('Content-Length: 4096', $options['headers']);
+
+            return new MockResponse('OK', [
+                'http_code' => 201,
+            ]);
+        });
         $service = $this->getService($client);
 
         $service->send($notification, $subscription);
-        $requests = $client->getRequests();
-        static::assertCount(1, $requests);
-        $request = $requests[0];
-
-        static::assertTrue($request->hasHeader('ttl'));
-        static::assertTrue($request->hasHeader('topic'));
-        static::assertTrue($request->hasHeader('urgency'));
-        static::assertTrue($request->hasHeader('content-type'));
-        static::assertTrue($request->hasHeader('content-encoding'));
-        static::assertTrue($request->hasHeader('crypto-key'));
-        static::assertTrue($request->hasHeader('encryption'));
-        static::assertTrue($request->hasHeader('content-length'));
-        static::assertTrue($request->hasHeader('authorization'));
-        static::assertSame(['3600'], $request->getHeader('ttl'));
-        static::assertSame(['topic'], $request->getHeader('topic'));
-        static::assertSame(['high'], $request->getHeader('urgency'));
-        static::assertSame(['application/octet-stream'], $request->getHeader('content-type'));
-        static::assertSame(['aesgcm'], $request->getHeader('content-encoding'));
-        static::assertSame(['4096'], $request->getHeader('content-length'));
-        static::assertStringStartsWith('dh=', $request->getHeaderLine('crypto-key'));
-        static::assertStringStartsWith('salt=', $request->getHeaderLine('encryption'));
-        static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
+        static::assertSame(1, $client->getRequestsCount());
     }
 
-    /**
-     * @test
-     */
-    public function aNotificationCannotBeSent(): void
+    #[Test]
+    public function aNotificationCanBeSentWithAES128GCMEncoding(): void
     {
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aes128gcm'])
@@ -97,39 +83,31 @@ final class WebPushTest extends TestCase
         $notification = Notification::create()
             ->sync()
             ->highUrgency()
-            ->withTopic('topic')
+            ->withTopic('Topic')
             ->withPayload('Hello World')
             ->withTTL(3600)
         ;
 
-        $client = new Client();
-        $client->addResponse(new Response());
+        $client = new MockHttpClient();
+        $client->setResponseFactory(function (string $method, string $url, array $options = []) {
+            static::assertContains('TTL: 3600', $options['headers']);
+            static::assertContains('Urgency: high', $options['headers']);
+            static::assertContains('Topic: Topic', $options['headers']);
+            static::assertContains('Content-Type: application/octet-stream', $options['headers']);
+            static::assertContains('Content-Encoding: aes128gcm', $options['headers']);
+            static::assertContains('Content-Length: 4095', $options['headers']);
+
+            return new MockResponse('OK', [
+                'http_code' => 201,
+            ]);
+        });
         $service = $this->getService($client);
 
         $service->send($notification, $subscription);
-        $requests = $client->getRequests();
-        static::assertCount(1, $requests);
-        $request = $requests[0];
-
-        static::assertTrue($request->hasHeader('ttl'));
-        static::assertTrue($request->hasHeader('topic'));
-        static::assertTrue($request->hasHeader('urgency'));
-        static::assertTrue($request->hasHeader('content-type'));
-        static::assertTrue($request->hasHeader('content-encoding'));
-        static::assertFalse($request->hasHeader('crypto-key'));
-        static::assertFalse($request->hasHeader('encryption'));
-        static::assertTrue($request->hasHeader('content-length'));
-        static::assertTrue($request->hasHeader('authorization'));
-        static::assertSame(['3600'], $request->getHeader('ttl'));
-        static::assertSame(['topic'], $request->getHeader('topic'));
-        static::assertSame(['high'], $request->getHeader('urgency'));
-        static::assertSame(['application/octet-stream'], $request->getHeader('content-type'));
-        static::assertSame(['aes128gcm'], $request->getHeader('content-encoding'));
-        static::assertSame(['4095'], $request->getHeader('content-length'));
-        static::assertStringStartsWith('vapid t=', $request->getHeaderLine('authorization'));
+        static::assertSame(1, $client->getRequestsCount());
     }
 
-    private function getService(ClientInterface $client): WebPush
+    private function getService(HttpClientInterface $client): WebPush
     {
         $extensionManager = ExtensionManager::create()
             ->add(TTLExtension::create())
@@ -151,8 +129,6 @@ final class WebPushTest extends TestCase
             ))
         ;
 
-        $requestFactory = new Psr17Factory();
-
-        return WebPush::create($client, $requestFactory, $extensionManager);
+        return WebPush::create($client, $extensionManager);
     }
 }

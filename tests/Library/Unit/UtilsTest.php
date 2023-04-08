@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Unit;
 
 use function chr;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
@@ -15,9 +16,7 @@ use WebPush\Utils;
  */
 final class UtilsTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function publicKeyToPEM(): void
     {
         $publicKey = Base64Url::decode(
@@ -35,9 +34,7 @@ CODE_SAMPLE
             , $pem);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function privateKeyToPEM(): void
     {
         $privateKey = Base64Url::decode('C40jLFSa5UWxstkFvdwzT3eHONE2FIJSEsVIncSCAqU');
@@ -57,9 +54,7 @@ CODE_SAMPLE
             , $pem);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function privateKeyToPEMAdjusted(): void
     {
         $privateKey = '';
@@ -78,10 +73,9 @@ CODE_SAMPLE
     }
 
     /**
-     * @test
-     *
      * @see https://tools.ietf.org/html/rfc8291#section-5
      */
+    #[Test]
     public function computeIKM(): void
     {
         $senderPublicKey = Base64Url::decode(
@@ -100,9 +94,7 @@ CODE_SAMPLE
         static::assertSame($expectedIKM, $ikm);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function unableToComputeIKM(): void
     {
         static::expectException(OperationException::class);

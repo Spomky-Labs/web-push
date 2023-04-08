@@ -24,7 +24,6 @@ final class SymfonyServiceCompilerPass implements CompilerPassInterface
 
         $definition = new Definition(WebPush::class, [
             new Reference('http_client'),
-            new Reference('webpush.request_factory'),
             new Reference(ExtensionManager::class),
         ]);
         $definition->setPublic(true);

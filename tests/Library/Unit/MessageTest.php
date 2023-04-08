@@ -7,6 +7,7 @@ namespace WebPush\Tests\Library\Unit;
 use function json_encode;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Action;
 use WebPush\Message;
@@ -16,9 +17,7 @@ use WebPush\Message;
  */
 final class MessageTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createSimpleMessage(): void
     {
         $message = Message::create('TITLE');
@@ -44,9 +43,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithOptionsAndOldStructure(): void
     {
         $action = Action::create('A', 'T');
@@ -92,9 +89,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithOptionsAndNewStructure(): void
     {
         $action = Action::create('A', 'T');
@@ -145,9 +140,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithAutoDirection(): void
     {
         $message = Message::create('TITLE')
@@ -160,9 +153,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithLTRDirection(): void
     {
         $message = Message::create('TITLE')
@@ -175,9 +166,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithRTLDirection(): void
     {
         $message = Message::create('TITLE')
@@ -190,9 +179,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithInteraction(): void
     {
         $message = Message::create('TITLE')
@@ -205,9 +192,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createMessageWithoutInteraction(): void
     {
         $message = Message::create('TITLE')
@@ -220,9 +205,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createSilentMessage(): void
     {
         $message = Message::create('TITLE')
@@ -235,9 +218,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createNonSilentMessage(): void
     {
         $message = Message::create('TITLE')
@@ -250,9 +231,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createWithRenotification(): void
     {
         $message = Message::create('TITLE')
@@ -265,9 +244,7 @@ final class MessageTest extends TestCase
         static::assertSame($expectedJson, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createWithoutRenotification(): void
     {
         $message = Message::create('TITLE')

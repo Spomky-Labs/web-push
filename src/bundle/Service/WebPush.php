@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\Bundle\Service;
 
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -20,7 +19,6 @@ final class WebPush implements WebPushService, Loggable
 
     public function __construct(
         private readonly HttpClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory,
         private readonly ExtensionManager $extensionManager
     ) {
         $this->logger = new NullLogger();
@@ -39,16 +37,10 @@ final class WebPush implements WebPushService, Loggable
             'notification' => $notification,
             'subscription' => $subscription,
         ]);
-        $request = $this->requestFactory->createRequest('POST', $subscription->getEndpoint());
-        $request = $this->extensionManager->process($request, $notification, $subscription);
-        $this->logger->debug('Request ready', [
-            'request' => $request,
-        ]);
-
+        $requestData = $this->extensionManager->process($notification, $subscription);
         $response = $this->client->request('POST', $subscription->getEndpoint(), [
-            'body' => $request->getBody()
-                ->getContents(),
-            'headers' => $request->getHeaders(),
+            'body' => $requestData->getBody(),
+            'headers' => $requestData->getHeaders(),
         ]);
         $this->logger->debug('Response received', [
             'response' => $response,

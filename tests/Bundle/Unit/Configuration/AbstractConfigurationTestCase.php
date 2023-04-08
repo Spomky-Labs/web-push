@@ -11,7 +11,7 @@ use WebPush\Bundle\DependencyInjection\Configuration;
 /**
  * @internal
  */
-abstract class AbstractConfigurationTest extends TestCase
+abstract class AbstractConfigurationTestCase extends TestCase
 {
     use ConfigurationTestCaseTrait;
 

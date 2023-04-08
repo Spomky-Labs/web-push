@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use WebPush\Bundle\Service\StatusReport;
@@ -15,10 +17,8 @@ use WebPush\Subscription;
  */
 final class StatusReportTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataReport
-     */
+    #[Test]
+    #[DataProvider('dataReport')]
     public function report(int $statusCode, bool $isSuccess, bool $hasExpired): void
     {
         $subscription = Subscription::create('https://foo.bar');
@@ -46,7 +46,7 @@ final class StatusReportTest extends TestCase
     /**
      * @return array[]
      */
-    public function dataReport(): array
+    public static function dataReport(): array
     {
         return [
             [199, false, false],

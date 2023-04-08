@@ -45,7 +45,6 @@ final class WebPushExtension extends Extension
         $loader->load('services.php');
 
         $container->setAlias('webpush.http_client', $config['http_client']);
-        $container->setAlias('webpush.request_factory', $config['request_factory']);
         if ($config['logger'] !== null) {
             $container->setAlias(LoggerSetterCompilerPass::SERVICE, $config['logger']);
         }

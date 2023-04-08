@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -30,17 +29,17 @@ final class TTLExtension implements Extension, Loggable
     }
 
     public function process(
-        RequestInterface $request,
+        RequestData $requestData,
         NotificationInterface $notification,
         SubscriptionInterface $subscription
-    ): RequestInterface {
+    ): void {
         $ttl = (string) $notification->getTTL();
         $this->logger->debug('Processing with the TTL extension', [
             'TTL' => $ttl,
         ]);
 
-        return $request
-            ->withAddedHeader('TTL', $ttl)
+        $requestData
+            ->addHeader('TTL', $ttl)
         ;
     }
 }

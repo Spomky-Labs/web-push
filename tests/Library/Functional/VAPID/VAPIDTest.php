@@ -6,11 +6,12 @@ namespace WebPush\Tests\Library\Functional\VAPID;
 
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\NativeClock;
 use WebPush\Base64Url;
 use WebPush\Notification;
+use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\VAPID\LcobucciProvider;
 use WebPush\VAPID\VAPIDExtension;
@@ -20,9 +21,7 @@ use WebPush\VAPID\VAPIDExtension;
  */
 final class VAPIDTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function vapidHeaderCanBeAdded(): void
     {
         $jwsProvider = LcobucciProvider::create(
@@ -30,20 +29,18 @@ final class VAPIDTest extends TestCase
             '870MB6gfuTJ4HtUnUvYMyJpr5eUZNP4Bk43bVdj3eAE'
         );
 
-        $request = new Request('POST', 'https://foo.bar:1337/test?a=foo&b=BAR');
-
         $notification = Notification::create();
         $subscription = Subscription::create('https://foo.bar:1337/test?a=foo&b=BAR');
 
-        $request = VAPIDExtension::create('subject', $jwsProvider, new NativeClock())
-
+        $requestData = new RequestData();
+        VAPIDExtension::create('subject', $jwsProvider, new NativeClock())
             ->setTokenExpirationTime('now +2hours')
-            ->process($request, $notification, $subscription)
+            ->process($requestData, $notification, $subscription)
         ;
 
-        $vapidHeader = $request->getHeaderLine('authorization');
+        $vapidHeader = $requestData->getHeaders()['Authorization'];
         static::assertStringStartsWith('vapid t=', $vapidHeader);
-        $tokenPayload = mb_substr($vapidHeader, 45);
+        $tokenPayload = mb_substr((string) $vapidHeader, 45);
         $position = mb_strpos($tokenPayload, '.');
         $tokenPayload = mb_substr($tokenPayload, 0, $position === false ? null : $position);
         $tokenPayload = Base64Url::decode($tokenPayload);

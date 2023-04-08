@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
-final class StatusReport implements StatusReportInterface
+final readonly class StatusReport implements StatusReportInterface
 {
     /**
      * @param string[] $links
      */
     public function __construct(
-        private readonly SubscriptionInterface $subscription,
-        private readonly NotificationInterface $notification,
-        private readonly int $code,
-        private readonly string $location,
-        private readonly array $links
+        private SubscriptionInterface $subscription,
+        private NotificationInterface $notification,
+        private int $code,
+        private string $location,
+        private array $links
     ) {
     }
 
@@ -39,7 +39,7 @@ final class StatusReport implements StatusReportInterface
         ResponseInterface $response
     ): self {
         $code = $response->getStatusCode();
-        $headers = $response->getHeaders();
+        $headers = $response->getHeaders(false);
         $location = implode(', ', $headers['location'] ?? ['']);
         $links = $headers['link'] ?? [];
 

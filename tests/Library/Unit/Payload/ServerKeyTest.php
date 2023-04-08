@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit\Payload;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Exception\OperationException;
 use WebPush\Payload\ServerKey;
@@ -13,9 +14,7 @@ use WebPush\Payload\ServerKey;
  */
 final class ServerKeyTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidPublicKeyLength(): void
     {
         static::expectException(OperationException::class);
@@ -24,9 +23,7 @@ final class ServerKeyTest extends TestCase
         ServerKey::create('', '');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidPrivateKeyLength(): void
     {
         static::expectException(OperationException::class);

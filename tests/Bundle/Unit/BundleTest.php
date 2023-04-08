@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ClassExistsMock;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -35,9 +37,7 @@ final class BundleTest extends TestCase
         ClassExistsMock::withMockedClasses([]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function theBundleHasTheCorrectExtension(): void
     {
         $bundle = new WebPushBundle();
@@ -45,10 +45,8 @@ final class BundleTest extends TestCase
         static::assertInstanceOf(WebPushExtension::class, $bundle->getContainerExtension());
     }
 
-    /**
-     * @test
-     * @dataProvider compilerPasses
-     */
+    #[Test]
+    #[DataProvider('compilerPasses')]
     public function theBundleHasTheCompilerPass(string $class): void
     {
         $containerBuilder = new ContainerBuilder();
@@ -70,7 +68,7 @@ final class BundleTest extends TestCase
         static::assertTrue($found, 'Unable to find the compiler pass ' . $class);
     }
 
-    public function compilerPasses(): array
+    public static function compilerPasses(): array
     {
         return [
             [ExtensionCompilerPass::class],

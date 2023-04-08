@@ -32,11 +32,7 @@ return static function (ContainerConfigurator $container): void {
     $container->set(AES128GCM::class);
 
     $container->set(WebPush::class)
-        ->args([
-            service('webpush.http_client'),
-            service('webpush.request_factory'),
-            service(ExtensionManager::class),
-        ])
+        ->args([service('webpush.http_client'), service(ExtensionManager::class)])
         ->public()
     ;
 };

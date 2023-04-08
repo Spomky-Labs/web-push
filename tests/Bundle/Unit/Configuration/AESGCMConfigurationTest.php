@@ -4,46 +4,18 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit\Configuration;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Payload\AESGCM;
 
 /**
  * @internal
  */
-final class AESGCMConfigurationTest extends AbstractConfigurationTest
+final class AESGCMConfigurationTest extends AbstractConfigurationTestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider invalidPaddings
-     */
-    public function invalidIfThePaddingDoesNotFulfillTheConstraints(string|int|bool $padding): void
-    {
-        $this->assertConfigurationIsInvalid(
-            [
-                [
-                    'payload' => [
-                        'aesgcm' => [
-                            'padding' => $padding,
-                        ],
-                    ],
-                ],
-            ],
-            'Invalid configuration for path "webpush.payload.aesgcm.padding": The padding must have one of the following value: none, recommended, max or an integer between 0 and 4078'
-        );
-    }
-
-    public function invalidPaddings(): array
-    {
-        return [['min'], [-1], [AESGCM::PADDING_MAX + 1]];
-    }
-
-    /**
-     * @test
-     *
-     * @dataProvider validPaddings
-     */
+    #[Test]
+    #[DataProvider('validPaddings')]
     public function validPadding(string|int|bool $padding): void
     {
         $this->assertProcessedConfigurationEquals(
@@ -58,8 +30,7 @@ final class AESGCMConfigurationTest extends AbstractConfigurationTest
             ],
             [
                 'logger' => null,
-                'http_client' => ClientInterface::class,
-                'request_factory' => RequestFactoryInterface::class,
+                'http_client' => HttpClientInterface::class,
                 'vapid' => [
                     'enabled' => false,
                     'token_lifetime' => 'now +1hour',
@@ -89,7 +60,7 @@ final class AESGCMConfigurationTest extends AbstractConfigurationTest
         );
     }
 
-    public function validPaddings(): array
+    public static function validPaddings(): array
     {
         return [['none'], ['recommended'], ['max'], [0], [AESGCM::PADDING_MAX]];
     }

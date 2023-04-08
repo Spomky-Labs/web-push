@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Http\Mock\Client;
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use WebPush\ExtensionManager;
 use WebPush\Notification;
 use WebPush\Subscription;
@@ -18,21 +18,20 @@ use WebPush\WebPush;
  */
 final class WebPushTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function aNotificationCanBeSent(): void
     {
         //Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
-        $client = new Client();
-        $client->addResponse(new Response(201));
-        $requestFactory = new Psr17Factory();
+        $client = new MockHttpClient();
+        $client->setResponseFactory(fn () => new MockResponse('', [
+            'http_code' => 201,
+        ]));
 
         $extensionManager = ExtensionManager::create();
-        $webPush = WebPush::create($client, $requestFactory, $extensionManager);
+        $webPush = WebPush::create($client, $extensionManager);
 
         // When
         $report = $webPush
@@ -45,21 +44,20 @@ final class WebPushTest extends TestCase
         static::assertSame($subscription, $report->getSubscription());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aNotificationCanBeSentAsync(): void
     {
         // Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
-        $client = new Client();
-        $client->addResponse(new Response(202));
-        $requestFactory = new Psr17Factory();
+        $client = new MockHttpClient();
+        $client->setResponseFactory(fn () => new MockResponse('', [
+            'http_code' => 201,
+        ]));
 
         $extensionManager = ExtensionManager::create();
-        $webPush = WebPush::create($client, $requestFactory, $extensionManager);
+        $webPush = WebPush::create($client, $extensionManager);
 
         // When
         $report = $webPush
@@ -72,21 +70,20 @@ final class WebPushTest extends TestCase
         static::assertSame($subscription, $report->getSubscription());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aNotificationCannotBeSent(): void
     {
         // Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
-        $client = new Client();
-        $client->addResponse(new Response(409));
-        $requestFactory = new Psr17Factory();
+        $client = new MockHttpClient();
+        $client->setResponseFactory(fn () => new MockResponse('', [
+            'http_code' => 409,
+        ]));
 
         $extensionManager = ExtensionManager::create();
-        $webPush = WebPush::create($client, $requestFactory, $extensionManager);
+        $webPush = WebPush::create($client, $extensionManager);
 
         // When
         $report = $webPush

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
+use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\TTLExtension;
 
@@ -15,14 +17,12 @@ use WebPush\TTLExtension;
  */
 final class TTLExtensionTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataTTLIsSetInHeader
-     */
+    #[Test]
+    #[DataProvider('dataTTLIsSetInHeader')]
     public function ttlIsSetInHeader(int $ttl): void
     {
         // Given
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
 
         $notification = Notification::create()
             ->withTTL($ttl)
@@ -30,18 +30,18 @@ final class TTLExtensionTest extends TestCase
         $subscription = Subscription::create('https://foo.bar');
 
         // When
-        $request = TTLExtension::create()
-            ->process($request, $notification, $subscription)
+        TTLExtension::create()
+            ->process($requestData, $notification, $subscription)
         ;
 
         // Then
-        static::assertSame((string) $ttl, $request->getHeaderLine('ttl'));
+        static::assertSame((string) $ttl, $requestData->getHeaders()['TTL']);
     }
 
     /**
      * @return array<int, array<int, int>>
      */
-    public function dataTTLIsSetInHeader(): array
+    public static function dataTTLIsSetInHeader(): array
     {
         return [[0], [10], [3600]];
     }

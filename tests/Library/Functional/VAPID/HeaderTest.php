@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\VAPID;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\VAPID\Header;
 
@@ -12,9 +13,7 @@ use WebPush\VAPID\Header;
  */
 final class HeaderTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createHeader(): void
     {
         $header = Header::create('token', 'key');

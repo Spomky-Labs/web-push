@@ -6,13 +6,13 @@ namespace WebPush\Payload;
 
 use function array_key_exists;
 use InvalidArgumentException;
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function sprintf;
 use WebPush\Extension;
 use WebPush\Loggable;
 use WebPush\NotificationInterface;
+use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
 
 final class PayloadExtension implements Extension, Loggable
@@ -49,29 +49,28 @@ final class PayloadExtension implements Extension, Loggable
     }
 
     public function process(
-        RequestInterface $request,
+        RequestData $requestData,
         NotificationInterface $notification,
         SubscriptionInterface $subscription
-    ): RequestInterface {
+    ): void {
         $this->logger->debug('Processing with payload');
         $payload = $notification->getPayload();
         if ($payload === null || $payload === '') {
             $this->logger->debug('No payload');
+            $requestData->addHeader('Content-Length', '0');
 
-            return $request
-                ->withAddedHeader('Content-Length', '0')
-            ;
+            return;
         }
 
         $encoder = $this->findEncoder($subscription);
         $this->logger->debug(sprintf('Encoder found: %s. Processing with the encoder.', $encoder->name()));
 
-        $request = $request
-            ->withAddedHeader('Content-Type', 'application/octet-stream')
-            ->withAddedHeader('Content-Encoding', $encoder->name())
+        $requestData
+            ->addHeader('Content-Type', 'application/octet-stream')
+            ->addHeader('Content-Encoding', $encoder->name())
         ;
 
-        return $encoder->encode($payload, $request, $subscription);
+        $encoder->encode($payload, $requestData, $subscription);
     }
 
     private function findEncoder(SubscriptionInterface $subscription): ContentEncoding

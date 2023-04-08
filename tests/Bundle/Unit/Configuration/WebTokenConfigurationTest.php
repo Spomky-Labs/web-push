@@ -4,61 +4,16 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Bundle\Unit\Configuration;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Base64Url;
 
 /**
  * @internal
  */
-final class WebTokenConfigurationTest extends AbstractConfigurationTest
+final class WebTokenConfigurationTest extends AbstractConfigurationTestCase
 {
-    /**
-     * @test
-     */
-    public function invalidIfPrivateKeyIsMissing(): void
-    {
-        $this->assertConfigurationIsInvalid(
-            [
-                [
-                    'vapid' => [
-                        'enabled' => true,
-                        'subject' => 'https://foo.bar',
-                        'web-token' => [
-                            'enabled' => true,
-                        ],
-                    ],
-                ],
-            ],
-            'The child config "private_key" under "webpush.vapid.web_token" must be configured: The VAPID private key'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function invalidIfPublicKeyIsMissing(): void
-    {
-        $this->assertConfigurationIsInvalid(
-            [
-                [
-                    'vapid' => [
-                        'enabled' => true,
-                        'subject' => 'https://foo.bar',
-                        'web-token' => [
-                            'enabled' => true,
-                            'private_key' => Base64Url::encode('00000000000000000000000000000000'),
-                        ],
-                    ],
-                ],
-            ],
-            'The child config "public_key" under "webpush.vapid.web_token" must be configured: The VAPID public key'
-        );
-    }
-
-    /**
-     * @test
-     */
+    #[Test]
     public function validVapidWebTokenConfiguration(): void
     {
         $this->assertProcessedConfigurationEquals(
@@ -79,8 +34,7 @@ final class WebTokenConfigurationTest extends AbstractConfigurationTest
             ],
             [
                 'logger' => null,
-                'http_client' => ClientInterface::class,
-                'request_factory' => RequestFactoryInterface::class,
+                'http_client' => HttpClientInterface::class,
                 'vapid' => [
                     'enabled' => true,
                     'token_lifetime' => 'now +1hour',

@@ -9,6 +9,7 @@ use function file_get_contents;
 use function in_array;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use function sprintf;
 
@@ -19,9 +20,7 @@ final class ComposerJsonTest extends TestCase
 {
     private const SRC_DIR = __DIR__ . '/../src';
 
-    /**
-     * @test
-     */
+    #[Test]
     public function packageDependenciesEqualRootDependencies(): void
     {
         $usedDependencies = ['symfony/symfony']; // Some builds add this to composer.json
@@ -62,9 +61,7 @@ final class ComposerJsonTest extends TestCase
         static::assertCount(0, $unusedDependencies, $message);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function rootReplacesSubPackages(): void
     {
         $rootReplaces = $this->getComposerReplaces(__DIR__ . '/../composer.json');

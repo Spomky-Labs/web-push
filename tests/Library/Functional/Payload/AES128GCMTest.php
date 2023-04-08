@@ -7,14 +7,14 @@ namespace WebPush\Tests\Library\Functional\Payload;
 use function chr;
 use function count;
 use InvalidArgumentException;
-use Nyholm\Psr7\Request;
 use function openssl_decrypt;
 use const OPENSSL_RAW_DATA;
 use function ord;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use function preg_match;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
@@ -24,6 +24,7 @@ use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\ServerKey;
+use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\Utils;
 
@@ -32,9 +33,7 @@ use WebPush\Utils;
  */
 final class AES128GCMTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function paddingLengthToHigh(): void
     {
         static::expectException(OperationException::class);
@@ -43,9 +42,7 @@ final class AES128GCMTest extends TestCase
         AES128GCM::create(new NativeClock())->customPadding(3994);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function paddingLengthToLow(): void
     {
         static::expectException(OperationException::class);
@@ -54,31 +51,27 @@ final class AES128GCMTest extends TestCase
         AES128GCM::create(new NativeClock())->customPadding(-1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function missingUserAgentPublicKey(): void
     {
         static::expectException(OperationException::class);
         static::expectExceptionMessage('The user-agent public key is missing');
 
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aes128gcm'])
         ;
 
-        AES128GCM::create(new NativeClock())->encode('', $request, $subscription);
+        AES128GCM::create(new NativeClock())->encode('', $requestData, $subscription);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function missingUserAgentAuthenticationToken(): void
     {
         static::expectException(OperationException::class);
         static::expectExceptionMessage('The user-agent authentication token is missing');
 
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
         $subscription = Subscription::create('https://foo.bar')
             ->withContentEncodings(['aes128gcm'])
         ;
@@ -87,14 +80,13 @@ final class AES128GCMTest extends TestCase
             'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
         );
 
-        AES128GCM::create(new NativeClock())->encode('', $request, $subscription);
+        AES128GCM::create(new NativeClock())->encode('', $requestData, $subscription);
     }
 
     /**
-     * @test
-     *
      * @see https://tests.peter.sh/push-encryption-verifier/
      */
+    #[Test]
     public function decryptPayloadCorrectly(): void
     {
         $body = Base64Url::decode(
@@ -107,10 +99,11 @@ final class AES128GCMTest extends TestCase
         $userAgentAuthToken = Base64Url::decode('BTBZMqHH6r4Tts7J_aSIgg');
         $expectedPayload = 'When I grow up, I want to be a watermelon';
 
-        $request = new Request('POST', 'https://foo.bar', [], $body);
+        $requestData = new RequestData();
+        $requestData->setBody($body);
 
         $payload = $this->decryptRequest(
-            $request,
+            $requestData,
             $userAgentAuthToken,
             $userAgentPublicKey,
             $userAgentPrivateKey,
@@ -120,11 +113,10 @@ final class AES128GCMTest extends TestCase
     }
 
     /**
-     * @test
-     * @dataProvider dataEncryptPayload
-     *
      * @see https://tests.peter.sh/push-encryption-verifier/
      */
+    #[Test]
+    #[DataProvider('dataEncryptPayload')]
     public function encryptPayload(
         string $userAgentPrivateKey,
         string $userAgentPublicKey,
@@ -161,16 +153,16 @@ final class AES128GCMTest extends TestCase
         $encoder->setCache($cache);
         static::assertSame('aes128gcm', $encoder->name());
 
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
 
         // When
         $encoder
-            ->encode($payload, $request, $subscription)
+            ->encode($payload, $requestData, $subscription)
         ;
 
         // Then
         $decryptedPayload = $this->decryptRequest(
-            $request,
+            $requestData,
             Base64Url::decode($userAgentAuthToken),
             Base64Url::decode($userAgentPublicKey),
             Base64Url::decode($userAgentPrivateKey),
@@ -179,11 +171,10 @@ final class AES128GCMTest extends TestCase
         static::assertSame($payload, $decryptedPayload);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function largePayloadForbidden(): void
     {
+        $request = null;
         static::expectException(OperationException::class);
         static::expectExceptionMessage('The size of payload must not be greater than 4096 bytes.');
 
@@ -202,8 +193,8 @@ final class AES128GCMTest extends TestCase
         static::assertSame('aes128gcm', $encoder->name());
         $payload = str_pad('', 3994, '0');
 
-        $request = new Request('POST', 'https://foo.bar');
-        $encoder->encode($payload, $request, $subscription);
+        $requestData = new RequestData();
+        $encoder->encode($payload, $requestData, $subscription);
 
         $decryptedPayload = $this->decryptRequest(
             $request,
@@ -219,10 +210,10 @@ final class AES128GCMTest extends TestCase
     /**
      * @return array<int, array<int, CacheItemPoolInterface|LoggerInterface|string>>
      */
-    public function dataEncryptPayload(): array
+    public static function dataEncryptPayload(): array
     {
-        $withoutCache = $this->getMissingCache();
-        $withCache = $this->getExistingCache();
+        $withoutCache = self::getMissingCache();
+        $withCache = self::getExistingCache();
         $uaPrivateKey = 'q1dXpw3UpT5VOmu_cf_v6ih07Aems3njxI-JWgLcM94';
         $uaPublicKey = 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4';
         $uaAuthSecret = 'BTBZMqHH6r4Tts7J_aSIgg';
@@ -241,16 +232,13 @@ final class AES128GCMTest extends TestCase
     }
 
     private function decryptRequest(
-        RequestInterface $request,
+        RequestData $requestData,
         string $authSecret,
         string $receiverPublicKey,
         string $receiverPrivateKey,
         bool $inverted = false
     ): string {
-        $requestBody = $request->getBody();
-        $requestBody->rewind();
-
-        $ciphertext = $requestBody->getContents();
+        $ciphertext = $requestData->getBody();
 
         // Salt
         $salt = mb_substr($ciphertext, 0, 16, '8bit');
@@ -297,12 +285,12 @@ final class AES128GCMTest extends TestCase
         return $matches[1];
     }
 
-    private function getMissingCache(): CacheItemPoolInterface
+    private static function getMissingCache(): CacheItemPoolInterface
     {
         return new NullAdapter();
     }
 
-    private function getExistingCache(): CacheItemPoolInterface
+    private static function getExistingCache(): CacheItemPoolInterface
     {
         $cache = new ArrayAdapter();
         $item = $cache->getItem('WEB_PUSH_PAYLOAD_ENCRYPTION');

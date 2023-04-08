@@ -6,9 +6,9 @@ namespace WebPush\Payload;
 
 use function pack;
 use Psr\Clock\ClockInterface;
-use Psr\Http\Message\RequestInterface;
 use const STR_PAD_RIGHT;
 use WebPush\Exception\OperationException;
+use WebPush\RequestData;
 
 final class AES128GCM extends AbstractAESGCM
 {
@@ -58,9 +58,9 @@ final class AES128GCM extends AbstractAESGCM
         return str_pad($payload . "\2", $this->padding, "\0", STR_PAD_RIGHT);
     }
 
-    protected function prepareHeaders(RequestInterface $request, ServerKey $serverKey, string $salt): RequestInterface
+    protected function prepareHeaders(RequestData $requestData, ServerKey $serverKey, string $salt): void
     {
-        return $request;
+        //Nothing to do
     }
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string

@@ -6,18 +6,17 @@ namespace WebPush\Bundle\DependencyInjection;
 
 use function in_array;
 use function is_int;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use function sprintf;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
 
-final class Configuration implements ConfigurationInterface
+final readonly class Configuration implements ConfigurationInterface
 {
     public function __construct(
-        private readonly string $alias
+        private string $alias
     ) {
     }
 
@@ -35,12 +34,8 @@ final class Configuration implements ConfigurationInterface
             ->info('A PSR3 logger to receive logs')
             ->end()
             ->scalarNode('http_client')
-            ->defaultValue(ClientInterface::class)
+            ->defaultValue(HttpClientInterface::class)
             ->info('PSR18 client to send notification to Web Push Services')
-            ->end()
-            ->scalarNode('request_factory')
-            ->defaultValue(RequestFactoryInterface::class)
-            ->info('PSR17 Request Factory to create requests')
             ->end()
             ->arrayNode('vapid')
             ->canBeEnabled()

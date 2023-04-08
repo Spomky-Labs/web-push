@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,9 +18,7 @@ use WebPush\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
  */
 final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function ifTheLoggerIsSetThenItIsSetToAllTaggedServices(): void
     {
         $collectingService = new Definition();

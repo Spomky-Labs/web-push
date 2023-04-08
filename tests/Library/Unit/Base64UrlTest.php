@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Base64Url;
 
@@ -12,11 +14,8 @@ use WebPush\Base64Url;
  */
 final class Base64UrlTest extends TestCase
 {
-    /**
-     * @dataProvider getTestVectors
-     *
-     * @test
-     */
+    #[Test]
+    #[DataProvider('getTestVectors')]
     public function encodeAndDecode(string $message, string $expectedResult): void
     {
         $encoded = Base64Url::encode($message);
@@ -31,7 +30,7 @@ final class Base64UrlTest extends TestCase
      *
      * @return array<int, array<int, string>>
      */
-    public function getTestVectors(): array
+    public static function getTestVectors(): array
     {
         return [
             ['000000', 'MDAwMDAw'],
@@ -47,11 +46,8 @@ final class Base64UrlTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getTestBadVectors
-     *
-     * @test
-     */
+    #[Test]
+    #[DataProvider('getTestBadVectors')]
     public function badInput(string $input): void
     {
         $decoded = Base64Url::decode($input);
@@ -61,7 +57,7 @@ final class Base64UrlTest extends TestCase
     /**
      * @return array<int, array<int, string>>
      */
-    public function getTestBadVectors(): array
+    public static function getTestBadVectors(): array
     {
         return [[' AA'], ["\tAA"], ["\rAA"], ["\nAA"]];
     }

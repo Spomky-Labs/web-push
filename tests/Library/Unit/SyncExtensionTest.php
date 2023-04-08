@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Request;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Notification;
 use WebPush\PreferAsyncExtension;
+use WebPush\RequestData;
 use WebPush\Subscription;
 
 /**
@@ -15,45 +16,41 @@ use WebPush\Subscription;
  */
 final class SyncExtensionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function asyncIsSetInHeader(): void
     {
         // Given
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
         $notification = Notification::create()
             ->async()
         ;
         $subscription = Subscription::create('https://foo.bar');
 
         // When
-        $request = PreferAsyncExtension::create()
-            ->process($request, $notification, $subscription)
+        PreferAsyncExtension::create()
+            ->process($requestData, $notification, $subscription)
         ;
 
         // Then
-        static::assertSame('respond-async', $request->getHeaderLine('prefer'));
+        static::assertSame('respond-async', $requestData->getHeaders()['Prefer']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function asyncIsNotSetInHeader(): void
     {
         //Given
-        $request = new Request('POST', 'https://foo.bar');
+        $requestData = new RequestData();
         $notification = Notification::create()
             ->sync()
         ;
         $subscription = Subscription::create('https://foo.bar');
 
         // When
-        $request = PreferAsyncExtension::create()
-            ->process($request, $notification, $subscription)
+        PreferAsyncExtension::create()
+            ->process($requestData, $notification, $subscription)
         ;
 
         // Then
-        static::assertFalse($request->hasHeader('prefer'));
+        static::assertArrayNotHasKey('Prefer', $requestData->getHeaders());
     }
 }

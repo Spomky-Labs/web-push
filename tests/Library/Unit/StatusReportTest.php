@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use Nyholm\Psr7\Response;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use WebPush\Notification;
 use WebPush\StatusReport;
 use WebPush\Subscription;
@@ -15,18 +17,22 @@ use WebPush\Subscription;
  */
 final class StatusReportTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider dataReport
-     */
+    #[Test]
+    #[DataProvider('dataReport')]
     public function report(int $statusCode, bool $isSuccess, bool $hasExpired): void
     {
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
-        $response = new Response($statusCode, [
-            'location' => ['https://foo.bar'],
-            'link' => ['https://link.1'],
-        ]);
+        $response = new MockResponse(
+            '',
+            [
+                'http_code' => $statusCode,
+                'response_headers' => [
+                    'location' => ['https://foo.bar'],
+                    'link' => ['https://link.1'],
+                ],
+            ]
+        );
         $report = StatusReport::createFromResponse($subscription, $notification, $response);
 
         static::assertSame($subscription, $report->getSubscription());
@@ -40,7 +46,7 @@ final class StatusReportTest extends TestCase
     /**
      * @return array[]
      */
-    public function dataReport(): array
+    public static function dataReport(): array
     {
         return [
             [199, false, false],
