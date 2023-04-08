@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebPush\Tests\Bundle;
+namespace WebPush\Tests;
 
 use WebPush\StatusReport;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebPush\Tests\Bundle;
+namespace WebPush\Tests;
 
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\ResponseInterface;

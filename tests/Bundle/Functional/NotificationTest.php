@@ -11,7 +11,7 @@ use WebPush\Action;
 use WebPush\Message;
 use WebPush\Notification;
 use WebPush\Subscription;
-use WebPush\Tests\Bundle\MockClientCallback;
+use WebPush\Tests\MockClientCallback;
 use WebPush\WebPush;
 use WebPush\WebPushService;
 

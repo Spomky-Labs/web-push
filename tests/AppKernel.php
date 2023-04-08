@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebPush\Tests\Bundle;
+namespace WebPush\Tests;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;

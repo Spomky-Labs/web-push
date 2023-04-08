@@ -1,6 +1,6 @@
 services:
-    WebPush\Tests\Bundle\MockClientCallback: ~
-    WebPush\Tests\Bundle\WebPushEventListener:
+    WebPush\Tests\MockClientCallback: ~
+    WebPush\Tests\WebPushEventListener:
         tags:
             - { name: kernel.event_listener, event: WebPush\StatusReport }
     Psr\Clock\ClockInterface:
@@ -19,7 +19,7 @@ framework:
     annotations: ~
     http_method_override: false
     http_client:
-        mock_response_factory: WebPush\Tests\Bundle\MockClientCallback
+        mock_response_factory: WebPush\Tests\MockClientCallback
 
 doctrine:
     dbal:
