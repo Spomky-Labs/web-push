@@ -37,7 +37,11 @@ final class TopicExtensionTest extends TestCase
         ;
 
         // Then
-        static::assertSame($topic, $requestData->getHeaders()['Topic']);
+        if ($topic === null) {
+            static::assertArrayNotHasKey('Topic', $requestData->getHeaders());
+        } else {
+            static::assertSame($topic, $requestData->getHeaders()['Topic']);
+        }
     }
 
     /**

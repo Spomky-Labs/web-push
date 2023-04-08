@@ -6,6 +6,7 @@
     executionOrder="random"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
     cacheDirectory=".phpunit.cache"
+    displayDetailsOnTestsThatTriggerWarnings="true"
 >
     <coverage>
         <include>
