@@ -25,6 +25,9 @@ final class RequestData
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getHeaders(): array
     {
         return $this->headers;

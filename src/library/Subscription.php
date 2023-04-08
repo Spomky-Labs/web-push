@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebPush;
 
+use const ARRAY_FILTER_USE_KEY;
 use function array_key_exists;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -108,6 +109,9 @@ class Subscription implements SubscriptionInterface
         $data = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
 
         is_array($data) || throw new OperationException('Invalid input');
+        array_walk($data, static function (mixed $item, string|int $key): void {
+            is_string($key) || throw new OperationException('Invalid input');
+        }, ARRAY_FILTER_USE_KEY);
 
         return self::createFromAssociativeArray($data);
     }
