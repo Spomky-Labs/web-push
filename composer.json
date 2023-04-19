@@ -97,5 +97,8 @@
     "web-token/jwt-signature-algorithm-ecdsa": "Mandatory if you want to use VAPID using web-token/jwt-framework",
     "lcobucci/jwt": "Mandatory if you want to use VAPID using lcobucci/jwt",
     "psr/log-implementation": "Recommended to receive logs from the library"
-  }
+  },
+  "conflict": {
+    "lcobucci/jwt": "<4|>=5"
+  },
 }
