@@ -29,7 +29,7 @@
         "doctrine/orm": "^2.6",
         "ekino/phpstan-banned-code": "^1.0",
         "infection/infection": "^0.26",
-        "lcobucci/jwt": "^4.3",
+        "lcobucci/jwt": "^4.3|^5.0",
         "matthiasnoback/symfony-config-test": "^4.2",
         "matthiasnoback/symfony-dependency-injection-test": "^4.2",
         "php-http/client-common": "^2.0",
