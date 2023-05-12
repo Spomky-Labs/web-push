@@ -1,6 +1,6 @@
 .PHONY: mu
 mu: vendor ## Mutation tests
-	vendor/bin/infection -s --threads=$$(nproc) --min-msi=80 --min-covered-msi=80
+	vendor/bin/infection -s --threads=$$(nproc) --min-msi=87 --min-covered-msi=89
 
 .PHONY: tests
 tests: vendor ## Run all tests
@@ -36,7 +36,7 @@ st: vendor ## Run static analyse
 
 .PHONY: ci-mu
 ci-mu: vendor ## Mutation tests (for CI/CD only)
-	vendor/bin/infection --logger-github -s --threads=$$(nproc) --min-msi=80 --min-covered-msi=80
+	vendor/bin/infection --logger-github -s --threads=$$(nproc) --min-msi=87 --min-covered-msi=89
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (for CI/CD only)
