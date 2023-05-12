@@ -44,15 +44,13 @@ final class WebTokenProvider implements JWSProvider, Loggable
         $x = mb_substr($publicKeyBin, 1, self::PRIVATE_KEY_LENGTH, '8bit');
         $y = mb_substr($publicKeyBin, -self::PRIVATE_KEY_LENGTH, null, '8bit');
 
-        $jwk = new JWK([
+        $this->signatureKey = new JWK([
             'kty' => 'EC',
             'crv' => 'P-256',
             'd' => $privateKey,
             'x' => Base64Url::encode($x),
             'y' => Base64Url::encode($y),
         ]);
-
-        $this->signatureKey = $jwk;
         $algorithmManager = new AlgorithmManager([new ES256()]);
         $this->serializer = new CompactSerializer();
         $this->jwsBuilder = new JWSBuilder($algorithmManager);

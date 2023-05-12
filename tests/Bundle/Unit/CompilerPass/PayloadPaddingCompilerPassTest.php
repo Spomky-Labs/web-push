@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use WebPush\Bundle\DependencyInjection\Compiler\PayloadPaddingCompilerPass;
@@ -52,6 +53,6 @@ final class PayloadPaddingCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new PayloadPaddingCompilerPass());
+        $container->addCompilerPass(new PayloadPaddingCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
     }
 }

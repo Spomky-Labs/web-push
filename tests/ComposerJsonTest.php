@@ -8,6 +8,7 @@ use DirectoryIterator;
 use function file_get_contents;
 use function in_array;
 use function json_decode;
+use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\TestCase;
 use function sprintf;
 
@@ -101,6 +102,6 @@ final class ComposerJsonTest extends TestCase
 
     private function parseComposerFile(string $composerFilePath): array
     {
-        return json_decode(file_get_contents($composerFilePath), true);
+        return json_decode(file_get_contents($composerFilePath), true, 512, JSON_THROW_ON_ERROR);
     }
 }
