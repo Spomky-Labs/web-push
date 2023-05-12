@@ -1,6 +1,6 @@
 .PHONY: mu
 mu: vendor ## Mutation tests
-	vendor/bin/infection -s --threads=$$(nproc) --min-msi=80 --min-covered-msi=80
+	vendor/bin/infection -s --threads=$$(nproc) --min-msi=87 --min-covered-msi=89
 
 .PHONY: tests
 tests: vendor ## Run all tests
@@ -9,7 +9,7 @@ tests: vendor ## Run all tests
 
 .PHONY: cc
 cc: vendor ## Show test coverage rates (HTML)
-	vendor/bin/phpunit --coverage-html ./build
+	vendor/bin/phpunit
 
 .PHONY: cs
 cs: vendor ## Fix all files using defined ECS rules
@@ -36,11 +36,11 @@ st: vendor ## Run static analyse
 
 .PHONY: ci-mu
 ci-mu: vendor ## Mutation tests (for CI/CD only)
-	vendor/bin/infection --logger-github -s --threads=$$(nproc) --min-msi=80 --min-covered-msi=80
+	vendor/bin/infection --logger-github -s --threads=$$(nproc) --min-msi=87 --min-covered-msi=89
 
 .PHONY: ci-cc
 ci-cc: vendor ## Show test coverage rates (for CI/CD only)
-	vendor/bin/phpunit --coverage-text
+	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
 
 .PHONY: ci-cs
 ci-cs: vendor ## Check all files using defined ECS rules (for CI/CD only)
