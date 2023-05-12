@@ -42,9 +42,8 @@ abstract class Utils
 
         $pem = '-----BEGIN EC PRIVATE KEY-----' . PHP_EOL;
         $pem .= chunk_split(base64_encode($der), 64, PHP_EOL);
-        $pem .= '-----END EC PRIVATE KEY-----' . PHP_EOL;
 
-        return $pem;
+        return $pem . ('-----END EC PRIVATE KEY-----' . PHP_EOL);
     }
 
     public static function publicKeyToPEM(string $publicKey): string
@@ -64,9 +63,8 @@ abstract class Utils
 
         $pem = '-----BEGIN PUBLIC KEY-----' . PHP_EOL;
         $pem .= chunk_split(base64_encode($der), 64, PHP_EOL);
-        $pem .= '-----END PUBLIC KEY-----' . PHP_EOL;
 
-        return $pem;
+        return $pem . ('-----END PUBLIC KEY-----' . PHP_EOL);
     }
 
     public static function computeIKM(

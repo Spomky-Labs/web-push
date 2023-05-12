@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Functional\VAPID;
 
 use function json_decode;
+use const JSON_THROW_ON_ERROR;
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 use WebPush\Base64Url;
@@ -47,7 +48,7 @@ final class VAPIDTest extends TestCase
         $position = mb_strpos($tokenPayload, '.');
         $tokenPayload = mb_substr($tokenPayload, 0, $position === false ? null : $position);
         $tokenPayload = Base64Url::decode($tokenPayload);
-        $claims = json_decode($tokenPayload, true);
+        $claims = json_decode($tokenPayload, true, 512, JSON_THROW_ON_ERROR);
 
         static::assertArrayHasKey('aud', $claims);
         static::assertArrayHasKey('sub', $claims);

@@ -6,28 +6,21 @@ namespace WebPush\Tests\Bundle\FakeApp\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use WebPush\Subscription;
+use WebPush\Tests\Bundle\FakeApp\Repository\UserRepository;
 
-/**
- * @ORM\Table(name="users")
- * @ORM\Entity(repositoryClass="WebPush\Tests\Bundle\FakeApp\Repository\UserRepository")
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: 'users')]
 class User
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="webpush_subscription")
-     */
-    private Subscription $subscription;
-
-    public function __construct(Subscription $subscription)
-    {
-        $this->subscription = $subscription;
+    public function __construct(
+        #[ORM\Column(type: 'webpush_subscription')]
+    private Subscription $subscription
+    ) {
     }
 
     public function getId(): ?int

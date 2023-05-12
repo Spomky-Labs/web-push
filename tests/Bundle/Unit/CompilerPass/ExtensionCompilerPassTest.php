@@ -53,6 +53,10 @@ final class ExtensionCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new ExtensionCompilerPass());
+        $container->addCompilerPass(
+            new ExtensionCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
     }
 }

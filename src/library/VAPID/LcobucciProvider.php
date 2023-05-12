@@ -63,7 +63,11 @@ final class LcobucciProvider implements JWSProvider, Loggable
     public function computeHeader(array $claims): Header
     {
         $this->logger->debug('Computing the JWS');
-        $signer = Sha256::create();
+        if (method_exists(Sha256::class, 'create')) {
+            $signer = Sha256::create();
+        } else {
+            $signer = new Sha256();
+        }
         $header = json_encode([
             'typ' => 'JWT',
             'alg' => 'ES256',

@@ -40,6 +40,10 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new LoggerSetterCompilerPass());
+        $container->addCompilerPass(
+            new LoggerSetterCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
     }
 }

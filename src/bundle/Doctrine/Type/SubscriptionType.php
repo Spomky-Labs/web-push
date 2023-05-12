@@ -14,6 +14,8 @@ use WebPush\Subscription;
 
 final class SubscriptionType extends Type
 {
+    public const NAME = 'webpush_subscription';
+
     /**
      * {@inheritdoc}
      */
@@ -23,13 +25,7 @@ final class SubscriptionType extends Type
             return null;
         }
         if (! $value instanceof Subscription) {
-            throw ConversionException::conversionFailedInvalidType(
-                $value,
-                $this->getName(),
-                ['null',
-                Subscription::class,
-                
-            ]);
+            throw ConversionException::conversionFailedInvalidType($value, self::NAME, ['null', Subscription::class]);
         }
 
         return json_encode($value, JSON_THROW_ON_ERROR);
@@ -46,7 +42,7 @@ final class SubscriptionType extends Type
         try {
             return Subscription::createFromString($value);
         } catch (Throwable $e) {
-            throw ConversionException::conversionFailedInvalidType($value, $this->getName(), ['null', 'string'], $e);
+            throw ConversionException::conversionFailedInvalidType($value, self::NAME, ['null', 'string'], $e);
         }
     }
 
@@ -63,7 +59,7 @@ final class SubscriptionType extends Type
      */
     public function getName(): string
     {
-        return 'webpush_subscription';
+        return self::NAME;
     }
 
     /**

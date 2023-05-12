@@ -61,6 +61,10 @@ final class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new PayloadCacheCompilerPass());
+        $container->addCompilerPass(
+            new PayloadCacheCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
     }
 }

@@ -34,12 +34,36 @@ final class WebPushBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
-        $container->addCompilerPass(new ExtensionCompilerPass());
-        $container->addCompilerPass(new LoggerSetterCompilerPass());
-        $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
-        $container->addCompilerPass(new PayloadCacheCompilerPass());
-        $container->addCompilerPass(new PayloadPaddingCompilerPass());
-        $container->addCompilerPass(new SymfonyServiceCompilerPass());
+        $container->addCompilerPass(
+            new ExtensionCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
+        $container->addCompilerPass(
+            new LoggerSetterCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
+        $container->addCompilerPass(
+            new PayloadContentEncodingCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
+        $container->addCompilerPass(
+            new PayloadCacheCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
+        $container->addCompilerPass(
+            new PayloadPaddingCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
+        $container->addCompilerPass(
+            new SymfonyServiceCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
 
         $this->registerMappings($container);
     }
@@ -58,7 +82,9 @@ final class WebPushBundle extends Bundle
             $realPath => 'WebPush',
         ];
         $container->addCompilerPass(
-            DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping')
+            DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, [], 'webpush.doctrine_mapping'),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
         );
     }
 }

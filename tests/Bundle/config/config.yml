@@ -48,7 +48,7 @@ doctrine:
         mappings:
             App:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/'
                 prefix: 'WebPush\Tests\Bundle\FakeApp\Entity'
                 alias: App

@@ -62,7 +62,7 @@ final class SubscriptionTest extends TestCase
         );
         static::assertSame('FPssNDTKnInHVndSTdbKFw==', $subscription->getKey('auth'));
         static::assertSame(['aesgcm'], $subscription->getSupportedContentEncodings());
-        static::assertSame(1580253757, $subscription->getExpirationTime());
+        static::assertSame(1_580_253_757, $subscription->getExpirationTime());
         static::assertSame(
             DatetimeImmutable::createFromFormat('Y-m-d\TH:i:sP', '2020-01-28T16:22:37-07:00')->getTimestamp(),
             $subscription->expiresAt()
@@ -136,7 +136,7 @@ final class SubscriptionTest extends TestCase
         static::assertSame($keys, $subscription->getKeys());
         static::assertSame([$contentEncoding], $subscription->getSupportedContentEncodings());
 
-        $json = json_encode($subscription);
+        $json = json_encode($subscription, JSON_THROW_ON_ERROR);
         $newSubscription = Subscription::createFromString($json);
 
         static::assertSame($endpoint, $newSubscription->getEndpoint());

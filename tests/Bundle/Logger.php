@@ -6,6 +6,7 @@ namespace WebPush\Tests\Bundle;
 
 use function array_key_exists;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class Logger implements LoggerInterface
 {
@@ -16,47 +17,95 @@ class Logger implements LoggerInterface
         return $this->messages;
     }
 
-    public function emergency($message, array $context = [])
+    /**
+     * System is unusable.
+     *
+     * @param mixed[] $context
+     */
+    public function emergency($message, array $context = []): void
     {
-        $this->log('emergency', $message, $context);
+        $this->log(LogLevel::EMERGENCY, $message, $context);
     }
 
-    public function alert($message, array $context = [])
+    /**
+     * Action must be taken immediately.
+     *
+     * Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
+     *
+     * @param mixed[] $context
+     */
+    public function alert($message, array $context = []): void
     {
-        $this->log('alert', $message, $context);
+        $this->log(LogLevel::ALERT, $message, $context);
     }
 
-    public function critical($message, array $context = [])
+    /**
+     * Critical conditions.
+     *
+     * Example: Application component unavailable, unexpected exception.
+     *
+     * @param mixed[] $context
+     */
+    public function critical($message, array $context = []): void
     {
-        $this->log('critical', $message, $context);
+        $this->log(LogLevel::CRITICAL, $message, $context);
     }
 
-    public function error($message, array $context = [])
+    /**
+     * Runtime errors that do not require immediate action but should typically be logged and monitored.
+     *
+     * @param mixed[] $context
+     */
+    public function error($message, array $context = []): void
     {
-        $this->log('error', $message, $context);
+        $this->log(LogLevel::ERROR, $message, $context);
     }
 
-    public function warning($message, array $context = [])
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
+     *
+     * @param mixed[] $context
+     */
+    public function warning($message, array $context = []): void
     {
-        $this->log('warning', $message, $context);
+        $this->log(LogLevel::WARNING, $message, $context);
     }
 
-    public function notice($message, array $context = [])
+    /**
+     * Normal but significant events.
+     *
+     * @param mixed[] $context
+     */
+    public function notice($message, array $context = []): void
     {
-        $this->log('notice', $message, $context);
+        $this->log(LogLevel::NOTICE, $message, $context);
     }
 
-    public function info($message, array $context = [])
+    /**
+     * Interesting events.
+     *
+     * Example: User logs in, SQL logs.
+     *
+     * @param mixed[] $context
+     */
+    public function info($message, array $context = []): void
     {
-        $this->log('info', $message, $context);
+        $this->log(LogLevel::INFO, $message, $context);
     }
 
-    public function debug($message, array $context = [])
+    /**
+     * Detailed debug information.
+     *
+     * @param mixed[] $context
+     */
+    public function debug($message, array $context = []): void
     {
-        $this->log('debug', $message, $context);
+        $this->log(LogLevel::DEBUG, $message, $context);
     }
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         if (! array_key_exists($level, $this->messages)) {
             $this->messages[$level] = [];

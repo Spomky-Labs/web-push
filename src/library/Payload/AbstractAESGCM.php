@@ -199,9 +199,8 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         $info = 'Content-Encoding: ';
         $info .= $type;
         $info .= "\0";
-        $info .= $context;
 
-        return $info;
+        return $info . $context;
     }
 
     private function getServerKey(): ServerKey

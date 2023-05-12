@@ -53,6 +53,10 @@ final class PayloadContentEncodingCompilerPassTest extends AbstractCompilerPassT
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new PayloadContentEncodingCompilerPass());
+        $container->addCompilerPass(
+            new PayloadContentEncodingCompilerPass(),
+            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            0
+        );
     }
 }
