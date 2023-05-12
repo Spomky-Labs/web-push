@@ -1,0 +1,66 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method WebPush\\\\Bundle\\\\DependencyInjection\\\\WebPushExtension\\:\\:configurePayloadSection\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/bundle/DependencyInjection/WebPushExtension.php
+
+		-
+			message: "#^Method WebPush\\\\Bundle\\\\DependencyInjection\\\\WebPushExtension\\:\\:configureVapidSection\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/bundle/DependencyInjection/WebPushExtension.php
+
+		-
+			message: "#^Method WebPush\\\\Bundle\\\\DependencyInjection\\\\WebPushExtension\\:\\:getConfiguration\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/bundle/DependencyInjection/WebPushExtension.php
+
+		-
+			message: "#^Method WebPush\\\\Bundle\\\\DependencyInjection\\\\WebPushExtension\\:\\:getDoctrineBundleConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/bundle/DependencyInjection/WebPushExtension.php
+
+		-
+			message: "#^Property WebPush\\\\Bundle\\\\Service\\\\StatusReport\\:\\:\\$links type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/bundle/Service/StatusReport.php
+
+		-
+			message: "#^Method WebPush\\\\StatusReport\\:\\:__construct\\(\\) has parameter \\$links with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/library/StatusReport.php
+
+		-
+			message: "#^Method WebPush\\\\StatusReport\\:\\:create\\(\\) has parameter \\$links with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/library/StatusReport.php
+
+		-
+			message: "#^Method WebPush\\\\StatusReportInterface\\:\\:getLinks\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/library/StatusReportInterface.php
+
+		-
+			message: "#^Method WebPush\\\\Subscription\\:\\:getKeys\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/library/Subscription.php
+
+		-
+			message: "#^Method WebPush\\\\SubscriptionInterface\\:\\:getKeys\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/library/SubscriptionInterface.php
+
+		-
+			message: "#^Call to deprecated method create\\(\\) of class Lcobucci\\\\JWT\\\\Signer\\\\Ecdsa\\.$#"
+			count: 1
+			path: src/library/VAPID/LcobucciProvider.php
+
+		-
+			message: "#^Call to function method_exists\\(\\) with 'Lcobucci\\\\\\\\JWT\\\\\\\\Signer\\\\\\\\Ecdsa\\\\\\\\Sha256' and 'create' will always evaluate to true\\.$#"
+			count: 1
+			path: src/library/VAPID/LcobucciProvider.php
+
+		-
+			message: "#^Parameter \\#1 \\$contents of static method Lcobucci\\\\JWT\\\\Signer\\\\Key\\\\InMemory\\:\\:plainText\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			count: 1
+			path: src/library/VAPID/LcobucciProvider.php
