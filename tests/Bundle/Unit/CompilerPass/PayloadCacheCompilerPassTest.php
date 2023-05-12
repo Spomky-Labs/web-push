@@ -6,6 +6,7 @@ namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -61,10 +62,6 @@ final class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(
-            new PayloadCacheCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
+        $container->addCompilerPass(new PayloadCacheCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
     }
 }

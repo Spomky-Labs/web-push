@@ -6,6 +6,7 @@ namespace WebPush\Tests\Bundle\Unit\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -40,10 +41,6 @@ final class LoggerSetterCompilerPassTest extends AbstractCompilerPassTestCase
 
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(
-            new LoggerSetterCompilerPass(),
-            \Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            0
-        );
+        $container->addCompilerPass(new LoggerSetterCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 0);
     }
 }
