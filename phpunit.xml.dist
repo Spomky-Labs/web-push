@@ -4,15 +4,11 @@
     bootstrap="vendor/autoload.php"
     colors="true"
     executionOrder="random"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
     cacheDirectory=".phpunit.cache"
     displayDetailsOnTestsThatTriggerWarnings="true"
 >
-    <coverage>
-        <include>
-            <directory suffix=".php">./src</directory>
-        </include>
-    </coverage>
+    <coverage/>
     <testsuites>
         <testsuite name="WebPush Bundle Test">
             <directory>./tests/Bundle</directory>
@@ -31,4 +27,9 @@
         <server name="SYMFONY_PHPUNIT_VERSION" value="10.0"/>
         <server name="APP_DEBUG" value="false"/>
     </php>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
 </phpunit>
