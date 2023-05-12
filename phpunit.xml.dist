@@ -8,6 +8,11 @@
     cacheDirectory=".phpunit.cache"
     displayDetailsOnTestsThatTriggerWarnings="true"
 >
+    <coverage>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </coverage>
     <testsuites>
         <testsuite name="WebPush Bundle Test">
             <directory>./tests/Bundle</directory>
