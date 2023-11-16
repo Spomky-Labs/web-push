@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush;
 
+use WebPush\Exception\OperationException;
 use function base64_decode;
 use function base64_encode;
 use function rtrim;
 use function strtr;
-use WebPush\Exception\OperationException;
 
 /**
  * Encode and decode data into Base64 Url Safe.

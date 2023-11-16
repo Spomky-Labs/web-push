@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace WebPush\Bundle\DependencyInjection;
 
-use function in_array;
-use function is_int;
-use function sprintf;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
+use function in_array;
+use function is_int;
+use function sprintf;
 
 final readonly class Configuration implements ConfigurationInterface
 {
@@ -20,9 +20,6 @@ final readonly class Configuration implements ConfigurationInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->alias);

@@ -14,17 +14,12 @@ use WebPush\Bundle\WebPushBundle;
 
 final class AppKernel extends Kernel
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(string $environment)
     {
         parent::__construct($environment, true);
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return iterable|BundleInterface[] An iterable of bundle instances
      */
     public function registerBundles(): iterable
@@ -32,9 +27,6 @@ final class AppKernel extends Kernel
         return [new FrameworkBundle(), new DoctrineBundle(), new MonologBundle(), new WebPushBundle()];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/config/config.yml');

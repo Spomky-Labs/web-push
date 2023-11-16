@@ -1,0 +1,16 @@
+parameters:
+    ignoreErrors:
+        -
+            message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:addDefaultsIfNotSet\\(\\)\\.$#"
+            count: 1
+            path: src/bundle/DependencyInjection/Configuration.php
+
+        -
+            message: "#^Parameter \\#1 \\$contentEncodings of method WebPush\\\\Subscription\\:\\:withContentEncodings\\(\\) expects array\\<string\\>, array given\\.$#"
+            count: 1
+            path: src/library/Subscription.php
+
+        -
+            message: "#^Parameter \\#1 \\$input of static method WebPush\\\\Subscription\\:\\:createFromAssociativeArray\\(\\) expects array\\<string, mixed\\>, array given\\.$#"
+            count: 1
+            path: src/library/Subscription.php

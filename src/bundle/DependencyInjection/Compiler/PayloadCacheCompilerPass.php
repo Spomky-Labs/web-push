@@ -12,9 +12,6 @@ use WebPush\Payload\AESGCM;
 
 final class PayloadCacheCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         $this->processForService(

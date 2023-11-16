@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use function is_array;
-use function parse_url;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sprintf;
 use WebPush\Exception\OperationException;
 use WebPush\Extension;
 use WebPush\Loggable;
 use WebPush\NotificationInterface;
 use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
+use function is_array;
+use function parse_url;
+use function sprintf;
 
 final class VAPIDExtension implements Extension, Loggable
 {

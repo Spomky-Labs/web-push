@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace WebPush\Bundle\DependencyInjection\Compiler;
 
-use function is_int;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
+use function is_int;
 
 final class PayloadPaddingCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         $this->processForService($container, AES128GCM::class, 'webpush.payload.aes128gcm.padding');

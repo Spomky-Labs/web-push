@@ -46,23 +46,21 @@ final class StatusReportTest extends TestCase
     /**
      * @return array[]
      */
-    public static function dataReport(): array
+    public static function dataReport(): iterable
     {
-        return [
-            [199, false, false],
-            [200, true, false],
-            [201, true, false],
-            [202, true, false],
-            [299, true, false],
-            [300, false, false],
-            [301, false, false],
-            [400, false, false],
-            [403, false, false],
-            [404, false, true],
-            [405, false, false],
-            [409, false, false],
-            [410, false, true],
-            [411, false, false],
-        ];
+        yield [199, false, false];
+        yield [200, true, false];
+        yield [201, true, false];
+        yield [202, true, false];
+        yield [299, true, false];
+        yield [300, false, false];
+        yield [301, false, false];
+        yield [400, false, false];
+        yield [403, false, false];
+        yield [404, false, true];
+        yield [405, false, false];
+        yield [409, false, false];
+        yield [410, false, true];
+        yield [411, false, false];
     }
 }

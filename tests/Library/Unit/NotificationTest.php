@@ -140,13 +140,11 @@ final class NotificationTest extends TestCase
     /**
      * @return array<int, array<int, string>>
      */
-    public static function dataUrgencies(): array
+    public static function dataUrgencies(): iterable
     {
-        return [
-            [Notification::URGENCY_VERY_LOW],
-            [Notification::URGENCY_LOW],
-            [Notification::URGENCY_NORMAL],
-            [Notification::URGENCY_HIGH],
-        ];
+        yield [Notification::URGENCY_VERY_LOW];
+        yield [Notification::URGENCY_LOW];
+        yield [Notification::URGENCY_NORMAL];
+        yield [Notification::URGENCY_HIGH];
     }
 }

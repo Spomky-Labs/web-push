@@ -13,9 +13,6 @@ use WebPush\ExtensionManager;
 
 final class SymfonyServiceCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition('http_client')) {

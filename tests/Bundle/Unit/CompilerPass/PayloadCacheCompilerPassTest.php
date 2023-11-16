@@ -47,17 +47,15 @@ final class PayloadCacheCompilerPassTest extends AbstractCompilerPassTestCase
         );
     }
 
-    public static function cacheParameters(): array
+    public static function cacheParameters(): iterable
     {
-        return [
-            [
-                AES128GCM::class,
-                'webpush.payload.aes128gcm.cache',
-                'webpush.payload.aes128gcm.cache_lifetime',
-                'now +1 day',
-            ],
-            [AESGCM::class, 'webpush.payload.aesgcm.cache', 'webpush.payload.aesgcm.cache_lifetime', 'now +1 day'],
+        yield [
+            AES128GCM::class,
+            'webpush.payload.aes128gcm.cache',
+            'webpush.payload.aes128gcm.cache_lifetime',
+            'now +1 day',
         ];
+        yield [AESGCM::class, 'webpush.payload.aesgcm.cache', 'webpush.payload.aesgcm.cache_lifetime', 'now +1 day'];
     }
 
     protected function registerCompilerPass(ContainerBuilder $container): void

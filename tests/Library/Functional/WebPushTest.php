@@ -51,12 +51,12 @@ final class WebPushTest extends TestCase
 
         $client = new MockHttpClient();
         $client->setResponseFactory(function (string $method, string $url, array $options = []) {
-            static::assertContains('TTL: 3600', $options['headers']);
-            static::assertContains('Urgency: high', $options['headers']);
-            static::assertContains('Topic: Topic', $options['headers']);
-            static::assertContains('Content-Type: application/octet-stream', $options['headers']);
-            static::assertContains('Content-Encoding: aesgcm', $options['headers']);
-            static::assertContains('Content-Length: 4096', $options['headers']);
+            $this->assertContains('TTL: 3600', $options['headers']);
+            $this->assertContains('Urgency: high', $options['headers']);
+            $this->assertContains('Topic: Topic', $options['headers']);
+            $this->assertContains('Content-Type: application/octet-stream', $options['headers']);
+            $this->assertContains('Content-Encoding: aesgcm', $options['headers']);
+            $this->assertContains('Content-Length: 4096', $options['headers']);
 
             return new MockResponse('OK', [
                 'http_code' => 201,
@@ -90,12 +90,12 @@ final class WebPushTest extends TestCase
 
         $client = new MockHttpClient();
         $client->setResponseFactory(function (string $method, string $url, array $options = []) {
-            static::assertContains('TTL: 3600', $options['headers']);
-            static::assertContains('Urgency: high', $options['headers']);
-            static::assertContains('Topic: Topic', $options['headers']);
-            static::assertContains('Content-Type: application/octet-stream', $options['headers']);
-            static::assertContains('Content-Encoding: aes128gcm', $options['headers']);
-            static::assertContains('Content-Length: 4095', $options['headers']);
+            $this->assertContains('TTL: 3600', $options['headers']);
+            $this->assertContains('Urgency: high', $options['headers']);
+            $this->assertContains('Topic: Topic', $options['headers']);
+            $this->assertContains('Content-Type: application/octet-stream', $options['headers']);
+            $this->assertContains('Content-Encoding: aes128gcm', $options['headers']);
+            $this->assertContains('Content-Length: 4095', $options['headers']);
 
             return new MockResponse('OK', [
                 'http_code' => 201,

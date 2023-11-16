@@ -52,14 +52,12 @@ final class BundleTest extends TestCase
         static::assertTrue($found, 'Unable to find the compiler pass ' . $class);
     }
 
-    public static function compilerPasses(): array
+    public static function compilerPasses(): iterable
     {
-        return [
-            [ExtensionCompilerPass::class],
-            [LoggerSetterCompilerPass::class],
-            [PayloadCacheCompilerPass::class],
-            [PayloadContentEncodingCompilerPass::class],
-            [PayloadPaddingCompilerPass::class],
-        ];
+        yield [ExtensionCompilerPass::class];
+        yield [LoggerSetterCompilerPass::class];
+        yield [PayloadCacheCompilerPass::class];
+        yield [PayloadContentEncodingCompilerPass::class];
+        yield [PayloadPaddingCompilerPass::class];
     }
 }

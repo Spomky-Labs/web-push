@@ -41,8 +41,10 @@ final class TTLExtensionTest extends TestCase
     /**
      * @return array<int, array<int, int>>
      */
-    public static function dataTTLIsSetInHeader(): array
+    public static function dataTTLIsSetInHeader(): iterable
     {
-        return [[0], [10], [3600]];
+        yield [0];
+        yield [10];
+        yield [3600];
     }
 }

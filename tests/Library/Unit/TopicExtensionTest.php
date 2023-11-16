@@ -47,8 +47,10 @@ final class TopicExtensionTest extends TestCase
     /**
      * @return array<int, array<int, string|null>>
      */
-    public static function dataTopicIsSetInHeader(): array
+    public static function dataTopicIsSetInHeader(): iterable
     {
-        return [[null], ['topic1'], ['foo-bar']];
+        yield [null];
+        yield ['topic1'];
+        yield ['foo-bar'];
     }
 }

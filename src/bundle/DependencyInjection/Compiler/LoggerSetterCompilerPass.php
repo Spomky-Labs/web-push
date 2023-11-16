@@ -14,9 +14,6 @@ final class LoggerSetterCompilerPass implements CompilerPassInterface
 
     public const SERVICE = 'webpush.logger';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasAlias(self::SERVICE)) {

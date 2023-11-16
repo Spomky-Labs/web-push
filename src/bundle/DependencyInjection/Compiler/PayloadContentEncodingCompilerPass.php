@@ -13,9 +13,6 @@ final class PayloadContentEncodingCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webpush_payload_content_encoding';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition(PayloadExtension::class)) {
