@@ -61,8 +61,12 @@ final class AES128GCMConfigurationTest extends AbstractConfigurationTestCase
         );
     }
 
-    public static function validPaddings(): array
+    public static function validPaddings(): iterable
     {
-        return [['none'], ['recommended'], ['max'], [0], [AES128GCM::PADDING_MAX]];
+        yield ['none'];
+        yield ['recommended'];
+        yield ['max'];
+        yield [0];
+        yield [AES128GCM::PADDING_MAX];
     }
 }

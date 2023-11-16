@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\Payload;
 
-use function chr;
-use function openssl_decrypt;
-use const OPENSSL_RAW_DATA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use function sprintf;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Clock\NativeClock;
-use function unpack;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Payload\AESGCM;
@@ -24,6 +19,11 @@ use WebPush\Payload\ServerKey;
 use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\Utils;
+use function chr;
+use function openssl_decrypt;
+use function sprintf;
+use function unpack;
+use const OPENSSL_RAW_DATA;
 
 /**
  * @internal
@@ -161,7 +161,7 @@ final class AESGCMTest extends TestCase
     /**
      * @return array<int, array<int, CacheItemPoolInterface|LoggerInterface|string>>
      */
-    public static function dataEncryptPayload(): array
+    public static function dataEncryptPayload(): iterable
     {
         $withoutCache = self::getMissingCache();
         $withCache = self::getExistingCache();
@@ -170,16 +170,14 @@ final class AESGCMTest extends TestCase
         $uaAuthSecret = 'BTBZMqHH6r4Tts7J_aSIgg';
         $payload = 'When I grow up, I want to be a watermelon';
 
-        return [
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'noPadding', $withoutCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, str_pad('', 4078, '1'), 'noPadding', $withoutCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'recommendedPadding', $withoutCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'maxPadding', $withoutCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'customPadding', $withoutCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'noPadding', $withCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'recommendedPadding', $withCache],
-            [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'maxPadding', $withCache],
-        ];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'noPadding', $withoutCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, str_pad('', 4078, '1'), 'noPadding', $withoutCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'recommendedPadding', $withoutCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'maxPadding', $withoutCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'customPadding', $withoutCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'noPadding', $withCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'recommendedPadding', $withCache];
+        yield [$uaPrivateKey, $uaPublicKey, $uaAuthSecret, $payload, 'maxPadding', $withCache];
     }
 
     private function decryptRequest(

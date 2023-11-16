@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use function pack;
 use Psr\Clock\ClockInterface;
-use function sprintf;
-use const STR_PAD_LEFT;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\RequestData;
+use function pack;
+use function sprintf;
+use const STR_PAD_LEFT;
 
 final class AESGCM extends AbstractAESGCM
 {

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Unit;
 
 use DatetimeImmutable;
-use function json_encode;
-use const JSON_THROW_ON_ERROR;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Exception\OperationException;
 use WebPush\Subscription;
+use function json_encode;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal
@@ -147,21 +147,19 @@ final class SubscriptionTest extends TestCase
     /**
      * @return array<int, array<string, array<string, string>|string>>
      */
-    public static function dataSubscription(): array
+    public static function dataSubscription(): iterable
     {
-        return [
-            [
-                'endpoint' => 'https://foo.bar',
-                'content_encoding' => 'FOO',
-                'keys' => [],
-            ],
-            [
-                'endpoint' => 'https://bar.foo',
-                'content_encoding' => 'FOO',
-                'keys' => [
-                    'authToken' => 'bar-foo',
-                    'publicKey' => 'FOO-BAR',
-                ],
+        yield [
+            'endpoint' => 'https://foo.bar',
+            'content_encoding' => 'FOO',
+            'keys' => [],
+        ];
+        yield [
+            'endpoint' => 'https://bar.foo',
+            'content_encoding' => 'FOO',
+            'keys' => [
+                'authToken' => 'bar-foo',
+                'publicKey' => 'FOO-BAR',
             ],
         ];
     }
@@ -169,107 +167,105 @@ final class SubscriptionTest extends TestCase
     /**
      * @return array<int, array<string, string>>
      */
-    public static function dataInvalidSubscription(): array
+    public static function dataInvalidSubscription(): iterable
     {
-        return [
-            [
-                'input' => json_encode(0, JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => '',
-                'exception' => JsonException::class,
-                'message' => 'Syntax error',
-            ],
-            [
-                'input' => '[]',
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 0,
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => 'FOO',
-                    'keys' => 'foo',
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => [123],
-                    'keys' => 'foo',
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => ['FOO'],
-                    'keys' => 'foo',
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => ['FOO'],
-                    'keys' => [
-                        12 => 0,
-                    ],
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid key name',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => ['FOO'],
-                    'keys' => [
-                        'authToken' => 'BAR',
-                        'publicKey' => 0,
-                    ],
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid key value',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => ['FOO'],
-                    'keys' => [
-                        'authToken' => 'BAR',
-                        'publicKey' => 0,
-                    ],
-                    'expirationTime' => 'Monday',
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
-            [
-                'input' => json_encode([
-                    'endpoint' => 'https://foo.bar',
-                    'supportedContentEncodings' => ['FOO'],
-                    'keys' => [
-                        'authToken' => 'BAR',
-                        'publicKey' => 'baz',
-                    ],
-                    'expirationTime' => 'Monday',
-                ], JSON_THROW_ON_ERROR),
-                'exception' => OperationException::class,
-                'message' => 'Invalid input',
-            ],
+        yield [
+            'input' => json_encode(0, JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => '',
+            'exception' => JsonException::class,
+            'message' => 'Syntax error',
+        ];
+        yield [
+            'input' => '[]',
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 0,
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => 'FOO',
+                'keys' => 'foo',
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => [123],
+                'keys' => 'foo',
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => ['FOO'],
+                'keys' => 'foo',
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => ['FOO'],
+                'keys' => [
+                    12 => 0,
+                ],
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid key name',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => ['FOO'],
+                'keys' => [
+                    'authToken' => 'BAR',
+                    'publicKey' => 0,
+                ],
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid key value',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => ['FOO'],
+                'keys' => [
+                    'authToken' => 'BAR',
+                    'publicKey' => 0,
+                ],
+                'expirationTime' => 'Monday',
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
+        ];
+        yield [
+            'input' => json_encode([
+                'endpoint' => 'https://foo.bar',
+                'supportedContentEncodings' => ['FOO'],
+                'keys' => [
+                    'authToken' => 'BAR',
+                    'publicKey' => 'baz',
+                ],
+                'expirationTime' => 'Monday',
+            ], JSON_THROW_ON_ERROR),
+            'exception' => OperationException::class,
+            'message' => 'Invalid input',
         ];
     }
 }

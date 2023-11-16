@@ -59,15 +59,13 @@ final class ExtensionTest extends KernelTestCase
         static::assertGreaterThanOrEqual(3070, $requestData->getHeaders()['Content-Length']);
     }
 
-    public static function listOfPayloadExtensions(): array
+    public static function listOfPayloadExtensions(): iterable
     {
-        return [
-            [PreferAsyncExtension::class],
-            [TopicExtension::class],
-            [TTLExtension::class],
-            [UrgencyExtension::class],
-            [PayloadExtension::class],
-            [VAPIDExtension::class],
-        ];
+        yield [PreferAsyncExtension::class];
+        yield [TopicExtension::class];
+        yield [TTLExtension::class];
+        yield [UrgencyExtension::class];
+        yield [PayloadExtension::class];
+        yield [VAPIDExtension::class];
     }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\VAPID;
 
-use function json_decode;
-use const JSON_THROW_ON_ERROR;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\NativeClock;
@@ -15,6 +13,8 @@ use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\VAPID\LcobucciProvider;
 use WebPush\VAPID\VAPIDExtension;
+use function json_decode;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

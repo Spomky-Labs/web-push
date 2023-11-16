@@ -37,18 +37,16 @@ final class PayloadPaddingCompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall($class, $methodName, $methodParameters);
     }
 
-    public static function paddingConfigurations(): array
+    public static function paddingConfigurations(): iterable
     {
-        return [
-            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'recommended', 'recommendedPadding', []],
-            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'none', 'noPadding', []],
-            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'max', 'maxPadding', []],
-            [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 50, 'customPadding', [50]],
-            [AESGCM::class, 'webpush.payload.aesgcm.padding', 'recommended', 'recommendedPadding', []],
-            [AESGCM::class, 'webpush.payload.aesgcm.padding', 'none', 'noPadding', []],
-            [AESGCM::class, 'webpush.payload.aesgcm.padding', 'max', 'maxPadding', []],
-            [AESGCM::class, 'webpush.payload.aesgcm.padding', 50, 'customPadding', [50]],
-        ];
+        yield [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'recommended', 'recommendedPadding', []];
+        yield [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'none', 'noPadding', []];
+        yield [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 'max', 'maxPadding', []];
+        yield [AES128GCM::class, 'webpush.payload.aes128gcm.padding', 50, 'customPadding', [50]];
+        yield [AESGCM::class, 'webpush.payload.aesgcm.padding', 'recommended', 'recommendedPadding', []];
+        yield [AESGCM::class, 'webpush.payload.aesgcm.padding', 'none', 'noPadding', []];
+        yield [AESGCM::class, 'webpush.payload.aesgcm.padding', 'max', 'maxPadding', []];
+        yield [AESGCM::class, 'webpush.payload.aesgcm.padding', 50, 'customPadding', [50]];
     }
 
     protected function registerCompilerPass(ContainerBuilder $container): void

@@ -30,20 +30,18 @@ final class Base64UrlTest extends TestCase
      *
      * @return array<int, array<int, string>>
      */
-    public static function getTestVectors(): array
+    public static function getTestVectors(): iterable
     {
-        return [
-            ['000000', 'MDAwMDAw'],
-            ["\0\0\0\0", 'AAAAAA'],
-            ["\xff", '_w'],
-            ["\xff\xff", '__8'],
-            ["\xff\xff\xff", '____'],
-            ["\xff\xff\xff\xff", '_____w'],
-            ["\xfb", '-w'],
-            ['', ''],
-            ['f', 'Zg'],
-            ['fo', 'Zm8'],
-        ];
+        yield ['000000', 'MDAwMDAw'];
+        yield ["\0\0\0\0", 'AAAAAA'];
+        yield ["\xff", '_w'];
+        yield ["\xff\xff", '__8'];
+        yield ["\xff\xff\xff", '____'];
+        yield ["\xff\xff\xff\xff", '_____w'];
+        yield ["\xfb", '-w'];
+        yield ['', ''];
+        yield ['f', 'Zg'];
+        yield ['fo', 'Zm8'];
     }
 
     #[Test]
@@ -57,9 +55,12 @@ final class Base64UrlTest extends TestCase
     /**
      * @return array<int, array<int, string>>
      */
-    public static function getTestBadVectors(): array
+    public static function getTestBadVectors(): iterable
     {
-        return [[' AA'], ["\tAA"], ["\rAA"], ["\nAA"]];
+        yield [' AA'];
+        yield ["\tAA"];
+        yield ["\rAA"];
+        yield ["\nAA"];
     }
 
     /**

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use function json_encode;
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sprintf;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Loggable;
 use WebPush\Utils;
+use function json_encode;
+use function sprintf;
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 final class LcobucciProvider implements JWSProvider, Loggable
 {

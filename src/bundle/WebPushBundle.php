@@ -18,17 +18,11 @@ use WebPush\Bundle\DependencyInjection\WebPushExtension;
 
 final class WebPushBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getContainerExtension(): ExtensionInterface
     {
         return new WebPushExtension('webpush');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);

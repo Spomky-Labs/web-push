@@ -4,17 +4,10 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use function is_array;
-use function openssl_encrypt;
-use const OPENSSL_KEYTYPE_EC;
-use function openssl_pkey_new;
-use const OPENSSL_RAW_DATA;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sprintf;
-use const STR_PAD_LEFT;
 use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Exception\OperationException;
@@ -22,6 +15,13 @@ use WebPush\Loggable;
 use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
 use WebPush\Utils;
+use function is_array;
+use function openssl_encrypt;
+use function openssl_pkey_new;
+use function sprintf;
+use const OPENSSL_KEYTYPE_EC;
+use const OPENSSL_RAW_DATA;
+use const STR_PAD_LEFT;
 
 abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 {

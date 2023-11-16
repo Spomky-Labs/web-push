@@ -60,8 +60,12 @@ final class AESGCMConfigurationTest extends AbstractConfigurationTestCase
         );
     }
 
-    public static function validPaddings(): array
+    public static function validPaddings(): iterable
     {
-        return [['none'], ['recommended'], ['max'], [0], [AESGCM::PADDING_MAX]];
+        yield ['none'];
+        yield ['recommended'];
+        yield ['max'];
+        yield [0];
+        yield [AESGCM::PADDING_MAX];
     }
 }

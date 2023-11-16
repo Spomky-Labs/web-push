@@ -13,9 +13,6 @@ final class ExtensionCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webpush_extension';
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition(ExtensionManager::class)) {
