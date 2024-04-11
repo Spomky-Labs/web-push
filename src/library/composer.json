@@ -31,7 +31,7 @@
     "suggest": {
         "ext-mbstring": "Mandatory when using Payload or VAPID extensions",
         "ext-openssl": "Mandatory when using Payload or VAPID extensions",
-        "web-token/jwt-signature-algorithm-ecdsa": "Mandatory if you want to use VAPID using web-token/jwt-framework",
+        "web-token/jwt-library": "Mandatory if you want to use VAPID using web-token/jwt-framework",
         "lcobucci/jwt": "Mandatory if you want to use VAPID using lcobucci/jwt",
         "psr/log-implementation": "Recommended to receive logs from the library"
     }

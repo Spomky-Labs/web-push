@@ -212,8 +212,8 @@ final class AESGCMTest extends TestCase
         $nonceInfo = 'Content-Encoding: nonce' . chr(0) . $context;
         $nonce = mb_substr(hash_hmac('sha256', $nonceInfo . chr(1), $prk, true), 0, 12, '8bit');
 
-        $C = mb_substr($ciphertext, 0, -16, '8bit');
-        $T = mb_substr($ciphertext, -16, null, '8bit');
+        $C = mb_substr((string) $ciphertext, 0, -16, '8bit');
+        $T = mb_substr((string) $ciphertext, -16, null, '8bit');
 
         $rawData = openssl_decrypt($C, 'aes-128-gcm', $cek, OPENSSL_RAW_DATA, $nonce, $T);
         $padding = mb_substr($rawData, 0, 2, '8bit');

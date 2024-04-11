@@ -89,7 +89,8 @@ return static function (ECSConfig $config) use ($header): void {
     ]);
 
     $config->skip([
-        PhpUnitTestClassRequiresCoversFixer::class
+        PhpUnitTestClassRequiresCoversFixer::class,
+        \PhpCsFixer\Fixer\Alias\MbStrFunctionsFixer::class,
     ]);
 
     $config->parallel();
