@@ -132,7 +132,7 @@ final class Message implements JsonSerializable
         return $this->tag;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }

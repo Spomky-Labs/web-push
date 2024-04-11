@@ -239,26 +239,26 @@ final class AES128GCMTest extends TestCase
         $ciphertext = $requestData->getBody();
 
         // Salt
-        $salt = mb_substr($ciphertext, 0, 16, '8bit');
+        $salt = mb_substr((string) $ciphertext, 0, 16, '8bit');
         static::assertSame(mb_strlen($salt, '8bit'), 16);
 
         // Record size
-        $rs = mb_substr($ciphertext, 16, 4, '8bit');
+        $rs = mb_substr((string) $ciphertext, 16, 4, '8bit');
         $rs = unpack('N', $rs)[1];
         static::assertSame(4096, $rs);
 
         // idlen
-        $idlen = ord(mb_substr($ciphertext, 20, 1, '8bit'));
+        $idlen = ord(mb_substr((string) $ciphertext, 20, 1, '8bit'));
 
         //keyid
-        $keyid = mb_substr($ciphertext, 21, $idlen, '8bit');
+        $keyid = mb_substr((string) $ciphertext, 21, $idlen, '8bit');
 
         // IKM
         $keyInfo = 'WebPush: info' . chr(0) . ($inverted ? $receiverPublicKey . $keyid : $keyid . $receiverPublicKey);
         $ikm = Utils::computeIKM($keyInfo, $authSecret, $keyid, $receiverPrivateKey, $receiverPublicKey);
 
         // We remove the header
-        $ciphertext = mb_substr($ciphertext, 16 + 4 + 1 + $idlen, null, '8bit');
+        $ciphertext = mb_substr((string) $ciphertext, 16 + 4 + 1 + $idlen, null, '8bit');
 
         // We compute the PRK
         $prk = hash_hmac('sha256', $ikm, $salt, true);
