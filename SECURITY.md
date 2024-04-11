@@ -3,12 +3,11 @@
 ## Supported Versions
 
 | Version | Supported          |
-| ------- | ------------------ |
-| 1.1     | :white_check_mark: |
-| 1.0     | :white_check_mark: |
-| < 1.0   | :x: *unstable releases* |
+|---------| ------------------ |
+| 3.1.x+  | :white_check_mark: |
+| < 3.1.x | :x:                |
 
 ## Reporting a Vulnerability
 
-If you think you have found a security issue, DO NOT open an issue.
-You **MUST** submit your issue at https://gitter.im/Spomky/.
+If you think you have found a security issue, **DO NOT open an issue**.
+You MUST use the GitHub Security Advisories tool at https://github.com/Spomky-Labs/web-push/security/advisories.
