@@ -1,11 +1,9 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
-
-name: 📁 PHP CI
+name: 📁 PHP CI & Docker Build
 
 on:
   push:
     branches:
-      - '*.x'
+      - '*.*.x'
     tags: ['*']
   pull_request: ~
   workflow_dispatch: ~
@@ -19,11 +17,11 @@ jobs:
     name: "0️⃣ Pre-checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: "Check file permissions"
         run: |
-          NON_EXECUTABLE=$(find . -type f -not -path './.git/*' -executable)
+          NON_EXECUTABLE=$(find . -type f -not -path './.git/*' -not -path './bin/console' -not -path './frankenphp/docker-entrypoint.sh' -not -path './link' -executable)
           if [[ -n "$NON_EXECUTABLE" ]]; then
             echo "Found non-executable files with executable permission:"
             echo "$NON_EXECUTABLE"
@@ -42,11 +40,11 @@ jobs:
     needs: [pre_checks]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     outputs:
       cache-key: ${{ steps.cache-key-generator.outputs.key }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - id: cache-key-generator
         run: echo "key=composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}" >> $GITHUB_OUTPUT
@@ -70,9 +68,9 @@ jobs:
     needs: [pre_checks]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ramsey/composer-install@v3
         with:
           dependency-versions: highest
@@ -84,9 +82,9 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: |
@@ -100,9 +98,9 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: |
@@ -116,9 +114,9 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: |
@@ -128,37 +126,26 @@ jobs:
       - run: |
           composer dump-autoload --optimize --strict-psr
           composer validate --strict
+          composer normalize --dry-run --diff || true
 
   lint:
     name: "5️⃣ Syntax Check"
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
-      - run: castor lint
+      - uses: actions/checkout@v6
+      - run: composer exec -- parallel-lint src tests
 
   check_licenses:
     name: "6️⃣ License Check"
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: |
-            vendor
-            ~/.composer/cache
-          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - uses: actions/checkout@v6
       - run: castor check-licenses
 
   deptrac:
@@ -166,9 +153,9 @@ jobs:
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: |
@@ -197,13 +184,17 @@ jobs:
           - php-version: '8.2'
             lowest-deps: true
           - php-version: '8.2'
+          - php-version: '8.3'
+          - php-version: '8.4'
+          - php-version: '8.5'
+            experimental: true
     container:
       image: ghcr.io/spomky-labs/phpqa:${{ matrix.php-version }}
     env:
       XDEBUG_MODE: coverage
       PHP_VERSION: ${{ matrix.php-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
           if [ "${{ matrix.lowest-deps || 'false' }}" = "true" ]; then
@@ -221,26 +212,28 @@ jobs:
     if: ${{ endsWith(github.ref_name, '.x') }}
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/spomky-labs/phpqa:8.2
+      image: ghcr.io/spomky-labs/phpqa:8.4
     env:
       XDEBUG_MODE: coverage
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
-      - name: Run Infection
-        run: castor infect_ci
+      - name: Run PHPUnit
+        run: castor phpunit
+      - name: Execute Infection
+        run: castor infect
 
   exported_files:
     name: "8️⃣ Exported Files Check"
     needs: [prepare_dependencies]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check exported files
         run: |
           EXPECTED="CODE_OF_CONDUCT.md,LICENSE,README.md,RELEASES.md,SECURITY.md,composer.json"
-          CURRENT=$(git archive HEAD | tar --list | grep -v '/$' | grep -Ev '^(src|tests)/' | sort | paste -sd "," -)
+          CURRENT=$(git archive HEAD | tar --list | grep -v '/$' | grep -Ev '^(assets|bin|config|fixtures|frankenphp|migrations|public|src|templates|translations)/' | sort | paste -sd "," -)
           echo "CURRENT = ${CURRENT}"
           echo "EXPECTED = ${EXPECTED}"
           if [[ "$CURRENT" != "$EXPECTED" ]]; then
