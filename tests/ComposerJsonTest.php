@@ -30,7 +30,7 @@ final class ComposerJsonTest extends TestCase
             $packageDependencies = $this->getComposerDependencies(self::SRC_DIR . '/' . $package . '/composer.json');
             foreach ($packageDependencies as $dependency => $version) {
                 // Skip spomky-labs/* dependencies
-                if (mb_strpos($dependency, 'spomky-labs/') === 0) {
+                if (mb_strpos((string) $dependency, 'spomky-labs/') === 0) {
                     continue;
                 }
 

@@ -1,205 +1,249 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 
-name: "Integrate"
+name: 📁 PHP CI
 
 on:
   push:
     branches:
-      - "*.x"
-  pull_request: null
+      - '*.x'
+    tags: ['*']
+  pull_request: ~
+  workflow_dispatch: ~
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  byte_level:
-    name: "0️⃣ Byte-level"
-    runs-on: "ubuntu-latest"
+  pre_checks:
+    name: "0️⃣ Pre-checks"
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
+      - uses: actions/checkout@v4
 
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" == ""
+          NON_EXECUTABLE=$(find . -type f -not -path './.git/*' -executable)
+          if [[ -n "$NON_EXECUTABLE" ]]; then
+            echo "Found non-executable files with executable permission:"
+            echo "$NON_EXECUTABLE"
+            exit 1
+          fi
 
       - name: "Find non-printable ASCII characters"
         run: |
-          ! LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]"
+          if LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 grep -PHn "[[:cntrl:]]"; then
+            echo "Non-printable ASCII characters found"
+            exit 1
+          fi
 
-  syntax_errors:
-    name: "1️⃣ Syntax errors"
-    runs-on: "ubuntu-latest"
+  prepare_dependencies:
+    name: "📦 Prepare Composer Dependencies"
+    needs: [pre_checks]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    outputs:
+      cache-key: ${{ steps.cache-key-generator.outputs.key }}
     steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
+      - uses: actions/checkout@v4
+
+      - id: cache-key-generator
+        run: echo "key=composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
         with:
-          php-version: "8.2"
-          coverage: "none"
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ steps.cache-key-generator.outputs.key }}
+          restore-keys: |
+            composer-${{ runner.os }}-
 
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
+      - uses: ramsey/composer-install@v3
         with:
-          dependency-versions: "highest"
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
 
-      - name: "Check source code for syntax errors"
-        run: "composer exec -- parallel-lint src/ tests/"
+  phpstan:
+    name: "1️⃣ Static Analysis (PHPStan)"
+    needs: [pre_checks]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: highest
+          composer-options: --optimize-autoloader
+      - run: castor phpstan
 
-  unit_tests:
-    name: "2️⃣ Unit and functional tests"
+  ecs:
+    name: "2️⃣ Coding Standards (ECS)"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - run: castor ecs
+
+  rector:
+    name: "3️⃣ Refactoring (Rector)"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - run: castor rector
+
+  validate:
+    name: "4️⃣ Validate composer.json"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - run: |
+          composer dump-autoload --optimize --strict-psr
+          composer validate --strict
+
+  lint:
+    name: "5️⃣ Syntax Check"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - run: castor lint
+
+  check_licenses:
+    name: "6️⃣ License Check"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - run: castor check-licenses
+
+  deptrac:
+    name: "7️⃣ Architecture Layer Check (Deptrac)"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            ~/.composer/cache
+          key: ${{ needs.prepare_dependencies.outputs.cache-key }}
+      - run: castor deptrac
+
+  tests:
+    name: "🧪 Unit & Functional Tests (PHP ${{ matrix.php-version }}${{ matrix.lowest-deps && ' - Lowest Deps' || '' }})"
     needs:
-      - "byte_level"
-      - "syntax_errors"
+      - prepare_dependencies
+      - phpstan
+      - ecs
+      - rector
+      - lint
+      - validate
+      - check_licenses
+      - deptrac
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
+      fail-fast: false
       matrix:
-        operating-system:
-          - "ubuntu-latest"
-        php-version:
-          - "8.2"
-        dependencies:
-          - "lowest"
-          - "highest"
-    runs-on: ${{ matrix.operating-system }}
+        include:
+          - php-version: '8.2'
+            lowest-deps: true
+          - php-version: '8.2'
+    container:
+      image: ghcr.io/spomky-labs/phpqa:${{ matrix.php-version }}
+    env:
+      XDEBUG_MODE: coverage
+      PHP_VERSION: ${{ matrix.php-version }}
     steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "${{ matrix.php-version }}"
-          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
-          coverage: "xdebug"
-
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
-        with:
-          dependency-versions: "${{ matrix.dependencies }}"
-          composer-options: "--optimize-autoloader"
-
-      - name: "Execute tests (PHP)"
-        run: "make ci-cc"
-
-      - name: "Deptrac"
+      - uses: actions/checkout@v4
+      - name: Install dependencies
         run: |
-          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
+          if [ "${{ matrix.lowest-deps || 'false' }}" = "true" ]; then
+            composer update --prefer-lowest --no-interaction --no-progress
+          else
+            composer install --no-interaction --no-progress
+          fi
 
-  #      - name: Send coverage to Coveralls
-  #        if: "matrix.php-version == '8.1' && matrix.dependencies == 'highest'"
-  #        env:
-  #          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-  #        run: |
-  #          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
-  #          php ./php-coveralls.phar -v
+      - name: Run PHPUnit
+        run: castor phpunit
 
-  static_analysis:
-    name: "3️⃣ Static Analysis"
-    needs:
-      - "byte_level"
-      - "syntax_errors"
-    runs-on: "ubuntu-latest"
+  infection:
+    name: "🧬 Mutation Testing"
+    needs: [tests]
+    if: ${{ endsWith(github.ref_name, '.x') }}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/spomky-labs/phpqa:8.2
+    env:
+      XDEBUG_MODE: coverage
     steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "8.2"
-          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
-          coverage: "none"
-
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Validate Composer configuration"
-        run: "composer validate --strict"
-
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
-        with:
-          dependency-versions: "highest"
-          composer-options: "--optimize-autoloader"
-
-      - name: "Check PSR-4 mapping"
-        run: "composer dump-autoload --optimize --strict-psr"
-
-      - name: "Execute static analysis"
-        run: "make st"
-
-  coding_standards:
-    name: "4️⃣ Coding Standards"
-    needs:
-      - "byte_level"
-      - "syntax_errors"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "8.2"
-          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
-          coverage: "none"
-
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Check adherence to EditorConfig"
-        uses: "greut/eclint-action@v0"
-
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
-        with:
-          dependency-versions: "highest"
-          composer-options: "--optimize-autoloader"
-
-      - name: "Check coding style"
-        run: "make ci-cs"
-
-      - name: "Deptrac"
-        run: |
-          vendor/bin/deptrac analyse --fail-on-uncovered --no-cache
-
-  rector_checkstyle:
-    name: "6️⃣ Rector Checkstyle"
-    needs:
-      - "byte_level"
-      - "syntax_errors"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "8.2"
-          extensions: "ctype, curl, dom, json, libxml, mbstring, openssl, phar, simplexml, sodium, tokenizer, xml, xmlwriter, zlib"
-          coverage: "xdebug"
-
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Fetch Git base reference"
-        run: "git fetch --depth=1 origin ${GITHUB_BASE_REF}"
-
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
-        with:
-          dependency-versions: "highest"
-          composer-options: "--optimize-autoloader"
-
-      - name: "Execute Rector"
-        run: "make rector"
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+      - name: Run Infection
+        run: castor infect_ci
 
   exported_files:
-    name: "7️⃣ Exported files"
-    needs:
-      - "byte_level"
-      - "syntax_errors"
-    runs-on: "ubuntu-20.04"
+    name: "8️⃣ Exported Files Check"
+    needs: [prepare_dependencies]
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Check exported files"
+      - uses: actions/checkout@v4
+      - name: Check exported files
         run: |
-          EXPECTED="LICENSE,README.md,SECURITY.md,composer.json"
-          CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" | paste -s -d ",")"
-          echo "CURRENT =${CURRENT}"
-          echo "EXPECTED=${EXPECTED}"
-          test "${CURRENT}" == "${EXPECTED}"
+          EXPECTED="CODE_OF_CONDUCT.md,LICENSE,README.md,RELEASES.md,SECURITY.md,composer.json"
+          CURRENT=$(git archive HEAD | tar --list | grep -v '/$' | grep -Ev '^(src|tests)/' | sort | paste -sd "," -)
+          echo "CURRENT = ${CURRENT}"
+          echo "EXPECTED = ${EXPECTED}"
+          if [[ "$CURRENT" != "$EXPECTED" ]]; then
+            echo "❌ Exported files do not match expected list"
+            exit 1
+          fi

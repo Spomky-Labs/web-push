@@ -28,7 +28,6 @@ doctrine:
                 driver: pdo_sqlite
                 memory: true
     orm:
-        auto_generate_proxy_classes: true
         auto_mapping: true
         mappings:
             App:

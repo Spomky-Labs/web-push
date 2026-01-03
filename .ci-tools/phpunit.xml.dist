@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    bootstrap="vendor/autoload.php"
+    bootstrap="../tests/autoload.php"
     colors="true"
     executionOrder="random"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
@@ -11,10 +11,10 @@
     <coverage/>
     <testsuites>
         <testsuite name="WebPush Bundle Test">
-            <directory>./tests/Bundle</directory>
+            <directory>../tests/Bundle</directory>
         </testsuite>
         <testsuite name="WebPush Library Test">
-            <directory>./tests/Library</directory>
+            <directory>../tests/Library</directory>
         </testsuite>
     </testsuites>
     <php>
@@ -29,7 +29,7 @@
     </php>
     <source>
         <include>
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">../src</directory>
         </include>
     </source>
 </phpunit>

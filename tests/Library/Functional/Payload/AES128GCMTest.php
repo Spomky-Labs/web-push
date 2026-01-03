@@ -240,7 +240,7 @@ final class AES128GCMTest extends TestCase
 
         // Salt
         $salt = mb_substr((string) $ciphertext, 0, 16, '8bit');
-        static::assertSame(mb_strlen($salt, '8bit'), 16);
+        static::assertSame(16, mb_strlen($salt, '8bit'));
 
         // Record size
         $rs = mb_substr((string) $ciphertext, 16, 4, '8bit');
