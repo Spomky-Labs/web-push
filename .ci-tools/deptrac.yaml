@@ -1,0 +1,25 @@
+parameters:
+  paths:
+    - '../src'
+  layers:
+    - name: 'Library'
+      collectors:
+        - type: 'directory'
+          value: '../src/library/.*'
+    - name: 'SymfonyBundle'
+      collectors:
+        - type: 'directory'
+          value: '../src/bundle/.*'
+    - name: 'Vendors'
+      collectors:
+        - { type: classLike, value: '^Psr\\' }
+        - { type: classLike, value: '^Symfony\\' }
+        - { type: classLike, value: '^Doctrine\\' }
+        - { type: classLike, value: '^Lcobucci\\JWT\\' }
+        - { type: classLike, value: '^Jose\\Component\\' }
+  ruleset:
+    Library:
+      - 'Vendors'
+    SymfonyBundle:
+      - 'Library'
+      - 'Vendors'

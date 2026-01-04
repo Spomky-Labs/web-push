@@ -151,12 +151,12 @@ final class SubscriptionTest extends TestCase
     {
         yield [
             'endpoint' => 'https://foo.bar',
-            'content_encoding' => 'FOO',
+            'contentEncoding' => 'FOO',
             'keys' => [],
         ];
         yield [
             'endpoint' => 'https://bar.foo',
-            'content_encoding' => 'FOO',
+            'contentEncoding' => 'FOO',
             'keys' => [
                 'authToken' => 'bar-foo',
                 'publicKey' => 'FOO-BAR',

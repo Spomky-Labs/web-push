@@ -5,7 +5,7 @@ This framework contains PHP libraries and Symfony bundle to allow developers to 
 
 # Status
 
-![Build Status](https://github.com/Spomky-Labs/web-push/workflows/Integrate/badge.svg)
+![Build Status](https://github.com/Spomky-Labs/web-push/workflows/%F0%9F%93%81%20PHP%20CI/badge.svg)
 
 [![Latest Stable Version](https://poser.pugx.org/Spomky-Labs/web-push/v)](//packagist.org/packages/Spomky-Labs/web-push)
 [![Total Downloads](https://poser.pugx.org/Spomky-Labs/web-push/downloads)](//packagist.org/packages/Spomky-Labs/web-push)

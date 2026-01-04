@@ -6,15 +6,15 @@ namespace WebPush\Payload;
 
 use WebPush\Exception\OperationException;
 
-final class ServerKey
+final readonly class ServerKey
 {
     private const PUBLIC_KEY_SIZE = 65;
 
     private const PRIVATE_KEY_SIZE = 32;
 
-    private readonly string $publicKey;
+    private string $publicKey;
 
-    private readonly string $privateKey;
+    private string $privateKey;
 
     public function __construct(string $publicKey, string $privateKey)
     {

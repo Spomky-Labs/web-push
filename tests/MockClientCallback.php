@@ -16,7 +16,7 @@ final class MockClientCallback
 
     private array $info = [];
 
-    public function __invoke(string $method, string $url, array $options = []): ResponseInterface
+    public function __invoke(): ResponseInterface
     {
         return new MockResponse($this->body, $this->info);
     }
