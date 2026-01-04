@@ -193,7 +193,6 @@ jobs:
     env:
       XDEBUG_MODE: coverage
       PHP_VERSION: ${{ matrix.php-version }}
-      CASTOR_GENERATE_STUBS: 0
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
@@ -216,7 +215,6 @@ jobs:
       image: ghcr.io/spomky-labs/phpqa:8.4
     env:
       XDEBUG_MODE: coverage
-      CASTOR_GENERATE_STUBS: 0
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies

@@ -20,23 +20,6 @@ framework:
     http_client:
         mock_response_factory: WebPush\Tests\MockClientCallback
 
-doctrine:
-    dbal:
-        default_connection: default
-        connections:
-            default:
-                driver: pdo_sqlite
-                memory: true
-    orm:
-        auto_mapping: true
-        mappings:
-            App:
-                is_bundle: false
-                type: attribute
-                dir: '%kernel.project_dir%/'
-                prefix: 'WebPush\Tests\Bundle\FakeApp\Entity'
-                alias: App
-
 webpush:
     vapid:
         enabled: true

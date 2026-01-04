@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush\Tests;
 
-use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -24,7 +23,7 @@ final class AppKernel extends Kernel
      */
     public function registerBundles(): iterable
     {
-        return [new FrameworkBundle(), new DoctrineBundle(), new MonologBundle(), new WebPushBundle()];
+        return [new FrameworkBundle(), new MonologBundle(), new WebPushBundle()];
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
