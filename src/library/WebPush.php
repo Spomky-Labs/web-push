@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Exception\OperationException;
+use function sprintf;
 
 final class WebPush implements WebPushService, Loggable
 {
@@ -81,13 +82,15 @@ final class WebPush implements WebPushService, Loggable
         } catch (HttpExceptionInterface $e) {
             $this->logger->error('HTTP error while sending notification', [
                 'endpoint' => $subscription->getEndpoint(),
-                'status_code' => $e->getResponse()->getStatusCode(),
+                'status_code' => $e->getResponse()
+                    ->getStatusCode(),
                 'error' => $e->getMessage(),
             ]);
             throw new OperationException(
                 sprintf(
                     'HTTP error %d while sending notification to %s: %s',
-                    $e->getResponse()->getStatusCode(),
+                    $e->getResponse()
+                        ->getStatusCode(),
                     $subscription->getEndpoint(),
                     $e->getMessage()
                 ),

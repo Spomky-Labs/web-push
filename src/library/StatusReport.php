@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace WebPush;
 
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Throwable;
+use function count;
+use function sprintf;
 
 final readonly class StatusReport implements StatusReportInterface
 {
@@ -51,13 +54,13 @@ final readonly class StatusReport implements StatusReportInterface
      *
      * @param SubscriptionInterface $subscription The subscription that failed
      * @param NotificationInterface $notification The notification that failed to send
-     * @param \Throwable $exception The exception that occurred
+     * @param Throwable $exception The exception that occurred
      * @return self A StatusReport with a 0 status code indicating a transport/network error
      */
     public static function createFromException(
         SubscriptionInterface $subscription,
         NotificationInterface $notification,
-        \Throwable $exception
+        Throwable $exception
     ): self {
         // Use status code 0 to indicate a transport/network error (no HTTP response received)
         return new self($subscription, $notification, 0, '', []);
@@ -212,7 +215,9 @@ final readonly class StatusReport implements StatusReportInterface
      */
     public static function filterExpired(array $reports): array
     {
-        return array_values(array_filter($reports, static fn (StatusReportInterface $r) => $r->isSubscriptionExpired()));
+        return array_values(
+            array_filter($reports, static fn (StatusReportInterface $r) => $r->isSubscriptionExpired())
+        );
     }
 
     /**

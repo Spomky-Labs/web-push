@@ -7,6 +7,8 @@ namespace WebPush;
 use WebPush\Exception\OperationException;
 use function array_key_exists;
 use function in_array;
+use function sprintf;
+use function strlen;
 
 final class Notification implements NotificationInterface
 {
