@@ -91,10 +91,70 @@ parameters:
 			path: ../src/library/Exception/AbstractWebPushException.php
 
 		-
+			rawMessage: Class "WebPush\Exception\InvalidPayloadException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidPayloadException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidPayloadException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidPayloadException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\InvalidTTLException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidTTLException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidTTLException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidTTLException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\InvalidTopicException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidTopicException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidTopicException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidTopicException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\InvalidUrgencyException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidUrgencyException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidUrgencyException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidUrgencyException.php
+
+		-
 			rawMessage: Class "WebPush\Exception\OperationException" is not allowed to extend "WebPush\Exception\AbstractWebPushException".
 			identifier: ergebnis.noExtends
 			count: 1
 			path: ../src/library/Exception/OperationException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\ValidationException" is not allowed to extend "WebPush\Exception\AbstractWebPushException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/ValidationException.php
+
+		-
+			rawMessage: Class WebPush\Exception\ValidationException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/ValidationException.php
 
 		-
 			rawMessage: Constructor in WebPush\Message has parameter $body with default value.
@@ -307,6 +367,12 @@ parameters:
 			path: ../src/library/RequestData.php
 
 		-
+			rawMessage: 'Method WebPush\StatusReport::getErrorMessage() has a nullable return type declaration.'
+			identifier: ergebnis.noNullableReturnTypeDeclaration
+			count: 1
+			path: ../src/library/StatusReport.php
+
+		-
 			rawMessage: Class WebPush\Subscription is neither abstract nor final.
 			identifier: ergebnis.final
 			count: 1
@@ -389,3 +455,21 @@ parameters:
 			identifier: ergebnis.noIsset
 			count: 2
 			path: ../src/library/VAPID/VAPIDExtension.php
+
+		-
+			rawMessage: 'Language construct isset() should not be used.'
+			identifier: ergebnis.noIsset
+			count: 2
+			path: ../src/library/WebPush.php
+
+		-
+			rawMessage: 'Method WebPush\WebPush::sendToMultiple() should return array<WebPush\StatusReport> but returns list<WebPush\StatusReportInterface>.'
+			identifier: return.type
+			count: 1
+			path: ../src/library/WebPush.php
+
+		-
+			rawMessage: 'Interface WebPush\WebPushService has PHPDoc tag @method for method sendToMultiple() parameter #2 $subscriptions with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/library/WebPushService.php
