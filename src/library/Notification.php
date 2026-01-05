@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use WebPush\Exception\InvalidPayloadException;
 use WebPush\Exception\InvalidTopicException;
 use WebPush\Exception\InvalidTTLException;
 use WebPush\Exception\InvalidUrgencyException;

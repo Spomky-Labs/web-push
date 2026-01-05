@@ -91,10 +91,70 @@ parameters:
 			path: ../src/library/Exception/AbstractWebPushException.php
 
 		-
+			rawMessage: Class "WebPush\Exception\InvalidPayloadException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidPayloadException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidPayloadException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidPayloadException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\InvalidTTLException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidTTLException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidTTLException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidTTLException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\InvalidTopicException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidTopicException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidTopicException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidTopicException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\InvalidUrgencyException" is not allowed to extend "WebPush\Exception\ValidationException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/InvalidUrgencyException.php
+
+		-
+			rawMessage: Class WebPush\Exception\InvalidUrgencyException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/InvalidUrgencyException.php
+
+		-
 			rawMessage: Class "WebPush\Exception\OperationException" is not allowed to extend "WebPush\Exception\AbstractWebPushException".
 			identifier: ergebnis.noExtends
 			count: 1
 			path: ../src/library/Exception/OperationException.php
+
+		-
+			rawMessage: Class "WebPush\Exception\ValidationException" is not allowed to extend "WebPush\Exception\AbstractWebPushException".
+			identifier: ergebnis.noExtends
+			count: 1
+			path: ../src/library/Exception/ValidationException.php
+
+		-
+			rawMessage: Class WebPush\Exception\ValidationException is neither abstract nor final.
+			identifier: ergebnis.final
+			count: 1
+			path: ../src/library/Exception/ValidationException.php
 
 		-
 			rawMessage: Constructor in WebPush\Message has parameter $body with default value.

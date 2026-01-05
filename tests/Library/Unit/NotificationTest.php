@@ -143,7 +143,7 @@ final class NotificationTest extends TestCase
         $topic = str_repeat('a', 32);
         $notification = Notification::create()->withTopic($topic);
 
-        self::assertSame($topic, $notification->getTopic());
+        static::assertSame($topic, $notification->getTopic());
     }
 
     #[Test]
@@ -153,7 +153,7 @@ final class NotificationTest extends TestCase
             ->withTopic('valid-topic_123.test~ABC')
         ;
 
-        self::assertSame('valid-topic_123.test~ABC', $notification->getTopic());
+        static::assertSame('valid-topic_123.test~ABC', $notification->getTopic());
     }
 
     #[Test]
