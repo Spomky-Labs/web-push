@@ -90,7 +90,19 @@ final class Notification implements NotificationInterface
 
     public function withTopic(string $topic): self
     {
-        $topic !== '' || throw new OperationException('Invalid topic');
+        // Check non-empty
+        $topic !== '' || throw new OperationException('Topic cannot be empty');
+
+        // Check length (32 octets max according to RFC 8030)
+        strlen($topic) <= 32 || throw new OperationException(
+            sprintf('Topic exceeds maximum length of 32 characters (got %d)', strlen($topic))
+        );
+
+        // Check allowed characters (URL-safe base64 alphabet: a-z, A-Z, 0-9, -, ., _, ~)
+        preg_match('/^[a-zA-Z0-9\-._~]+$/', $topic) === 1 || throw new OperationException(
+            'Topic must contain only URL-safe characters (a-z, A-Z, 0-9, -, ., _, ~)'
+        );
+
         $this->topic = $topic;
 
         return $this;
