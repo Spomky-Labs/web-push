@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace WebPush;
 
+use WebPush\Exception\InvalidPayloadException;
+use WebPush\Exception\InvalidTopicException;
+use WebPush\Exception\InvalidTTLException;
+use WebPush\Exception\InvalidUrgencyException;
 use WebPush\Exception\OperationException;
 use function array_key_exists;
 use function in_array;
@@ -62,12 +66,15 @@ final class Notification implements NotificationInterface
 
     public function withUrgency(string $urgency): self
     {
-        in_array($urgency, [
+        if (! in_array($urgency, [
             self::URGENCY_VERY_LOW,
             self::URGENCY_LOW,
             self::URGENCY_NORMAL,
             self::URGENCY_HIGH,
-        ], true) || throw new OperationException('Invalid urgency parameter');
+        ], true)) {
+            throw new InvalidUrgencyException('Invalid urgency parameter', $urgency);
+        }
+
         $this->urgency = $urgency;
 
         return $this;
@@ -93,17 +100,25 @@ final class Notification implements NotificationInterface
     public function withTopic(string $topic): self
     {
         // Check non-empty
-        $topic !== '' || throw new OperationException('Topic cannot be empty');
+        if ($topic === '') {
+            throw new InvalidTopicException('Topic cannot be empty', $topic);
+        }
 
         // Check length (32 octets max according to RFC 8030)
-        strlen($topic) <= 32 || throw new OperationException(
-            sprintf('Topic exceeds maximum length of 32 characters (got %d)', strlen($topic))
-        );
+        if (strlen($topic) > 32) {
+            throw new InvalidTopicException(
+                sprintf('Topic exceeds maximum length of 32 characters (got %d)', strlen($topic)),
+                $topic
+            );
+        }
 
         // Check allowed characters (URL-safe base64 alphabet: a-z, A-Z, 0-9, -, ., _, ~)
-        preg_match('/^[a-zA-Z0-9\-._~]+$/', $topic) === 1 || throw new OperationException(
-            'Topic must contain only URL-safe characters (a-z, A-Z, 0-9, -, ., _, ~)'
-        );
+        if (preg_match('/^[a-zA-Z0-9\-._~]+$/', $topic) !== 1) {
+            throw new InvalidTopicException(
+                'Topic must contain only URL-safe characters (a-z, A-Z, 0-9, -, ., _, ~)',
+                $topic
+            );
+        }
 
         $this->topic = $topic;
 
@@ -117,7 +132,10 @@ final class Notification implements NotificationInterface
 
     public function withTTL(int $ttl): self
     {
-        $ttl >= 0 || throw new OperationException('Invalid TTL');
+        if ($ttl < 0) {
+            throw new InvalidTTLException('Invalid TTL', $ttl);
+        }
+
         $this->ttl = $ttl;
 
         return $this;

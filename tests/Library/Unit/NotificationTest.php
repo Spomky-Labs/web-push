@@ -7,6 +7,9 @@ namespace WebPush\Tests\Library\Unit;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use WebPush\Exception\InvalidTopicException;
+use WebPush\Exception\InvalidTTLException;
+use WebPush\Exception\InvalidUrgencyException;
 use WebPush\Exception\OperationException;
 use WebPush\Notification;
 
@@ -82,7 +85,7 @@ final class NotificationTest extends TestCase
     #[Test]
     public function invalidUrgency(): void
     {
-        $this->expectException(OperationException::class);
+        $this->expectException(InvalidUrgencyException::class);
         $this->expectExceptionMessage('Invalid urgency parameter');
 
         Notification::create()
@@ -93,7 +96,7 @@ final class NotificationTest extends TestCase
     #[Test]
     public function invalidTopic(): void
     {
-        $this->expectException(OperationException::class);
+        $this->expectException(InvalidTopicException::class);
         $this->expectExceptionMessage('Topic cannot be empty');
 
         Notification::create()
@@ -104,7 +107,7 @@ final class NotificationTest extends TestCase
     #[Test]
     public function topicTooLong(): void
     {
-        $this->expectException(OperationException::class);
+        $this->expectException(InvalidTopicException::class);
         $this->expectExceptionMessage('Topic exceeds maximum length of 32 characters');
 
         Notification::create()
@@ -115,7 +118,7 @@ final class NotificationTest extends TestCase
     #[Test]
     public function topicWithInvalidCharacters(): void
     {
-        $this->expectException(OperationException::class);
+        $this->expectException(InvalidTopicException::class);
         $this->expectExceptionMessage('Topic must contain only URL-safe characters');
 
         Notification::create()
@@ -126,7 +129,7 @@ final class NotificationTest extends TestCase
     #[Test]
     public function topicWithSpaces(): void
     {
-        $this->expectException(OperationException::class);
+        $this->expectException(InvalidTopicException::class);
         $this->expectExceptionMessage('Topic must contain only URL-safe characters');
 
         Notification::create()
@@ -156,7 +159,7 @@ final class NotificationTest extends TestCase
     #[Test]
     public function invalidTTL(): void
     {
-        $this->expectException(OperationException::class);
+        $this->expectException(InvalidTTLException::class);
         $this->expectExceptionMessage('Invalid TTL');
 
         Notification::create()
