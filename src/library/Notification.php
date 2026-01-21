@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use WebPush\Exception\InvalidTopicException;
-use WebPush\Exception\InvalidTTLException;
-use WebPush\Exception\InvalidUrgencyException;
-use WebPush\Exception\OperationException;
 use function array_key_exists;
 use function in_array;
 use function sprintf;
 use function strlen;
+use WebPush\Exception\InvalidTopicException;
+use WebPush\Exception\InvalidTTLException;
+use WebPush\Exception\InvalidUrgencyException;
+use WebPush\Exception\OperationException;
 
 final class Notification implements NotificationInterface
 {

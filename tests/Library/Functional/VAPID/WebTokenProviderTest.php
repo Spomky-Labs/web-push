@@ -8,10 +8,10 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\VAPID\WebTokenProvider;
-use const STR_PAD_RIGHT;
 
 /**
  * @internal
