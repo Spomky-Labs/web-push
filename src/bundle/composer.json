@@ -17,9 +17,9 @@
     ],
     "require": {
         "spomky-labs/web-push-lib": "^3.0",
-        "symfony/config": "^6.2|^7.0",
-        "symfony/dependency-injection": "^6.2|^7.0",
-        "symfony/framework-bundle": "^6.2|^7.0"
+        "symfony/config": "^6.2|^7.0|^8.0",
+        "symfony/dependency-injection": "^6.2|^7.0|^8.0",
+        "symfony/framework-bundle": "^6.2|^7.0|^8.0"
     },
     "autoload": {
         "psr-4": {
