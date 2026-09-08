@@ -16,7 +16,6 @@
         "ext-json": "*",
         "psr/cache": "^1.0|^2.0|^3.0",
         "psr/clock": "^1.0",
-        "psr/container": "^2.0",
         "psr/log": "^1.1|^2.0|^3.0",
         "symfony/config": "^6.2|^7.0|^8.0",
         "symfony/dependency-injection": "^6.2|^7.0|^8.0",
