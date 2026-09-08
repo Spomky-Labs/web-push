@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace WebPush;
 
 /**
- * @method array<StatusReportInterface> sendToMultiple(NotificationInterface $notification, array $subscriptions)
+ * @method list<StatusReportInterface> sendToMultiple(NotificationInterface $notification, array<SubscriptionInterface> $subscriptions)
  */
 interface WebPushService
 {

@@ -20,8 +20,9 @@ abstract class Utils
 
     public static function privateKeyToPEM(string $privateKey, string $publicKey): string
     {
-        $d = unpack('H*', str_pad($privateKey, self::PART_SIZE, "\0", STR_PAD_LEFT));
-        if (! is_array($d) || ! isset($d[1])) {
+        $unpacked = unpack('H*', str_pad($privateKey, self::PART_SIZE, "\0", STR_PAD_LEFT));
+        $d = is_array($unpacked) ? ($unpacked[1] ?? null) : null;
+        if (! is_string($d)) {
             throw new OperationException('Unable to convert the private key');
         }
 
@@ -30,7 +31,7 @@ abstract class Utils
             '3077' // SEQUENCE, length 87+length($d)=32
                 . '020101' // INTEGER, 1
                     . '0420'   // OCTET STRING, length($d) = 32
-                        . $d[1]
+                        . $d
                     . 'a00a' // TAGGED OBJECT #0, length 10
                         . '0608' // OID, length 8
                             . '2a8648ce3d030107' // 1.3.132.0.34 = P-256 Curve

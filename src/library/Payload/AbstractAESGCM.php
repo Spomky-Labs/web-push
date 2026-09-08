@@ -16,6 +16,7 @@ use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
 use WebPush\Utils;
 use function is_array;
+use function is_string;
 use function openssl_encrypt;
 use function openssl_pkey_new;
 use function sprintf;
@@ -239,10 +240,19 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         is_array($details) || throw new OperationException('Unable to get the key details');
 
+        $ec = $details['ec'] ?? null;
+        is_array($ec) || throw new OperationException('Unable to get the key details');
+        $x = $ec['x'] ?? null;
+        $y = $ec['y'] ?? null;
+        $d = $ec['d'] ?? null;
+        (is_string($x) && is_string($y) && is_string($d)) || throw new OperationException(
+            'Unable to get the key details'
+        );
+
         $publicKey = "\4";
-        $publicKey .= str_pad((string) $details['ec']['x'], self::SIZE, "\0", STR_PAD_LEFT);
-        $publicKey .= str_pad((string) $details['ec']['y'], self::SIZE, "\0", STR_PAD_LEFT);
-        $privateKey = str_pad((string) $details['ec']['d'], self::SIZE, "\0", STR_PAD_LEFT);
+        $publicKey .= str_pad($x, self::SIZE, "\0", STR_PAD_LEFT);
+        $publicKey .= str_pad($y, self::SIZE, "\0", STR_PAD_LEFT);
+        $privateKey = str_pad($d, self::SIZE, "\0", STR_PAD_LEFT);
         $key = ServerKey::create($publicKey, $privateKey);
 
         $this->logger->debug('The key has been created.');

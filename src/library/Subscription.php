@@ -12,7 +12,6 @@ use function is_array;
 use function is_int;
 use function is_string;
 use function json_decode;
-use const ARRAY_FILTER_USE_KEY;
 use const JSON_THROW_ON_ERROR;
 
 class Subscription implements SubscriptionInterface
@@ -106,12 +105,14 @@ class Subscription implements SubscriptionInterface
 
     public static function createFromString(string $input): self
     {
-        $data = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
 
-        is_array($data) || throw new OperationException('Invalid input');
-        array_walk($data, static function (mixed $item, string|int $key): void {
+        is_array($decoded) || throw new OperationException('Invalid input');
+        $data = [];
+        foreach ($decoded as $key => $value) {
             is_string($key) || throw new OperationException('Invalid input');
-        }, ARRAY_FILTER_USE_KEY);
+            $data[$key] = $value;
+        }
 
         return self::createFromAssociativeArray($data);
     }
@@ -140,10 +141,12 @@ class Subscription implements SubscriptionInterface
         if (array_key_exists('supportedContentEncodings', $input)) {
             $encodings = $input['supportedContentEncodings'];
             is_array($encodings) || throw new OperationException('Invalid input');
-            array_walk($encodings, static function (mixed $item): void {
-                is_string($item) || throw new OperationException('Invalid input');
-            });
-            $object->withContentEncodings($encodings);
+            $contentEncodings = [];
+            foreach ($encodings as $encoding) {
+                is_string($encoding) || throw new OperationException('Invalid input');
+                $contentEncodings[] = $encoding;
+            }
+            $object->withContentEncodings($contentEncodings);
         }
         if (array_key_exists('expirationTime', $input)) {
             $input['expirationTime'] === null || is_int($input['expirationTime']) || throw new OperationException(

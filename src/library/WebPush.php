@@ -107,8 +107,8 @@ final class WebPush implements WebPushService, Loggable
      * Instead, it attempts to send to all subscriptions and returns a StatusReport
      * for each one, allowing you to inspect successes and failures.
      *
-     * @param Subscription[] $subscriptions
-     * @return StatusReport[]
+     * @param array<SubscriptionInterface> $subscriptions
+     * @return list<StatusReportInterface>
      */
     public function sendToMultiple(NotificationInterface $notification, array $subscriptions): array
     {

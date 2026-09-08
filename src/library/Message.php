@@ -19,7 +19,7 @@ use const JSON_UNESCAPED_UNICODE;
 final class Message implements JsonSerializable
 {
     /**
-     * @var Action[]
+     * @var array<int, Action>
      */
     private array $actions = [];
 
