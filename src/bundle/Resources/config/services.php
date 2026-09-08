@@ -13,6 +13,7 @@ use WebPush\TopicExtension;
 use WebPush\TTLExtension;
 use WebPush\UrgencyExtension;
 use WebPush\WebPush;
+use WebPush\WebPushService;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
@@ -35,4 +36,5 @@ return static function (ContainerConfigurator $container): void {
         ->args([service('webpush.http_client'), service(ExtensionManager::class)])
         ->public()
     ;
+    $container->alias(WebPushService::class, WebPush::class);
 };
