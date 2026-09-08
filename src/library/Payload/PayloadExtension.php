@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use function array_key_exists;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sprintf;
 use WebPush\Extension;
 use WebPush\Loggable;
 use WebPush\NotificationInterface;
 use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
+use function array_key_exists;
+use function sprintf;
 
 final class PayloadExtension implements Extension, Loggable
 {

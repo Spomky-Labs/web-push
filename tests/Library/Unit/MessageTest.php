@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use function json_encode;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Action;
 use WebPush\Message;
+use function json_encode;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 /**
  * @internal

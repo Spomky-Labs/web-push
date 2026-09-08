@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
-use function chr;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Utils;
+use function chr;
 
 /**
  * @internal

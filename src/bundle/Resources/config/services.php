@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use WebPush\ExtensionManager;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
@@ -14,6 +13,7 @@ use WebPush\TTLExtension;
 use WebPush\UrgencyExtension;
 use WebPush\WebPush;
 use WebPush\WebPushService;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()
