@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use const ARRAY_FILTER_USE_KEY;
-use function array_key_exists;
 use DateTimeImmutable;
 use DateTimeInterface;
+use WebPush\Exception\OperationException;
+use function array_key_exists;
 use function is_array;
 use function is_int;
 use function is_string;
 use function json_decode;
+use const ARRAY_FILTER_USE_KEY;
 use const JSON_THROW_ON_ERROR;
-use WebPush\Exception\OperationException;
 
 class Subscription implements SubscriptionInterface
 {
