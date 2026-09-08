@@ -60,7 +60,7 @@ final class AES128GCM extends AbstractAESGCM
 
     protected function prepareHeaders(RequestData $requestData, ServerKey $serverKey, string $salt): void
     {
-        //Nothing to do
+        // Nothing to do
     }
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string

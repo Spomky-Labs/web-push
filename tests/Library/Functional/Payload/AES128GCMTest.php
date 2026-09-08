@@ -250,7 +250,7 @@ final class AES128GCMTest extends TestCase
         // idlen
         $idlen = ord(mb_substr((string) $ciphertext, 20, 1, '8bit'));
 
-        //keyid
+        // keyid
         $keyid = mb_substr((string) $ciphertext, 21, $idlen, '8bit');
 
         // IKM

@@ -32,7 +32,7 @@ final class WebTokenProviderTest extends TestCase
     #[DataProvider('dataComputeHeader')]
     public function computeHeader(string $publicKey, string $privateKey): void
     {
-        //Given
+        // Given
         $expiresAt = new DateTimeImmutable('@1580253757');
 
         // When
@@ -44,7 +44,7 @@ final class WebTokenProviderTest extends TestCase
             ])
         ;
 
-        //Then
+        // Then
         static::assertStringStartsWith(
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.',
             $header->getToken()

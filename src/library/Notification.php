@@ -186,7 +186,7 @@ final class Notification implements NotificationInterface
 
     public function get(string $key): mixed
     {
-        $this->has($key) === true || throw new OperationException('Missing metadata');
+        $this->has($key) || throw new OperationException('Missing metadata');
 
         return $this->metadata[$key];
     }

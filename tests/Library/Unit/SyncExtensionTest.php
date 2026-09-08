@@ -38,7 +38,7 @@ final class SyncExtensionTest extends TestCase
     #[Test]
     public function asyncIsNotSetInHeader(): void
     {
-        //Given
+        // Given
         $requestData = new RequestData();
         $notification = Notification::create()
             ->sync()

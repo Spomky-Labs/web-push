@@ -295,6 +295,7 @@ final class Message implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
+        /** @var array<string, mixed> $properties */
         $properties = get_object_vars($this);
         unset($properties['title']);
 
