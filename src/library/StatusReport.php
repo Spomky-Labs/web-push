@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use Symfony\Contracts\HttpClient\ResponseInterface;
-use Throwable;
 use function count;
 use function sprintf;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+use Throwable;
 
 final readonly class StatusReport implements StatusReportInterface
 {
