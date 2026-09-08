@@ -29,8 +29,8 @@ final class WebPush implements WebPushService, Loggable
             'spomky-labs/web-push-bundle',
             '3.3.0',
             'The class "%s" is deprecated and will be removed in 4.0.0. Please use "%s" instead.',
-            'WebPush\\Bundle\\Service\\WebPush',
-            'WebPush\\WebPush'
+            self::class,
+            \WebPush\WebPush::class
         );
     }
 
