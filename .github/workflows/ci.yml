@@ -203,8 +203,17 @@ jobs:
             composer install --no-interaction --no-progress
           fi
 
+      # Not `castor phpunit`: castor needs PHP >= 8.4 and the images for the
+      # older versions of the matrix ship the non-static build. Keep this in
+      # sync with the `phpunit` task of castor.php.
       - name: Run PHPUnit
-        run: castor phpunit
+        run: |
+          composer exec -- phpunit-11 \
+            --coverage-xml .ci-tools/coverage \
+            --log-junit=.ci-tools/coverage/junit.xml \
+            --configuration .ci-tools/phpunit.xml.dist \
+            --display-warnings \
+            --display-deprecations
 
   infection:
     name: "🧬 Mutation Testing"
