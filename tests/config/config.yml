@@ -1,5 +1,8 @@
 services:
     WebPush\Tests\MockClientCallback: ~
+    WebPush\Tests\WebPushServiceConsumer:
+        autowire: true
+        public: true
     WebPush\Tests\WebPushEventListener:
         tags:
             - { name: kernel.event_listener, event: WebPush\StatusReport }

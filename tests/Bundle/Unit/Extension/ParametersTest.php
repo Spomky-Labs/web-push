@@ -10,6 +10,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Base64Url;
 use WebPush\VAPID\JWSProvider;
+use WebPush\WebPush;
+use WebPush\WebPushService;
 
 /**
  * @internal
@@ -23,6 +25,7 @@ final class ParametersTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasAlias('webpush.logger', LoggerInterface::class);
         $this->assertContainerBuilderHasAlias('webpush.http_client', HttpClientInterface::class);
+        $this->assertContainerBuilderHasAlias(WebPushService::class, WebPush::class);
 
         $this->assertContainerBuilderHasParameter('webpush.payload.aesgcm.cache_lifetime', 'now + 30min');
         $this->assertContainerBuilderHasParameter('webpush.payload.aesgcm.padding', 'recommended');
