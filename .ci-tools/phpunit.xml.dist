@@ -12,6 +12,9 @@
         <testsuite name="WebPush Library Test">
             <directory>../tests/Library</directory>
         </testsuite>
+        <testsuite name="Monorepo Test">
+            <file>../tests/ComposerJsonTest.php</file>
+        </testsuite>
     </testsuites>
     <php>
         <ini name="error_reporting" value="-1"/>
