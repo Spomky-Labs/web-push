@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace WebPush\Tests\Bundle\Unit;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -15,6 +17,8 @@ use WebPush\Subscription;
 /**
  * @internal
  */
+#[Group('legacy')]
+#[IgnoreDeprecations]
 final class StatusReportTest extends TestCase
 {
     #[Test]

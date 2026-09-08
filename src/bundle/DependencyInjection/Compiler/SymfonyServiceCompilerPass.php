@@ -8,8 +8,8 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use WebPush\Bundle\Service\WebPush;
 use WebPush\ExtensionManager;
+use WebPush\WebPush;
 
 final class SymfonyServiceCompilerPass implements CompilerPassInterface
 {

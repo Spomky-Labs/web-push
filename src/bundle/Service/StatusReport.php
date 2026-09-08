@@ -9,6 +9,9 @@ use WebPush\NotificationInterface;
 use WebPush\StatusReportInterface;
 use WebPush\SubscriptionInterface;
 
+/**
+ * @deprecated since 3.3.0, use WebPush\StatusReport instead. Will be removed in 4.0.0.
+ */
 final class StatusReport implements StatusReportInterface
 {
     private ?int $code = null;
@@ -25,6 +28,13 @@ final class StatusReport implements StatusReportInterface
         private readonly NotificationInterface $notification,
         private readonly ResponseInterface $response
     ) {
+        trigger_deprecation(
+            'spomky-labs/web-push-bundle',
+            '3.3.0',
+            'The class "%s" is deprecated and will be removed in 4.0.0. Please use "%s" instead.',
+            'WebPush\\Bundle\\Service\\StatusReport',
+            'WebPush\\StatusReport'
+        );
     }
 
     public function getSubscription(): SubscriptionInterface

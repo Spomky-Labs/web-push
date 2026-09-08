@@ -19,6 +19,7 @@
         "spomky-labs/web-push-lib": "^3.0",
         "symfony/config": "^6.2|^7.0",
         "symfony/dependency-injection": "^6.2|^7.0",
+        "symfony/deprecation-contracts": "^2.5|^3.0",
         "symfony/framework-bundle": "^6.2|^7.0"
     },
     "autoload": {
