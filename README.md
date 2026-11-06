@@ -14,7 +14,12 @@ This framework contains PHP libraries and Symfony bundle to allow developers to 
 
 # Documentation
 
-The documentation can be read on the following website: https://web-push.spomky-labs.com/
+The documentation is at **<https://docs.spomky-labs.com/web-push/>**, one version per maintained branch.
+
+* [Requirements](https://docs.spomky-labs.com/web-push/latest/requirements/)
+* [Overview](https://docs.spomky-labs.com/web-push/latest/common-concepts/overview/) — subscriptions, notifications and VAPID.
+* [The library](https://docs.spomky-labs.com/web-push/latest/the-library/installation/) — in any PHP application.
+* [The Symfony bundle](https://docs.spomky-labs.com/web-push/latest/the-symfony-bundle/installation/)
 
 # Support
 
