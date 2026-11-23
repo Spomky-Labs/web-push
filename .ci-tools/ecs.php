@@ -87,8 +87,8 @@ return ECSConfig::configure()
     ])
     ->withSkip([
         PhpUnitTestClassRequiresCoversFixer::class,
-        MethodChainingIndentationFixer::class => [__DIR__ . '/src/Resources/config'],
-        MethodChainingNewlineFixer::class => [__DIR__ . '/src/Resources/config'],
+        MethodChainingIndentationFixer::class => [__DIR__ . '/../src/bundle/Resources/config'],
+        MethodChainingNewlineFixer::class => [__DIR__ . '/../src/bundle/Resources/config'],
     ])
     ->withParallel()
     ->withPaths([
