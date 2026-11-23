@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush;
 
+use JsonSerializable;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
-use JsonSerializable;
 
 /**
  * @see https://notifications.spec.whatwg.org/#actions

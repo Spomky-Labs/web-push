@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace WebPush;
 
-use function array_key_exists;
-use function in_array;
-use function sprintf;
-use function strlen;
 use WebPush\Exception\InvalidTopicException;
 use WebPush\Exception\InvalidTTLException;
 use WebPush\Exception\InvalidUrgencyException;
 use WebPush\Exception\OperationException;
+use function array_key_exists;
+use function in_array;
+use function sprintf;
+use function strlen;
 
 final class Notification implements NotificationInterface
 {
@@ -186,7 +186,7 @@ final class Notification implements NotificationInterface
 
     public function get(string $key): mixed
     {
-        $this->has($key) === true || throw new OperationException('Missing metadata');
+        $this->has($key) || throw new OperationException('Missing metadata');
 
         return $this->metadata[$key];
     }

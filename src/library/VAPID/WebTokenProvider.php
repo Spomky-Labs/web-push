@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace WebPush\VAPID;
 
-use function hex2bin;
-use function is_string;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use function json_encode;
-use const JSON_THROW_ON_ERROR;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Loggable;
+use function hex2bin;
+use function is_string;
+use function json_encode;
+use const JSON_THROW_ON_ERROR;
 
 final class WebTokenProvider implements JWSProvider, Loggable
 {

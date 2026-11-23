@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use WebPush\VAPID\JWSProvider;
 use WebPush\VAPID\WebTokenProvider;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 return static function (ContainerConfigurator $container): void {
     $container = $container->services()

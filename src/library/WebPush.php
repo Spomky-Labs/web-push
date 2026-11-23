@@ -6,11 +6,11 @@ namespace WebPush;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sprintf;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Exception\OperationException;
+use function sprintf;
 
 final class WebPush implements WebPushService, Loggable
 {

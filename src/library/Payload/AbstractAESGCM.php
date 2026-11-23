@@ -4,17 +4,10 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use function is_array;
-use function openssl_encrypt;
-use const OPENSSL_KEYTYPE_EC;
-use function openssl_pkey_new;
-use const OPENSSL_RAW_DATA;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sprintf;
-use const STR_PAD_LEFT;
 use WebPush\Base64Url;
 use WebPush\Cachable;
 use WebPush\Exception\OperationException;
@@ -22,6 +15,13 @@ use WebPush\Loggable;
 use WebPush\RequestData;
 use WebPush\SubscriptionInterface;
 use WebPush\Utils;
+use function is_array;
+use function openssl_encrypt;
+use function openssl_pkey_new;
+use function sprintf;
+use const OPENSSL_KEYTYPE_EC;
+use const OPENSSL_RAW_DATA;
+use const STR_PAD_LEFT;
 
 abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 {
@@ -89,13 +89,13 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
     public function encode(string $payload, RequestData $requestData, SubscriptionInterface $subscription): void
     {
         $this->logger->debug('Trying to encode the following payload.');
-        $subscription->hasKey('p256dh') === true || throw new OperationException(
+        $subscription->hasKey('p256dh') || throw new OperationException(
             'The user-agent public key is missing'
         );
         $userAgentPublicKey = Base64Url::decode($subscription->getKey('p256dh'));
         $this->logger->debug(sprintf('User-agent public key: %s', Base64Url::encode($userAgentPublicKey)));
 
-        $subscription->hasKey('auth') === true || throw new OperationException(
+        $subscription->hasKey('auth') || throw new OperationException(
             'The user-agent authentication token is missing'
         );
         $userAgentAuthToken = Base64Url::decode($subscription->getKey('auth'));
@@ -106,7 +106,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
 
         $serverKey = $this->getServerKey();
 
-        //IKM
+        // IKM
         $keyInfo = $this->getKeyInfo($userAgentPublicKey, $serverKey);
         $ikm = Utils::computeIKM(
             $keyInfo,
@@ -117,7 +117,7 @@ abstract class AbstractAESGCM implements ContentEncoding, Loggable, Cachable
         );
         $this->logger->debug(sprintf('IKM: %s', Base64Url::encode($ikm)));
 
-        //PRK
+        // PRK
         $prk = hash_hmac('sha256', $ikm, $salt, true);
         $this->logger->debug(sprintf('PRK: %s', Base64Url::encode($prk)));
 

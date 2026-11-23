@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace WebPush;
 
+use WebPush\Exception\OperationException;
 use function is_array;
 use function is_string;
 use function pack;
+use function unpack;
 use const PHP_EOL;
 use const STR_PAD_LEFT;
-use function unpack;
-use WebPush\Exception\OperationException;
 
 abstract class Utils
 {

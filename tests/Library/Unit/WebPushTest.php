@@ -21,7 +21,7 @@ final class WebPushTest extends TestCase
     #[Test]
     public function aNotificationCanBeSent(): void
     {
-        //Given
+        // Given
         $subscription = Subscription::create('https://foo.bar');
         $notification = Notification::create();
 
