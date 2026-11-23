@@ -21,9 +21,12 @@ $builder->withSets([
     DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
     PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
-    PHPUnitSetList::PHPUNIT_120,
 ]);
-$builder->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true);
+// Symfony and PHPUnit are deliberately left out: composer resolves the highest
+// versions available to the CI container (Symfony 8, PHPUnit 12) while the library
+// still supports Symfony ^6.2 and the test suite runs on PHPUnit 11. Version-pinned
+// migration sets would rewrite the code above that floor.
+$builder->withComposerBased(twig: true, doctrine: true);
 $builder->withPhpVersion(PhpVersion::PHP_82);
 $builder->withPaths(
     [
