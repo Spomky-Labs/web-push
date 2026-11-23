@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace WebPush\Tests\Library\Unit;
 
 use DatetimeImmutable;
-use function json_encode;
-use const JSON_THROW_ON_ERROR;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Exception\OperationException;
 use WebPush\Subscription;
+use function json_encode;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @internal

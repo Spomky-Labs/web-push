@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WebPush\Payload;
 
-use function pack;
 use Psr\Clock\ClockInterface;
-use const STR_PAD_RIGHT;
 use WebPush\Exception\OperationException;
 use WebPush\RequestData;
+use function pack;
+use const STR_PAD_RIGHT;
 
 final class AES128GCM extends AbstractAESGCM
 {
@@ -60,7 +60,7 @@ final class AES128GCM extends AbstractAESGCM
 
     protected function prepareHeaders(RequestData $requestData, ServerKey $serverKey, string $salt): void
     {
-        //Nothing to do
+        // Nothing to do
     }
 
     protected function prepareBody(string $encryptedText, ServerKey $serverKey, string $tag, string $salt): string

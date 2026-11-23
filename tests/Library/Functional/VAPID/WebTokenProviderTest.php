@@ -8,10 +8,10 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use const STR_PAD_RIGHT;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\VAPID\WebTokenProvider;
+use const STR_PAD_RIGHT;
 
 /**
  * @internal
@@ -32,7 +32,7 @@ final class WebTokenProviderTest extends TestCase
     #[DataProvider('dataComputeHeader')]
     public function computeHeader(string $publicKey, string $privateKey): void
     {
-        //Given
+        // Given
         $expiresAt = new DateTimeImmutable('@1580253757');
 
         // When
@@ -44,7 +44,7 @@ final class WebTokenProviderTest extends TestCase
             ])
         ;
 
-        //Then
+        // Then
         static::assertStringStartsWith(
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJhdWRpZW5jZSIsInN1YiI6InN1YmplY3QiLCJleHAiOjE1ODAyNTM3NTd9.',
             $header->getToken()

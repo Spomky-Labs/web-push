@@ -76,9 +76,7 @@ final class StatusReport implements StatusReportInterface
 
     private function prepareStatusCode(): int
     {
-        if ($this->code === null) {
-            $this->code = $this->response->getStatusCode();
-        }
+        $this->code ??= $this->response->getStatusCode();
 
         return $this->code;
     }

@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Functional\Payload;
 
-use function chr;
-use function openssl_decrypt;
-use const OPENSSL_RAW_DATA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use function sprintf;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Clock\NativeClock;
-use function unpack;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Payload\AESGCM;
@@ -24,6 +19,11 @@ use WebPush\Payload\ServerKey;
 use WebPush\RequestData;
 use WebPush\Subscription;
 use WebPush\Utils;
+use function chr;
+use function openssl_decrypt;
+use function sprintf;
+use function unpack;
+use const OPENSSL_RAW_DATA;
 
 /**
  * @internal
