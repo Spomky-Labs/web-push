@@ -30,73 +30,71 @@ use Symplify\CodingStandard\Fixer\Spacing\MethodChainingNewlineFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
-return static function (ECSConfig $config): void {
-    $header = '';
-    $config->import(SetList::PSR_12);
-    $config->import(SetList::CLEAN_CODE);
-    $config->import(SetList::DOCTRINE_ANNOTATIONS);
-    $config->import(SetList::SPACES);
-    $config->import(SetList::PHPUNIT);
-    $config->import(SetList::SYMPLIFY);
-    $config->import(SetList::ARRAY);
-    $config->import(SetList::COMMON);
-    $config->import(SetList::COMMENTS);
-    $config->import(SetList::CONTROL_STRUCTURES);
-    $config->import(SetList::DOCBLOCK);
-    $config->import(SetList::NAMESPACES);
-    $config->import(SetList::STRICT);
-
-    $config->rule(StrictParamFixer::class);
-    $config->rule(StrictComparisonFixer::class);
-    $config->rule(ArrayIndentationFixer::class);
-    $config->rule(OrderedImportsFixer::class);
-    $config->rule(ProtectedToPrivateFixer::class);
-    $config->rule(DeclareStrictTypesFixer::class);
-    $config->rule(NativeConstantInvocationFixer::class);
-    $config->rule(LinebreakAfterOpeningTagFixer::class);
-    $config->rule(CombineConsecutiveIssetsFixer::class);
-    $config->rule(CombineConsecutiveUnsetsFixer::class);
-    $config->rule(NoSuperfluousElseifFixer::class);
-    $config->rule(NoSuperfluousPhpdocTagsFixer::class);
-    $config->rule(PhpdocTrimConsecutiveBlankLineSeparationFixer::class);
-    $config->rule(PhpdocOrderFixer::class);
-    $config->rule(SimplifiedNullReturnFixer::class);
-    $config->rule(PhpUnitTestCaseStaticMethodCallsFixer::class);
-    $config->ruleWithConfiguration(ArraySyntaxFixer::class, [
+return ECSConfig::configure()
+    ->withSets([
+        SetList::PSR_12,
+        SetList::CLEAN_CODE,
+        SetList::DOCTRINE_ANNOTATIONS,
+        SetList::SPACES,
+        SetList::ARRAY,
+        SetList::COMMON,
+        SetList::COMMENTS,
+        SetList::CONTROL_STRUCTURES,
+        SetList::DOCBLOCK,
+        SetList::NAMESPACES,
+    ])
+    ->withRules([
+        StrictParamFixer::class,
+        StrictComparisonFixer::class,
+        ArrayIndentationFixer::class,
+        ProtectedToPrivateFixer::class,
+        DeclareStrictTypesFixer::class,
+        NativeConstantInvocationFixer::class,
+        LinebreakAfterOpeningTagFixer::class,
+        CombineConsecutiveIssetsFixer::class,
+        CombineConsecutiveUnsetsFixer::class,
+        NoSuperfluousElseifFixer::class,
+        NoSuperfluousPhpdocTagsFixer::class,
+        PhpdocTrimConsecutiveBlankLineSeparationFixer::class,
+        PhpdocOrderFixer::class,
+        SimplifiedNullReturnFixer::class,
+        PhpUnitTestCaseStaticMethodCallsFixer::class,
+    ])
+    ->withConfiguredRule(ArraySyntaxFixer::class, [
         'syntax' => 'short',
-    ]);
-    $config->ruleWithConfiguration(NativeFunctionInvocationFixer::class, [
+    ])
+    ->withConfiguredRule(OrderedImportsFixer::class, [
+        'imports_order' => ['class', 'function', 'const'],
+    ])
+    ->withConfiguredRule(NativeFunctionInvocationFixer::class, [
         'include' => ['@compiler_optimized'],
         'scope' => 'namespaced',
         'strict' => true,
-    ]);
-    $config->ruleWithConfiguration(HeaderCommentFixer::class, [
-        'header' => $header,
-    ]);
-    $config->ruleWithConfiguration(AlignMultilineCommentFixer::class, [
+    ])
+    ->withConfiguredRule(HeaderCommentFixer::class, [
+        'header' => '',
+    ])
+    ->withConfiguredRule(AlignMultilineCommentFixer::class, [
         'comment_type' => 'all_multiline',
-    ]);
-    $config->ruleWithConfiguration(PhpUnitTestAnnotationFixer::class, [
+    ])
+    ->withConfiguredRule(PhpUnitTestAnnotationFixer::class, [
         'style' => 'annotation',
-    ]);
-    $config->ruleWithConfiguration(GlobalNamespaceImportFixer::class, [
+    ])
+    ->withConfiguredRule(GlobalNamespaceImportFixer::class, [
         'import_classes' => true,
         'import_constants' => true,
         'import_functions' => true,
-    ]);
-
-    $config->skip([
+    ])
+    ->withSkip([
         PhpUnitTestClassRequiresCoversFixer::class,
         MethodChainingIndentationFixer::class => [__DIR__ . '/src/Resources/config'],
         MethodChainingNewlineFixer::class => [__DIR__ . '/src/Resources/config'],
-    ]);
-
-    $config->parallel();
-    $config->paths([
+    ])
+    ->withParallel()
+    ->withPaths([
         __DIR__ . '/../src',
         __DIR__ . '/../tests',
         __DIR__ . '/../castor.php',
         __DIR__ . '/ecs.php',
         __DIR__ . '/rector.php',
     ]);
-};
