@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use WebPush\Payload\AES128GCM;
 use WebPush\Payload\AESGCM;
 use function in_array;
+use function is_array;
 use function is_int;
 use function sprintf;
 
@@ -38,11 +39,15 @@ final readonly class Configuration implements ConfigurationInterface
             ->canBeEnabled()
             ->validate()
             ->ifTrue(static function (array $conf): bool {
-                $wt = $conf['web_token']['enabled'] ? 1 : 0;
-                $lc = $conf['lcobucci']['enabled'] ? 1 : 0;
-                $cu = $conf['custom']['enabled'] ? 1 : 0;
+                $enabled = 0;
+                foreach (['web_token', 'lcobucci', 'custom'] as $provider) {
+                    $providerConf = $conf[$provider] ?? null;
+                    if (is_array($providerConf) && ($providerConf['enabled'] ?? false) === true) {
+                        ++$enabled;
+                    }
+                }
 
-                return $wt + $lc + $cu !== 1;
+                return $enabled !== 1;
             })
             ->thenInvalid('One, and only one, JWS Provider shall be set')
             ->end()

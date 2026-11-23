@@ -60,6 +60,9 @@ final class Action implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return array_filter(get_object_vars($this), static fn ($v): bool => $v !== null);
+        /** @var array<string, mixed> $properties */
+        $properties = get_object_vars($this);
+
+        return array_filter($properties, static fn ($v): bool => $v !== null);
     }
 }

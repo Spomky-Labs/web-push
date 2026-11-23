@@ -55,12 +55,6 @@ parameters:
 			path: ../src/bundle/DependencyInjection/Compiler/SymfonyServiceCompilerPass.php
 
 		-
-			rawMessage: Cannot access offset 'enabled' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../src/bundle/DependencyInjection/Configuration.php
-
-		-
 			rawMessage: Class "WebPush\Bundle\Exception\InitializationException" is not allowed to extend "WebPush\Exception\AbstractWebPushException".
 			identifier: ergebnis.noExtends
 			count: 1
