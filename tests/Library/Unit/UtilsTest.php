@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace WebPush\Tests\Library\Unit;
 
+use ErrorException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WebPush\Base64Url;
 use WebPush\Exception\OperationException;
 use WebPush\Utils;
 use function chr;
+use function restore_error_handler;
+use function set_error_handler;
+use const E_DEPRECATED;
 
 /**
  * @internal
@@ -92,6 +96,34 @@ CODE_SAMPLE
         $keyInfo = 'WebPush: info' . chr(0) . $receiverPublicKey . $senderPublicKey;
         $ikm = Utils::computeIKM($keyInfo, $authSecret, $receiverPublicKey, $senderPrivateKey, $senderPublicKey);
         static::assertSame($expectedIKM, $ikm);
+    }
+
+    /**
+     * @see https://github.com/Spomky-Labs/web-push/issues/103
+     */
+    #[Test]
+    public function computeIKMDoesNotTriggerADeprecation(): void
+    {
+        $senderPublicKey = Base64Url::decode(
+            'BP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A8'
+        );
+        $senderPrivateKey = Base64Url::decode('yfWPiYE-n46HLnH0KqZOF1fJJU3MYrct3AELtAQ-oRw');
+        $receiverPublicKey = Base64Url::decode(
+            'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcx aOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+        );
+        $authSecret = Base64Url::decode('BTBZMqHH6r4Tts7J_aSIgg');
+        $keyInfo = 'WebPush: info' . chr(0) . $receiverPublicKey . $senderPublicKey;
+
+        set_error_handler(static function (int $severity, string $message, string $file, int $line): never {
+            throw new ErrorException($message, 0, $severity, $file, $line);
+        }, E_DEPRECATED);
+        try {
+            $ikm = Utils::computeIKM($keyInfo, $authSecret, $receiverPublicKey, $senderPrivateKey, $senderPublicKey);
+        } finally {
+            restore_error_handler();
+        }
+
+        static::assertSame(Base64Url::decode('S4lYMb_L0FxCeq0WhDx813KgSYqU26kOyzWUdsXYyrg'), $ikm);
     }
 
     #[Test]
