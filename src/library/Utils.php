@@ -16,8 +16,6 @@ abstract class Utils
 {
     private const PART_SIZE = 32;
 
-    private const HASH_SIZE = 256;
-
     public static function privateKeyToPEM(string $privateKey, string $publicKey): string
     {
         $unpacked = unpack('H*', str_pad($privateKey, self::PART_SIZE, "\0", STR_PAD_LEFT));
@@ -96,7 +94,7 @@ abstract class Utils
     ): string {
         $serverPrivateKeyPEM = self::privateKeyToPEM($serverPrivateKey, $serverPublicKey);
         $userAgentPublicKeyPEM = self::publicKeyToPEM($userAgentPublicKey);
-        $result = openssl_pkey_derive($userAgentPublicKeyPEM, $serverPrivateKeyPEM, self::HASH_SIZE);
+        $result = openssl_pkey_derive($userAgentPublicKeyPEM, $serverPrivateKeyPEM);
         is_string($result) || throw new OperationException('Unable to compute the agreement key');
 
         return str_pad($result, self::PART_SIZE, "\0", STR_PAD_LEFT);
